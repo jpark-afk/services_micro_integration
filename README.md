@@ -51,6 +51,28 @@ Generate runnable scripts after writing the YAML file:
 
 Run the command from `projects\<your_project>`. It generates scripts such as `generate_ddscdd.bat`, `generate_testapp_native.bat`, `build_testapp_native.bat`, and `user_work\patch_run.bat`.
 
+## Generation Workflow
+
+Run the following commands from `projects\<your_project>` after setting the values in `project-template-values.yaml`:
+
+```bat
+..\..\common\management\render_project_scripts.bat .\project-template-values.yaml --force
+.\user_work\patch_run.bat
+.\generate_ddscdd.bat
+```
+
+`patch_run.bat` applies the required workarounds to `PATCH_INPUT_XML_FILE` and writes `PATCH_OUTPUT_XML_FILE` under `user_work\`. `generate_ddscdd.bat` then uses that patched XML and `DEPLOYMENT_NAME` to generate the AUTOSAR CDD development code.
+
+Create a separate XML input for the native TestApp by copying the patched XML to the `RTIME_MAG_FILES` name, normally `test_system.xml`. Do not replace the CDD input XML.
+
+```bat
+copy /Y ".\user_work\<PATCH_OUTPUT_XML_FILE>" ".\user_work\test_system.xml"
+.\generate_testapp_native.bat
+.\build_testapp_native.bat
+```
+
+Before generating the TestApp, set `NATIVE_MAG_DEPLOYMENT` to a deployment that exists in `test_system.xml`. `generate_testapp_native.bat` creates the TestApp source under `testapp\`; `build_testapp_native.bat` builds it for `WINDOWS_TARGET_NAME`.
+
 ## project-template-values.yaml Guide
 
 Use this structure:
