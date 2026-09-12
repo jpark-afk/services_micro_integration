@@ -1,0 +1,4 @@
+#!/bin/sh
+
+git submodule sync --quiet --recursive
+git submodule update --init --recursive

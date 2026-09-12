@@ -19,6 +19,16 @@ git config submodule.recurse true
 
 `common/` is pinned to a release tag from `git@github.com:jpark-afk/micro_workaround.git`. To adopt a newer shared release, check out its tag in `common/`, stage the resulting gitlink in this repository, and commit that pointer update.
 
+## Git Hooks
+
+Enable the version-controlled hooks once after cloning:
+
+```bat
+.\.githooks\install.bat
+```
+
+After each parent-repository checkout, the `post-checkout` hook initializes and updates submodules to the commit pinned by the parent repository. It deliberately does not use `--remote`, so a checkout remains reproducible and does not silently advance `common/`.
+
 ## New Project Layout
 
 Create one folder per project:
