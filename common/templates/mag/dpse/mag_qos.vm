@@ -1,0 +1,27 @@
+##/* $Id$
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2020.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##modification history:
+##---------------------
+##10a,20jul20,fmt created 
+##========================================================================
+#setDefaultVariables()
+#set ( $use_mag = true )
+#set ( $use_dpde = false )
+#setVariableDiscoveryPluginName()
+#declareXMLHeader()
+#declareQosLibrary()
+#declareDomainParticipantQosStart()
+#declareDomainParticipantQosTransports()
+#declareDomainParticipantQosResourceLimits()
+#declareDomainParticipantQosEnd()
+#declareDataWriterQos()
+#declareDataReaderQos()
+#declareQosProfileEnd()
+#declareDiscoveryQosProfile()
+#declareQosLibraryEnd()
+#declareXMLEnd()

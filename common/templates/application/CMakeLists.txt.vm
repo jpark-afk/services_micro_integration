@@ -1,0 +1,491 @@
+#parse( "utils/utils.vm" )
+#parse( "application/CMakeLists_Linux.vm" )
+
+CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
+
+#DefineENVVariables( $systemModel.components )
+
+#SET_LIB_ORDER()
+
+IF (NOT DEFINED RTIMEHOME)
+    IF (DEFINED ENV{RTIMEHOME})
+        SET(RTIMEHOME $ENV{RTIMEHOME})
+        # Trim surrounding whitespace first
+        STRING(STRIP "#[[$]]#{RTIMEHOME}" RTIMEHOME)
+        # Remove leading/trailing quotes
+        STRING(REGEX REPLACE "^\"|\"#[[$]]#" "" RTIMEHOME "#[[$]]#{RTIMEHOME}")
+    ELSE()
+        MESSAGE(FATAL_ERROR "RTIMEHOME must be defined or set as an environment variable.")
+    ENDIF()
+ENDIF()
+MESSAGE(STATUS "[RTI] RTIMEHOME ..................: #braces("RTIMEHOME")")
+
+IF (NOT DEFINED RTIME_TARGET_NAME)
+    IF (DEFINED ENV{RTIME_TARGET_NAME})
+        SET(RTIME_TARGET_NAME $ENV{RTIME_TARGET_NAME})
+    ELSE()
+        MESSAGE(FATAL_ERROR "RTIME_TARGET_NAME must be defined or set as an environment variable.")
+    ENDIF()
+ENDIF()
+MESSAGE(STATUS "[RTI] RTIME_TARGET_NAME ..........: #braces("RTIME_TARGET_NAME")")
+
+IF (NOT (DEFINED RTIME_SECURE))
+    SET(RTIME_SECURE FALSE)
+ENDIF()
+
+IF (NOT (DEFINED RTIME_LIGHTWEIGHT_SECURE))
+    SET(RTIME_LIGHTWEIGHT_SECURE FALSE)
+ENDIF()
+
+IF (NOT (DEFINED RTI_SHARED_LIB))
+    SET(RTI_SHARED_LIB FALSE)
+ENDIF()
+
+MESSAGE(STATUS "[RTI] RTI_SHARED_LIB .............: #braces("RTI_SHARED_LIB")")
+MESSAGE(STATUS "[RTI] RTIME_LIGHTWEIGHT_SECURE ...: #braces("RTIME_LIGHTWEIGHT_SECURE")")
+MESSAGE(STATUS "[RTI] RTIME_SECURE ...............: #braces("RTIME_SECURE")")
+MESSAGE(STATUS "[RTI] EXCLUDE_SHMEM ..............: #braces("EXCLUDE_SHMEM")")
+MESSAGE(STATUS "[RTI] EXCLUDE_ZCV2 ...............: #braces("EXCLUDE_ZCV2")")
+SET(RTI_LIB_PREFIX librti_me_)
+SET(RTI_LIB_SUFFIX)
+
+IF (NOT RTI_SHARED_LIB)
+    IF (#braces("CMAKE_BUILD_TYPE") MATCHES "[Rr]elease")
+        SET(RTI_LIB_SUFFIX "z")
+        SET(RTI_DEBUG_BUILD FALSE)
+        ADD_DEFINITIONS(-DNDEBUG)
+    ELSE()
+        SET(RTI_LIB_SUFFIX "zd")
+        SET(RTI_DEBUG_BUILD TRUE)
+    ENDIF()
+ELSE()
+    IF (#braces("CMAKE_BUILD_TYPE") MATCHES "[Rr]elease")
+        SET(RTI_LIB_SUFFIX "")
+        SET(RTI_DEBUG_BUILD FALSE)
+        ADD_DEFINITIONS(-DNDEBUG)
+    ELSE()
+        SET(RTI_LIB_SUFFIX "d")
+        SET(RTI_DEBUG_BUILD TRUE)
+    ENDIF()
+ENDIF()
+
+ADD_DEFINITIONS()
+LINK_DIRECTORIES()
+INCLUDE_DIRECTORIES(#braces("CMAKE_CURRENT_SOURCE_DIR"))
+#if( $outputLanguage == $CPP )
+PROJECT(${inputFilePrefix} CXX C)
+SET(SOURCE_EXTENSION cxx)
+#else
+PROJECT(${inputFilePrefix} C)
+SET(SOURCE_EXTENSION c)
+#end
+
+IF (#braces("CMAKE_SYSTEM_NAME") STREQUAL "Linux")
+    SET(PLATFORM_LIBS m pthread rt)
+    ADD_DEFINITIONS(-DRTI_LINUX)
+ELSEIF (#braces("CMAKE_SYSTEM_NAME") STREQUAL "Darwin")
+    SET(PLATFORM_LIBS dl m pthread )
+    ADD_DEFINITIONS(-DRTI_DARWIN)
+ELSEIF (#braces("CMAKE_SYSTEM_NAME") STREQUAL "Windows")
+    SET(RTI_LIB_PREFIX rti_me_)
+    SET(PLATFORM_LIBS ws2_32 netapi32 advapi32 user32 winmm Mincore)
+    ADD_DEFINITIONS(-DRTI_WIN32)
+    ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
+
+    IF (RTI_USE_NMAKE OR (#braces("CMAKE_GENERATOR") MATCHES "NMake"))
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " /defaultlib:libc.lib /defaultlib:msvcrt.lib /defaultlib:Winmm.lib /nodefaultlib:libcmt.lib /nodefaultlib:libcmtd.lib /nodefaultlib:msvcrtd.lib")
+    ELSE()
+        IF (RTI_DEBUG_BUILD)
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " /NODEFAULTLIB:MSVCRT.lib")
+        ENDIF()
+        add_compile_options(
+            $<$<CONFIG:>:/MD>
+            $<$<CONFIG:Debug>:/MDd>
+            $<$<CONFIG:Release>:/MD>
+        )
+    ENDIF()
+ENDIF()
+
+SET(RTIDDSGEN "#braces("RTIMEHOME")/rtiddsgen/scripts/rtiddsgen")
+SET(RTIDDSMAG "#braces("RTIMEHOME")/rtiddsmag/scripts/rtiddsmag")
+
+SET_PROPERTY(GLOBAL PROPERTY RULE_MESSAGES OFF)
+
+${hashtag} Type support files are already generated, no IDL regeneration needed
+${hashtag} SET(IDL_SOURCE_C ${inputFilePlugin}.idl)
+SET(IDL_SOURCE_C)
+
+${hashtag} Set MAG files if needed
+IF (NOT DEFINED RTIME_MAG_FILES)
+    SET(RTIME_MAG_FILES ${inputFilePrefix}.xml)
+ENDIF()
+
+SET(IDL_PATH #braces("CMAKE_CURRENT_SOURCE_DIR"))
+SET(XML_PATH #braces("CMAKE_CURRENT_SOURCE_DIR"))
+
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY #braces("CMAKE_CURRENT_SOURCE_DIR")/objs/#braces("RTIME_TARGET_NAME"))
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY #braces("CMAKE_CURRENT_SOURCE_DIR")/objs/#braces("RTIME_TARGET_NAME"))
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY #braces("CMAKE_CURRENT_SOURCE_DIR")/objs/#braces("RTIME_TARGET_NAME"))
+
+IF (CMAKE_GENERATOR MATCHES "Visual Studio")
+    ${hashtag}Visual studio needs to run commands using 'call'
+    ${hashtag}if there is more than one dependency
+    SET(COMMAND_PREFIX call)
+ELSE()
+    SET(COMMAND_PREFIX)
+ENDIF()
+
+IF (RTIME_CERT)
+    ADD_DEFINITIONS(-DRTI_CERT)
+ENDIF()
+
+SET(RTI_SECURE_INC)
+SET(RTI_SECURE_LINK_DIRECTORES)
+
+IF (NOT RTI_SHARED_LIB)
+    SET(RTI_LIB_EXT #braces("CMAKE_STATIC_LIBRARY_SUFFIX"))
+ELSE()
+    SET(RTI_LIB_EXT #braces("CMAKE_SHARED_LIBRARY_SUFFIX"))
+ENDIF()
+
+IF ((#braces("CMAKE_SYSTEM_NAME") STREQUAL "Windows") AND RTI_SHARED_LIB)
+    ADD_DEFINITIONS(-DRTIME_DLL_VARIABLE)
+ENDIF()
+
+IF (#braces("RTIME_SECURE") OR #braces("RTIME_LIGHTWEIGHT_SECURE"))
+   IF(NOT DEFINED OPENSSLHOME)
+        IF(DEFINED ENV{OPENSSLHOME})
+            SET(OPENSSLHOME $ENV{OPENSSLHOME})
+        ELSE()
+            IF(RTI_DEBUG_BUILD)
+                SET(_cfg_type "debug")
+            ELSE()
+                SET(_cfg_type "release")
+            ENDIF()
+
+            IF(RTI_SHARED_LIB)
+                SET(_cfg_link "shared")
+            ELSE()
+                SET(_cfg_link "static")
+            ENDIF()
+
+            SET(OPENSSLHOME
+                "#braces("RTIMEHOME")/third_party/openssl-3.5.5/#braces("RTIME_TARGET_NAME")/#braces("_cfg_type")-#braces("_cfg_link")"
+            )
+        ENDIF()
+    ENDIF()
+
+    MESSAGE(STATUS "[RTI] OPENSSLHOME ................: #braces("OPENSSLHOME")")
+
+    IF (#braces("CMAKE_SYSTEM_NAME") STREQUAL "Windows")
+        SET(SSL_LIBS libcrypto)
+        SET(PLATFORM_LIBS crypt32.lib #braces("PLATFORM_LIBS"))
+    ELSE()
+        SET(SSL_LIBS crypto)
+
+        IF (#braces("CMAKE_SYSTEM_NAME") STREQUAL "Linux")
+            LIST(APPEND SSL_LIBS dl)
+        ENDIF()
+    ENDIF()
+
+    SET(RTI_SECURE_LINK_DIRECTORES #braces("OPENSSLHOME")/lib)
+    SET(RTI_SECURE_INC #braces("OPENSSLHOME")/include)
+ENDIF()
+
+IF (#braces("RTIME_SECURE"))
+    SET(RTI_SECURE_LIB rti_me_seccore#braces( "RTI_LIB_SUFFIX" ))
+    LIST(APPEND RTI_SECURE_INC #braces("XML_INC"))
+
+    IF (SYSLIBXML2)
+        IF (LIBXML2HOME)
+            SET(XML_INC #braces("LIBXML2HOME")/lib)
+        ENDIF()
+    SET(XML_LIBS xml2)
+    ENDIF()
+ENDIF()
+
+${hashtag} Find ZCV2, SHMEM, and xtypes libraries in the library folder and add them
+${hashtag} to our library list. This is for convenience. In the future this will
+${hashtag} be based on the example generated and not on the presence of the libraries.
+${hashtag} CPP requires Shared memory. ZCv2 requries shared memory.
+STRING(REGEX MATCH "^[^-]+" ARCH_NAME #braces("RTIME_TARGET_NAME"))
+SET(LIB_PATH "#braces("RTIMEHOME")/lib/#braces("ARCH_NAME")")
+SET(PSL_LIB_PATH "#braces("RTIMEHOME")/lib/#braces("RTIME_TARGET_NAME")")
+
+${hashtag} Add the xtypes library if supported in case the IDL was compiled with
+${hashtag} -interpreted 1 (default).
+IF (EXISTS "#braces("LIB_PATH")/#braces("RTI_LIB_PREFIX")ddsxtypes#braces( "RTI_LIB_SUFFIX" )#braces("RTI_LIB_EXT")")
+    SET(MICRO_C_LIBS
+        rti_me_ddsxtypes#braces( "RTI_LIB_SUFFIX" )
+        rti_me#braces( "RTI_LIB_SUFFIX" )
+    )
+ELSE()
+    SET(MICRO_C_LIBS
+        rti_me#braces( "RTI_LIB_SUFFIX" )
+    )
+ENDIF()
+
+IF (EXISTS "#braces("LIB_PATH")/#braces("RTI_LIB_PREFIX")ddsfilter#braces( "RTI_LIB_SUFFIX" )#braces("RTI_LIB_EXT")")
+    LIST(APPEND MICRO_C_LIBS "rti_me_ddsfilter#braces( "RTI_LIB_SUFFIX" )")
+ENDIF()
+
+IF (EXISTS "#braces("LIB_PATH")/#braces("RTI_LIB_PREFIX")netioshmem#braces( "RTI_LIB_SUFFIX" )#braces("RTI_LIB_EXT")"
+            AND NOT EXCLUDE_SHMEM)
+    LIST(APPEND MICRO_C_LIBS "rti_me_netioshmem#braces( "RTI_LIB_SUFFIX" )")
+ENDIF()
+
+IF (EXISTS "#braces("LIB_PATH")/#braces("RTI_LIB_PREFIX")netiosdm#braces( "RTI_LIB_SUFFIX" )#braces("RTI_LIB_EXT")"
+            AND NOT EXCLUDE_SHMEM)
+    LIST(APPEND MICRO_C_LIBS "rti_me_netiosdm#braces( "RTI_LIB_SUFFIX" )")
+ENDIF()
+
+IF (EXISTS "#braces("LIB_PATH")/#braces("RTI_LIB_PREFIX")netiozcopy#braces( "RTI_LIB_SUFFIX" )#braces("RTI_LIB_EXT")"
+            AND NOT EXCLUDE_ZCV2)
+    LIST(APPEND MICRO_C_LIBS "rti_me_netiozcopy#braces( "RTI_LIB_SUFFIX" )")
+    ADD_DEFINITIONS(-DRTIME_HAVE_ZCOPYV2=1)
+ENDIF()
+
+IF (#braces("RTIME_LIGHTWEIGHT_SECURE"))
+    IF (EXISTS "#braces("LIB_PATH")/#braces("RTI_LIB_PREFIX")ddspsk#braces( "RTI_LIB_SUFFIX" )#braces("RTI_LIB_EXT")"
+        AND EXISTS "#braces("PSL_LIB_PATH")/#braces("RTI_LIB_PREFIX")pskpsl_openssl3#braces( "RTI_LIB_SUFFIX" )#braces("RTI_LIB_EXT")")
+
+        LIST(APPEND MICRO_C_LIBS "rti_me_ddspsk#braces( "RTI_LIB_SUFFIX" )")
+        LIST(APPEND MICRO_C_LIBS "rti_me_pskpsl_openssl3#braces( "RTI_LIB_SUFFIX" )")
+    ELSE()
+        MESSAGE(FATAL_ERROR "PSK libraries were not found.")
+    ENDIF()
+ENDIF()
+
+IF (DEFINED RTIME_MAG_FILES)
+    LIST(APPEND MICRO_C_LIBS rti_me_appgen#braces( "RTI_LIB_SUFFIX" ))
+ENDIF()
+IF (NOT RTIME_CERT)
+
+#if( $outputLanguage == $CPP )
+    LIST(APPEND MICRO_C_LIBS
+                 rti_me_cpp#braces( "RTI_LIB_SUFFIX" )
+        )
+#end
+
+    LIST(APPEND MICRO_C_LIBS
+        rti_me_rhsm#braces( "RTI_LIB_SUFFIX" )
+        rti_me_whsm#braces( "RTI_LIB_SUFFIX" )
+        rti_me_discdpse#braces( "RTI_LIB_SUFFIX" )
+        rti_me_discdpde#braces( "RTI_LIB_SUFFIX" )
+            )
+ENDIF()
+
+INCLUDE_DIRECTORIES(
+    "#braces("RTIMEHOME")/include"
+    "#braces("RTIMEHOME")/include/rti_me"
+)
+
+IF (RTI_SECURE_INC)
+    INCLUDE_DIRECTORIES("#braces("RTI_SECURE_INC")")
+ENDIF()
+
+LINK_DIRECTORIES(
+    "#braces("RTIMEHOME")/lib/#braces("RTIME_TARGET_NAME")"
+    "#braces("RTI_SECURE_LINK_DIRECTORES")"
+)
+
+STRING(REGEX MATCH "(.*)-(.*)" pil_match #braces("RTIME_TARGET_NAME"))
+IF (pil_match)
+    SET(RTIME_PIL_ARCH #braces("CMAKE_MATCH_1"))
+    LIST(APPEND MICRO_C_LIBS rti_me_netiopsl#braces( "RTI_LIB_SUFFIX" ))
+    LIST(APPEND MICRO_C_LIBS rti_me_ospsl#braces( "RTI_LIB_SUFFIX" ))
+    LINK_DIRECTORIES("#braces("RTIMEHOME")/lib/#braces("RTIME_PIL_ARCH")")
+    GET_PROPERTY(cppdef DIRECTORY PROPERTY COMPILE_DEFINITIONS)
+ENDIF()
+
+FOREACH(idl #braces( "IDL_SOURCE_C" ))
+    GET_FILENAME_COMPONENT(filename #braces("idl") NAME)
+    STRING(REGEX REPLACE "\\.idl" "" basename #braces("filename"))
+    LIST(APPEND IDL_GEN_C #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename").#braces("SOURCE_EXTENSION");
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Plugin.#braces("SOURCE_EXTENSION");
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Support.#braces("SOURCE_EXTENSION"))
+    LIST(APPEND IDL_GEN_H #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename").h
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Plugin.h;
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Support.h)
+    IF (RTIME_IDL_ADD_REGENERATE_TYPESUPPORT_RULE)
+        IF (NOT EXISTS #braces("idl"))
+            MESSAGE(FATAL_ERROR "#braces("idl") does not exist.")
+        ELSEIF(IS_DIRECTORY #braces("idl"))
+            MESSAGE(FATAL_ERROR "#braces("idl") is not a file.")
+        ENDIF()
+
+        SET(IDL_GEN_FILE_C #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename").#braces("SOURCE_EXTENSION");
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Plugin.#braces("SOURCE_EXTENSION");
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Support.#braces("SOURCE_EXTENSION"))
+        SET(IDL_GEN_FILE_H #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename").h;
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Plugin.h;
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Support.h)
+        ADD_CUSTOM_COMMAND(OUTPUT #braces("IDL_GEN_FILE_C") #braces("IDL_GEN_FILE_H")
+                           COMMAND #braces("COMMAND_PREFIX") #braces("RTIDDSGEN") -language C
+                                   -micro -verbosity 1 -update typefiles
+                                   -d #braces("CMAKE_CURRENT_SOURCE_DIR");
+                                   #braces("IDL_PATH")/#braces("idl");
+                           DEPENDS #braces("IDL_PATH")/#braces("idl")
+                           COMMENT "Regeneration type support plugin from #braces("idl")"
+                          )
+        SET_SOURCE_FILES_PROPERTIES(#braces("IDL_GEN_FILE_C") #braces("IDL_GEN_FILE_H") PROPERTIES GENERATED 1)
+    ENDIF()
+ENDFOREACH()
+
+${hashtag} Type support files already exist, add them manually
+IF (NOT IDL_SOURCE_C)
+    LIST(APPEND IDL_GEN_C #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePlugin}.#braces("SOURCE_EXTENSION");
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePlugin}Plugin.#braces("SOURCE_EXTENSION");
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePlugin}Support.#braces("SOURCE_EXTENSION"))
+    LIST(APPEND IDL_GEN_H #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePlugin}.h;
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePlugin}Plugin.h;
+                          #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePlugin}Support.h)
+    ${hashtag} Also add existing Appgen files
+    LIST(APPEND APP_GEN_C #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePrefix}Appgen.c)
+    LIST(APPEND APP_GEN_H #braces("CMAKE_CURRENT_SOURCE_DIR")/${inputFilePrefix}Appgen.h)
+ENDIF()
+
+${hashtag} Commented out MAG file regeneration since files already exist
+IF (FALSE AND DEFINED RTIME_MAG_FILES)
+    FOREACH(xml #braces("RTIME_MAG_FILES"))
+        IF (NOT EXISTS #braces("xml"))
+            MESSAGE(FATAL_ERROR "#braces("xml") does not exist.")
+        ELSEIF(IS_DIRECTORY #braces("xml"))
+            MESSAGE(FATAL_ERROR "#braces("xml") is not a file.")
+        ENDIF()
+
+        GET_FILENAME_COMPONENT(filename #braces("xml") NAME)
+        STRING(REGEX REPLACE "\\.xml" "" basename #braces("filename"))
+        GET_FILENAME_COMPONENT(basename #braces("xml") NAME_WE)
+
+        STRING(REGEX REPLACE "\\.xml" "Qos.xml" xml_qos #braces("xml"))
+        IF (EXISTS #braces("xml_qos"))
+            IF(NOT IS_DIRECTORY #braces("xml_qos"))
+                SET(REFERENCED_OPT "YES")
+            ENDIF()
+        ENDIF()
+
+        LIST(APPEND APP_GEN_C #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Appgen.c)
+
+        LIST(APPEND APP_GEN_H #braces("CMAKE_CURRENT_SOURCE_DIR")/#braces("basename")Appgen.h)
+
+
+        IF (DEFINED REFERENCED_OPT)
+            ADD_CUSTOM_COMMAND(OUTPUT #braces("APP_GEN_C") #braces("APP_GEN_H")
+                               COMMAND #braces("COMMAND_PREFIX") #braces("RTIDDSMAG") -verbosity 1
+                                       -language C
+                                       -replace
+                                       -d #braces("CMAKE_CURRENT_SOURCE_DIR")
+                                       -idlFile #braces("IDL_PATH")/#braces("IDL_SOURCE_C")
+                                       -referencedFile #braces("XML_PATH")/#braces("basename")Qos.xml;
+                                       #braces("XML_PATH")/#braces("xml");
+                               DEPENDS #braces("XML_PATH")/#braces("xml") #braces("XML_PATH")/#braces("basename")Qos.xml
+                               COMMENT "Regeneration of application support from #braces("xml")"
+            )
+        ELSE()
+            ADD_CUSTOM_COMMAND(OUTPUT #braces("APP_GEN_C") #braces("APP_GEN_H")
+                               COMMAND #braces("COMMAND_PREFIX") #braces("RTIDDSMAG") -verbosity 1
+                                       -language C
+                                       -replace
+                                       -d #braces("CMAKE_CURRENT_SOURCE_DIR")
+                                       -idlFile #braces("IDL_PATH")/#braces("IDL_SOURCE_C");
+                                       #braces("XML_PATH")/#braces("xml");
+                               DEPENDS #braces("XML_PATH")/#braces("xml")
+                               COMMENT "Regeneration of application support from #braces("xml")"
+            )
+        ENDIF()
+    ENDFOREACH()
+ENDIF()
+
+IF (#braces("RTIME_SECURE"))
+    ADD_CUSTOM_TARGET(security_material ALL
+                      DEPENDS #braces("CMAKE_SOURCE_DIR")/security/ca/ca.pem
+                              #braces("CMAKE_SOURCE_DIR")/security/ca/certs/publisher.pem;
+                              #braces("CMAKE_SOURCE_DIR")/security/ca/certs/publisher_key.pem;
+                              #braces("CMAKE_SOURCE_DIR")/security/ca/certs/subscriber.pem;
+                              #braces("CMAKE_SOURCE_DIR")/security/ca/certs/subscriber_key.pem;
+                              #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_publisher.p7s;
+                              #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_subscriber.p7s;
+                              #braces("CMAKE_SOURCE_DIR")/security/xml/governance.p7s;
+                     )
+
+    ADD_CUSTOM_COMMAND(OUTPUT #braces("CMAKE_SOURCE_DIR")/security/openssl_ca.cnf
+                              #braces("CMAKE_SOURCE_DIR")/security/openssl_publisher.cnf;
+                              #braces("CMAKE_SOURCE_DIR")/security/openssl_subscriber.cnf;
+                              #braces("CMAKE_SOURCE_DIR")/security/xml/governance.xml;
+                              #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_publisher.xml;
+                              #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_subscriber.xml;
+                       COMMAND "#braces("CMAKE_COMMAND")" -E copy_directory "#braces("RTIMEHOME")/rtiddsgen/resource/rtiddsgen/security" "security"
+                       COMMENT "Copy secure configuration files"
+                       WORKING_DIRECTORY #braces("CMAKE_SOURCE_DIR")
+                      )
+
+    ADD_CUSTOM_COMMAND(OUTPUT #braces("CMAKE_SOURCE_DIR")/security/ca/ca_key.pem #braces("CMAKE_SOURCE_DIR")/security/ca/ca.pem
+                       COMMAND "#braces("CMAKE_COMMAND")" -E make_directory ca
+                       COMMAND "#braces("CMAKE_COMMAND")" -E touch ca/index.txt
+                       COMMAND echo 01 > ca/serial
+                       COMMAND openssl genrsa -out ca/ca_key.pem 2048
+                       COMMAND openssl req -new -key ca/ca_key.pem -out ca/ca.csr -config openssl_ca.cnf
+                       COMMAND openssl x509 -req -days 365 -in ca/ca.csr -signkey ca/ca_key.pem -out ca/ca.pem
+                       COMMENT "Regenerating Certificate Authority"
+                       DEPENDS #braces("CMAKE_SOURCE_DIR")/security/openssl_ca.cnf
+                       WORKING_DIRECTORY #braces("CMAKE_SOURCE_DIR")/security
+                      )
+
+    ADD_CUSTOM_COMMAND(OUTPUT #braces("CMAKE_SOURCE_DIR")/security/ca/certs/publisher.pem #braces("CMAKE_SOURCE_DIR")/security/ca/certs/publisher_key.pem
+                       COMMAND "#braces("CMAKE_COMMAND")" -E make_directory ca/certs
+                       COMMAND openssl genrsa -out ca/certs/publisher_key.pem 2048
+                       COMMAND openssl req -new -key ca/certs/publisher_key.pem -out ca/certs/publisher.csr -config openssl_publisher.cnf
+                       COMMAND openssl ca -batch -config openssl_ca.cnf -in ca/certs/publisher.csr -out ca/certs/publisher.pem
+                       COMMENT "Regenerating Publisher identity"
+                       DEPENDS #braces("CMAKE_SOURCE_DIR")/security/openssl_ca.cnf #braces("CMAKE_SOURCE_DIR")/security/openssl_publisher.cnf
+                       WORKING_DIRECTORY #braces("CMAKE_SOURCE_DIR")/security
+                      )
+
+    ADD_CUSTOM_COMMAND(OUTPUT #braces("CMAKE_SOURCE_DIR")/security/ca/certs/subscriber.pem #braces("CMAKE_SOURCE_DIR")/security/ca/certs/subscriber_key.pem
+                       COMMAND "#braces("CMAKE_COMMAND")" -E make_directory ca/certs
+                       COMMAND openssl genrsa -out ca/certs/subscriber_key.pem 2048
+                       COMMAND openssl req -new -key ca/certs/subscriber_key.pem -out ca/certs/subscriber.csr -config openssl_subscriber.cnf
+                       COMMAND openssl ca -batch -config openssl_ca.cnf -in ca/certs/subscriber.csr -out ca/certs/subscriber.pem
+                       COMMENT "Regenerating Subscriber identity"
+                       DEPENDS #braces("CMAKE_SOURCE_DIR")/security/openssl_ca.cnf #braces("CMAKE_SOURCE_DIR")/security/openssl_subscriber.cnf
+                       WORKING_DIRECTORY #braces("CMAKE_SOURCE_DIR")/security
+                      )
+
+    ADD_CUSTOM_COMMAND(OUTPUT #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_publisher.p7s
+                       COMMAND openssl cms -in xml/permissions_publisher.xml -out xml/permissions_publisher.p7s -signer ca/ca.pem -inkey ca/ca_key.pem -sign -outform smime
+                       COMMENT "Regenerating Publisher Permissions file"
+                       DEPENDS #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_publisher.xml #braces("CMAKE_SOURCE_DIR")/security/ca/ca.pem #braces("CMAKE_SOURCE_DIR")/security/ca/ca_key.pem
+                       WORKING_DIRECTORY #braces("CMAKE_SOURCE_DIR")/security
+                      )
+
+    ADD_CUSTOM_COMMAND(OUTPUT #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_subscriber.p7s
+                       COMMAND openssl cms -in xml/permissions_subscriber.xml -out xml/permissions_subscriber.p7s -signer ca/ca.pem -inkey ca/ca_key.pem -sign -outform smime
+                       COMMENT "Regenerating Subscriber Permissions file"
+                       DEPENDS #braces("CMAKE_SOURCE_DIR")/security/xml/permissions_subscriber.xml #braces("CMAKE_SOURCE_DIR")/security/ca/ca.pem #braces("CMAKE_SOURCE_DIR")/security/ca/ca_key.pem
+                       WORKING_DIRECTORY #braces("CMAKE_SOURCE_DIR")/security
+                      )
+
+    ADD_CUSTOM_COMMAND(OUTPUT #braces("CMAKE_SOURCE_DIR")/security/xml/governance.p7s
+                       COMMAND openssl cms -in xml/governance.xml -out xml/governance.p7s -signer ca/ca.pem -inkey ca/ca_key.pem -sign -outform smime
+                       COMMENT "Regenerating Governance file"
+                       DEPENDS #braces("CMAKE_SOURCE_DIR")/security/xml/governance.xml #braces("CMAKE_SOURCE_DIR")/security/ca/ca.pem #braces("CMAKE_SOURCE_DIR")/security/ca/ca_key.pem
+                       WORKING_DIRECTORY #braces("CMAKE_SOURCE_DIR")/security
+                      )
+ENDIF()
+
+SET_LIB_ORDER(MICRO_C_LIBS)
+
+ADD_EXECUTABLE(${systemModel.appName}
+               #braces("CMAKE_CURRENT_SOURCE_DIR")/main.#braces("SOURCE_EXTENSION");
+               #braces("CMAKE_CURRENT_SOURCE_DIR")/${systemModel.appName}.#braces("SOURCE_EXTENSION");
+               #braces("CMAKE_CURRENT_SOURCE_DIR")/${systemModel.appName}.h;
+                                             #braces("IDL_GEN_C") #braces("IDL_GEN_H") #braces("APP_GEN_C") #braces("APP_GEN_H"))
+
+TARGET_LINK_LIBRARIES(${systemModel.appName}
+        #braces("MICRO_C_LIBS");
+        #braces("XML_LIBS");
+        #braces("SSL_LIBS");
+        #braces("PLATFORM_LIBS")
+)
+

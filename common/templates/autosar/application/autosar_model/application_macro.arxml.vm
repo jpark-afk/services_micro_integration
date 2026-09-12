@@ -1,0 +1,48 @@
+#parse( "utils/utils.vm" )
+## This file contains macros to generate the application ARXML file
+
+## Helper macro to generate the list of AR topics
+#macro(generate_ar_topic_list)
+ #foreach( $library in $systemModel.libraries )
+  #foreach( $participant in $library.participants )
+    #foreach( $publisher in $participant.publishers )
+      #foreach( $datawriter in $publisher.dataWriters )
+        #set($topicEntry = [$datawriter.topicName, $datawriter.typeRef])
+        #if(!$topicsList.contains($topicEntry))
+          #if($topicsList.add($topicEntry))#end
+        #end
+      #end
+    #end
+    #foreach( $subscriber in $participant.subscribers )
+      #foreach( $datareader in $subscriber.dataReaders )
+        #set($topicEntry = [$datareader.topicName, $datareader.typeRef])
+        #if(!$topicsList.contains($topicEntry))
+          #if($topicsList.add($topicEntry))#end
+        #end
+      #end
+    #end
+  #end
+ #end
+#end
+
+## Helper macro to generate the list of types
+#macro(generate_type_list)
+ #foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #if(!$typesList.contains($datawriter.typeRef))
+                    #if($typesList.add($datawriter.typeRef))#end
+                #end
+            #end
+        #end
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #if(!$typesList.contains($datareader.typeRef))
+                    #if($typesList.add($datareader.typeRef))#end
+                #end
+            #end
+        #end
+    #end
+ #end
+#end

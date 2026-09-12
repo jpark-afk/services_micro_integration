@@ -1,0 +1,330 @@
+#parse( "utils/utils.vm" )
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DpseDiscoveryProperties                                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dpseDiscovery $dpseDiscovery $name )
+    ${hashtag}define $name \
+    { \
+    #if( $QosUtils.isEveryFieldNull( $dpseDiscovery )  )
+        DPSE_DiscoveryPluginProperty_INITIALIZER \
+    #else
+        RT_ComponentFactoryProperty_INITIALIZER, /* _parent */ \
+        {   /*participant_liveliness_assert_period */ \
+            #duration( $dpseDiscovery.participantLivelinessAssertPeriod, "30", "0" )
+        }, \
+        {   /*participant_liveliness_lease_duration */ \
+            #duration( $dpseDiscovery.participantLivelinessLeaseDuration, "100", "0" )
+        }, \
+        $dpseDiscovery.initialParticipantAnnouncements, /* initial_participant_announcements */ \
+        {   /*initial_participant_announcement_period */ \
+            #duration( $dpseDiscovery.initialParticipantAnnouncementPeriod, "1", "0" )
+        }, \
+        $QosUtils.integerOrLengthAutoToCpp( $dpseDiscovery.maxParticipantLocators ), /* max_participant_locators */ \
+        $dpseDiscovery.maxLocatorsPerDiscoveredParticipant#if( $dpseDiscovery.participantMessageReaderReliabilityKind ),#end /* max_locators_per_discovered_participant */ \
+        #if( !$dpseDiscovery.participantMessageReaderReliabilityKind )
+            DDS_PARTICIPANT_MESSAGE_READER_RELIABILITY_KIND_INITIALIZER \
+        #else
+            #enum( $dpseDiscovery.participantMessageReaderReliabilityKind ) /* participant_message_reader_reliability_kind */ \
+        #end
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DpdeDiscoveryProperties                                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dpdeDiscovery $dpdeDiscovery $name )
+    ${hashtag}define $name \
+    { \
+    #if( $QosUtils.isEveryFieldNull( $dpdeDiscovery ) )
+        DPDE_DiscoveryPluginProperty_INITIALIZER \
+    #else
+        RT_ComponentFactoryProperty_INITIALIZER, /* _parent */ \
+        {   /*participant_liveliness_assert_period */ \
+            #duration( $dpdeDiscovery.participantLivelinessAssertPeriod, "30", "0" )
+        }, \
+        {   /*participant_liveliness_lease_duration */ \
+            #duration( $dpdeDiscovery.participantLivelinessLeaseDuration, "100", "0" )
+        }, \
+        $dpdeDiscovery.initialParticipantAnnouncements, /* initial_participant_announcements */ \
+        {   /*initial_participant_announcement_period */ \
+            #duration( $dpdeDiscovery.initialParticipantAnnouncementPeriod, "1", "0" )
+        }, \
+        #ddsBoolean( $dpdeDiscovery.cacheSerializedSamples, false ), /* cache_serialized_samples */ \
+        $QosUtils.integerOrLengthAutoToCpp( $dpdeDiscovery.maxParticipantLocators ), /* max_participant_locators */ \
+        $dpdeDiscovery.maxLocatorsPerDiscoveredParticipant, /* max_locators_per_discovered_participant */ \
+        $dpdeDiscovery.maxSamplesPerBuiltinEndpointReader, /* max_samples_per_builtin_endpoint_reader */ \
+        $dpdeDiscovery.maxSamplesPerRemoteBuiltinEndpointWriter, /* max_samples_per_remote_builtin_endpoint_writer */ \
+        $QosUtils.integerOrLengthUnlimitedToCpp( $dpdeDiscovery.builtinWriterMaxHeartbeatRetries ), /* builtin_writer_max_heartbeat_retries */ \
+        {   /*builtin_writer_heartbeat_period */ \
+            #duration( $dpdeDiscovery.builtinWriterHeartbeatPeriod, "0", "100000000" )
+        }, \
+        $QosUtils.integerOrLengthUnlimitedToCpp( $dpdeDiscovery.builtinWriterHeartbeatsPerMaxSamples ), /* builtin_writer_heartbeats_per_max_samples */ \
+        {   /* builtin_endpoint_reader_nack_period */ \
+            #duration( $dpdeDiscovery.builtinEndpointReaderNackPeriod, "0", "50000000" )
+        }#if( $dpdeDiscovery.participantMessageReaderReliabilityKind ),#end \
+        #if( !$dpdeDiscovery.participantMessageReaderReliabilityKind )
+            DDS_PARTICIPANT_MESSAGE_READER_RELIABILITY_KIND_INITIALIZER \
+        #else
+            #enum( $dpdeDiscovery.participantMessageReaderReliabilityKind ) /* participant_message_reader_reliability_kind */ \
+        #end
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    UDP_InterfaceFactoryProperty                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( UDPInterfaceTableEntry $entry, $name )
+    #foreach( $element in $entry )
+        #set ( $element_name = $name + $foreach.count )
+        ${hashtag}define $element_name \
+        { \
+            $element.flags, /* flags */ \
+            $ConverterUtils.convertIpv4AddressToHex( $element.address ), /* address */ \
+            $ConverterUtils.convertIpv4AddressToHex( $element.netMask ), /* netmask */ \
+            "${element.interfaceName}" /* ifname */ \
+        }
+        #if( $foreach.hasNext )
+
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    UDP_InterfaceFactoryProperty                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( udpv4 $udpInterfaceFactory, $name )
+    #if( $udpInterfaceFactory != $null)
+        #splitComponentName( $name )
+        ## Checking if we need to add a variable to include the allowInterface or not
+        #if ( $udpInterfaceFactory.allowInterface != $null )
+            #set ( $allow_interface_name = ${component_name} + "_allow_interface" )
+            #set ( $allow_interface_size = $udpInterfaceFactory.allowInterface.element.size() )
+            extern const char *const ${allow_interface_name}[${allow_interface_size}];
+        #end
+        ## Checking if we need to add a variable to include the denyInterface or not
+        #if ( $udpInterfaceFactory.denyInterface != $null )
+            #set ( $deny_interface_name = ${component_name} + "_deny_interface" )
+            #set ( $deny_interface_size = $udpInterfaceFactory.denyInterface.element.size() )
+            extern const char *const ${deny_interface_name}[${deny_interface_size}];
+        #end
+        ## Checking if we need to add a variable to include the interface table or not
+        #if ( $udpInterfaceFactory.interfaceTable != $null )
+            #set ( $interface_table_name = ${component_name} + "_interface_table" )
+            #set ( $interface_table_size = $udpInterfaceFactory.interfaceTable.element.size() )
+            extern const struct UDP_InterfaceTableEntry ${interface_table_name}[${interface_table_size}];
+
+            #UDPInterfaceTableEntry( $udpInterfaceFactory.interfaceTable.element, $interface_table_name )
+        #end
+    #end
+
+    /**
+     * NOTE: Do not add a comma (,) after UDP_NAT_INITIALIZER, it is
+     * part of the definition based on the RTI_CERT definition.
+     */
+    ${hashtag}define $name \
+    { \
+    #if( !$udpInterfaceFactory )
+        UDP_InterfaceFactoryProperty_INITIALIZER \
+    #else
+        NETIO_InterfaceFactoryProperty_INITIALIZER, \
+        #redaStringSeq( $udpInterfaceFactory.allowInterface $allow_interface_name $allow_interface_size ), /* allow_interface */ \
+        #redaStringSeq( $udpInterfaceFactory.denyInterface $deny_interface_name $deny_interface_size ), /* deny_interface */ \
+        $udpInterfaceFactory.maxSendBufferSize, /* max_send_buffer_size */ \
+        $udpInterfaceFactory.maxReceiveBufferSize, /* max_receive_buffer_size */ \
+        $udpInterfaceFactory.maxMessageSize, /* max_message_size */ \
+        UDP_MAX_SEND_MESSAGE_SIZE_DEFAULT /* max_send_message_size */ \
+        $udpInterfaceFactory.multicastTtl, /* multicast_ttl */ \
+        UDP_NAT_INITIALIZER \
+        #interfaceTableSeq( $udpInterfaceFactory.interfaceTable $interface_table_name $interface_table_size ), /* if_table */ \
+        #redaString( $udpInterfaceFactory.multicastInterface ), /* multicast_interface */ \
+        #ddsBoolean( $udpInterfaceFactory.isDefaultInterface, true ), /* is_default_interface */ \
+        #ddsBoolean( $udpInterfaceFactory.disableAutoInterfaceConfig, false ), /* disable_auto_interface_config */ \
+        #ddsBoolean( $udpInterfaceFactory.multicastLoopbackDisabled, false ), /* multicast_loopback_disabled */ \
+        #threadProperty( $udpInterfaceFactory.recvThread, "UDP_THREAD_PROPERTY_DEFAULT", "recv_thread", false )
+        UDP_INTERFACE_BIND_DEFAULT, /* enable_interface_bind */ \
+        #ddsBoolean( $udpInterfaceFactory.disableMulticastBind, false ), /* disable_multicast_bind */ \
+        #ddsBoolean( $udpInterfaceFactory.disableMulticastInterfaceSelect, false ), /* disable_multicast_interface_select */ \
+        UDP_TRANSFORMS_INITIALIZER \
+        #propertyValueWithDefault( $udpInterfaceFactory.transportPriorityMappingLow "UDP_TRANSPORT_PRIORITY_MAPPING_LOW_DEFAULT" "transport_priority_mapping_low" true )
+        #propertyValueWithDefault( $udpInterfaceFactory.transportPriorityMappingHigh "UDP_TRANSPORT_PRIORITY_MAPPING_HIGH_DEFAULT" "transport_priority_mapping_high" true )
+        #propertyValueWithDefault( $udpInterfaceFactory.transportPriorityMask "UDP_TRANSPORT_PRIORITY_MASK_DEFAULT" "transport_priority_mapping_mask" true )
+        #propertyValueWithDefault( $udpInterfaceFactory.maxUnicastSendSockets "UDP_MAX_UNICAST_SEND_SOCKETS_DEFAULT" "max_unicast_send_sockets" false )
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    NETIO_SHMEMInterfaceFactoryProperty                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( shmem $shmemInterfaceFactory, $name )
+    ${hashtag}define $name \
+    { \
+    #if( !$shmemInterfaceFactory )
+        NETIO_SHMEMInterfaceFactoryProperty_INITIALIZER \
+    #else
+        NETIO_InterfaceFactoryProperty_INITIALIZER, \
+        $shmemInterfaceFactory.receivedMessageCountMax, /* received_message_count_max */ \
+        $shmemInterfaceFactory.receiveBufferSize, /* receive_buffer_size */ \
+        $shmemInterfaceFactory.messageSizeMax, /* message_size_max */ \
+        #threadProperty( $shmemInterfaceFactory.recvThread, "NETIO_SHMEM_THREAD_PROPERTY_DEFAULT", "recv_thread_property", true )
+        #ddsProductVersion( $shmemInterfaceFactory.ddsProductVersion )
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    ZCOPY_NotifInterfaceFactoryProperty                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( zcopy $zcopyInterfaceFactory, $name )
+    #if( $zcopyInterfaceFactory )
+        #if ( $zcopyInterfaceFactory.userIntf && !$DISABLE_USER_INTF )
+            ${hashtag}define ${name}_NOTIF_USER_INTERFACE \
+            { \
+                $zcopyInterfaceFactory.userIntf.createInstance, /* create_instance */ \
+                $zcopyInterfaceFactory.userIntf.deleteInstance, /* delete_instance */ \
+                $zcopyInterfaceFactory.userIntf.resolveAddress, /* resolve_address */ \
+                $zcopyInterfaceFactory.userIntf.getRouteTable, /* get_route_table */ \
+                $zcopyInterfaceFactory.userIntf.reserveAddress, /* reserve_address */ \
+                $zcopyInterfaceFactory.userIntf.releaseAddress, /* release_address */ \
+                $zcopyInterfaceFactory.userIntf.addRoute, /* add_route */ \
+                $zcopyInterfaceFactory.userIntf.deleteRoute, /* delete_route */ \
+                $zcopyInterfaceFactory.userIntf.bind, /* bind */ \
+                $zcopyInterfaceFactory.userIntf.unbind, /* unbind */ \
+                $zcopyInterfaceFactory.userIntf.send, /* send */ \
+                $zcopyInterfaceFactory.userIntf.notifyRecvPort /* notify_recv_port */ \
+            }
+
+            extern const struct ZCOPY_NotifUserInterfaceI ${zcopyInterfaceFactory.name}_user_intf;
+        #end
+
+        #if ( $zcopyInterfaceFactory.userProperty )
+            ${hashtag}define ${name}_NOTIF_USER_PROPERTY \
+            { \
+                ${zcopyInterfaceFactory.userProperty.intfAddr}U, /* intf_addr */ \
+                #threadProperty( $zcopyInterfaceFactory.userProperty.threadProp, "OSAPI_ThreadProperty_INITIALIZER", "thread_prop", true )
+                ${zcopyInterfaceFactory.userProperty.maxReceivePorts}U, /* max_receive_ports */ \
+                ${zcopyInterfaceFactory.userProperty.maxRoutes}U /* max_routes */ \
+            }
+
+            extern const struct ZCOPY_NotifMechanismProperty ${zcopyInterfaceFactory.name}_user_property;
+        #end
+    #end
+
+    ${hashtag}define ${name}_PROPERTY \
+    { \
+    #if( !$zcopyInterfaceFactory )
+        ZCOPY_NotifInterfaceFactoryProperty_INITIALIZER \
+    #else
+        NETIO_InterfaceFactoryProperty_INITIALIZER, \
+        ${zcopyInterfaceFactory.maxSamplesPerNotif}L, /* max_samples_per_notif */ \
+        #if( !$zcopyInterfaceFactory.userIntf || $DISABLE_USER_INTF )NULL#else&${zcopyInterfaceFactory.name}_user_intf#end, /* user_intf */ \
+        #if( !$zcopyInterfaceFactory.userProperty )NULL#else&${zcopyInterfaceFactory.name}_user_property#end /* user_property */ \
+    #end
+    }
+
+    ${hashtag}define $name \
+    { \
+    #if( !$zcopyInterfaceFactory )
+        ZCOPY_NotifLoaderFactoryProperty_INITIALIZER \
+    #else
+        ${name}_PROPERTY, /* _parent */ \
+        "${zcopyInterfaceFactory.name}" /* notif_transport_name */ \
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DDS_PskServiceFactoryProperty                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( psk $pskFactory, $name )
+    #if( $pskFactory )
+        #if ( $pskFactory.pslConfig && !$DISABLE_PSL_CONFIG )
+            #if ( $pskFactory.pslConfig.errorListener )
+                ${hashtag}define ${name}_PSL_CONFIG_ERROR_LISTENER \
+                { \
+                    #if( !$pskFactory.pslConfig.errorListener.callback )NULL#else$pskFactory.pslConfig.errorListener.callback#end, /* callback */
+                    #if( !$pskFactory.pslConfig.errorListener.userPtr )NULL#else&$pskFactory.pslConfig.errorListener.userPtr#end /* user_ptr */
+                }
+
+                extern const struct PSK_ErrListener ${pskFactory.name}_configuration_err_listener;
+            #end
+
+            ${hashtag}define ${name}_PSL_CONFIG \
+            { \
+                #if( !$pskFactory.pslConfig.providerName )NULL#else"$pskFactory.pslConfig.providerName"#end, /* provider_name */
+                #if( !$pskFactory.pslConfig.errorListener )NULL#else&${pskFactory.name}_configuration_err_listener#end /* err_listener */
+            }
+
+            extern const struct DDS_SecTransform_Configuration ${pskFactory.name}_configuration;
+        #end
+
+        #if ( $pskFactory.passTrackerConfig && !$DISABLE_PSL_CONFIG )
+            #if ( $pskFactory.passTrackerConfig.errorListener )
+                ${hashtag}define ${name}_PASS_TRACKER_CONFIG_ERROR_LISTENER \
+                { \
+                    #if( !$pskFactory.passTrackerConfig.errorListener.callback )NULL#else$pskFactory.passTrackerConfig.errorListener.callback#end, /* callback */
+                    #if( !$pskFactory.passTrackerConfig.errorListener.userPtr )NULL#else&$pskFactory.passTrackerConfig.errorListener.userPtr#end /* user_ptr */
+                }
+
+                extern struct PSK_FilePassTrackerErrListener ${pskFactory.name}_pass_tracker_configuration_err_listener;
+            #end
+
+            #set( $passTrackerEnableInitRead = "RTI_TRUE" )
+            #if( $pskFactory.passTrackerConfig.enableInitRead != $null && !$pskFactory.passTrackerConfig.enableInitRead )
+                #set( $passTrackerEnableInitRead = "RTI_FALSE" )
+            #end
+
+            ${hashtag}define ${name}_PASS_TRACKER_CONFIG \
+            { \
+                #if( !$pskFactory.passTrackerConfig.pollingIntervalMs )100#else$pskFactory.passTrackerConfig.pollingIntervalMs#end, /* polling_interval_ms */
+                $passTrackerEnableInitRead, /* enable_init_read */
+                #if( !$pskFactory.passTrackerConfig.errorListener ){ NULL, NULL }#else${name}_PASS_TRACKER_CONFIG_ERROR_LISTENER#end /* err_listener */
+            }
+
+            extern struct PSK_PassTrackerConfiguration ${pskFactory.name}_pass_tracker_configuration;
+        #end
+    #end
+
+    ${hashtag}define ${name} \
+    { \
+    #if( !$pskFactory )
+        DDS_PskServiceFactoryProperty_INITIALIZER \
+    #else
+        RT_ComponentFactoryProperty_INITIALIZER, \
+        "${pskFactory.name}", /* service_name */ \
+        #if( !$pskFactory.pslGetInterfaceFunc)PSK_OSSL_get_interface#else&${pskFactory.pslGetInterfaceFunc}#end, /* psl_get_interface_func */ \
+        #if( !$pskFactory.pslConfig || $DISABLE_PSL_CONFIG )NULL#else&${pskFactory.name}_configuration#end, /* psl_config */ \
+        #if( !$pskFactory.passTrackerGetInterfaceFunc )PSK_FilePassTracker_get_interface#else&${pskFactory.passTrackerGetInterfaceFunc}#end, /* pass_tracker_get_interface_func */ \
+        #if( !$pskFactory.passTrackerConfig || $DISABLE_PSL_CONFIG )NULL#else&${pskFactory.name}_pass_tracker_configuration#end /* pass_tracker_config */ \
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Component Initializer                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( componentInitializer $name $component )
+    #addLocation( $component.location )
+    #if( !$name )
+        ERROR: componentInitializer(): name value was null which is not supported.
+        #logError( "componentInitializer(): name value was null which is not supported." )
+        #stop
+    #end
+    #if( !$component )
+        ERROR: componentInitializer(): Component value was null which is not supported.
+        #logError( "componentInitializer(): Component value was null which is not supported." )
+        #stop
+    #end
+    #set( $className = $component.class.simpleName )
+    #if ( $className.equals("StaticDiscovery" ) )
+        #dpseDiscovery( $component $name )
+    #elseif ( $className.equals("DynamicDiscovery" ) )
+        #dpdeDiscovery( $component $name )
+    #elseif ( $className.equals("Udpv4" ) )
+        #udpv4( $component $name )
+    #elseif ( $className.equals("Shmem" ) )
+        #shmem( $component $name )
+    #elseif ( $className.equals("ZeroCopy" ) )
+        #zcopy( $component $name )
+    #elseif ( $className.equals("PskSecurity" ) )
+        #psk( $component $name )
+    #else
+        ERROR: Component class not recognized: $className  $component
+        #logError( "Component class not recognized: $className  $component" )
+    #end
+#end

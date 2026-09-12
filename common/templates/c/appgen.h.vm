@@ -1,0 +1,67 @@
+#parse( "utils/utils.vm" )
+#parse( "c/components.h.vm" )
+#parse( "c/qos.h.vm" )
+#parse( "c/entities.h.vm" )
+#warningHeader()
+
+#if( $outputLanguage == $CPP )
+${hashtag}include "#headerInclude()${inputFilePrefix}AppgenPlugin.h"
+#else
+${hashtag}include "#headerInclude()${typeFilePrefix}Plugin.h"
+#end
+${hashtag}include "app_gen/app_gen.h"
+## Go through the list of components and add the includes
+#componentIncludes( $systemModel )
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | Component Initializers                                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Go through the list of components and create an initializer for each one
+#foreach( $entry in $systemModel.components.entrySet() )
+    #componentInitializer( $entry.key, $entry.value )
+
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | QoS Initializers                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Go through the list of QoSes and create an initializer for each one
+#foreach( $entry in $systemModel.qoses.entrySet() )
+    #qosInitializer( $entry.key, $entry.value )
+
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | DomainParticipants                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## For each child Library create a Library initializer
+## For each child DomainParticipant create a DomainParticipant initializer
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #set( $formattedDpName = "#formatDomainParticipantName( $library, $participant, '_' )" )
+        ##
+        ## === Configure DPSE Discovery ===
+        ##
+        #foreach( $remoteParticipant in $participant.remoteParticipants )
+            #set( $formattedRemoteDpName = "#formatRemoteDomainParticipantName( $remoteParticipant.libraryName, $remoteParticipant, '_' )" )
+
+            ## --- Remote Writers ---
+            #foreach( $remoteWriter in $remoteParticipant.remoteWriters )
+                #addLocation( $remoteWriter )
+                #remotePublicationData( $remoteWriter "${formattedDpName}_${formattedRemoteDpName}_${remoteWriter.publisherName}_${remoteWriter.variableName}" "${formattedRemoteDpName}_${remoteWriter.publisherName}_${remoteWriter.variableName}" "${formattedRemoteDpName}_${remoteWriter.publisherName}" "${formattedRemoteDpName}_${remoteWriter.topicRef}" )
+
+            #end
+            ## --- Remote Readers ---
+            #foreach( $remoteReader in $remoteParticipant.remoteReaders )
+                #addLocation( $remoteReader )
+                #remoteSubscriptionData( $remoteReader "${formattedDpName}_${formattedRemoteDpName}_${remoteReader.subscriberName}_${remoteReader.variableName}" "${formattedRemoteDpName}_${remoteReader.subscriberName}_${remoteReader.variableName}" "${formattedRemoteDpName}_${remoteReader.subscriberName}" "${formattedRemoteDpName}_${remoteReader.topicRef}" )
+
+            #end
+        #end
+    #domainParticipant( $participant )
+
+    #end
+    #libraryModel( $library )
+
+#end
+
+## Declare the arrays of libraries
+extern const struct APPGEN_LibraryModel ${inputFilePrefix}_libraries[${systemModel.libraries.size()}];

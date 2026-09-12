@@ -1,0 +1,11 @@
+#parse( "utils/utils.vm" )
+
+## This file contains macros to generate the application main file
+## Use mainly with DDS_application_main.c.vm
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |   macro to include the necessary header files                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( applicationMainC $app_name )
+    ${hashtag}include "${app_name}.h"
+#end

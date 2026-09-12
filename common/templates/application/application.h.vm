@@ -1,0 +1,49 @@
+#parse( "utils/utils.vm" )
+#parse( "application/app.h.vm" )
+
+## This file is the template that will generate the application header file
+
+${hashtag}ifndef APPLICATION_H
+${hashtag}define APPLICATION_H
+
+#warningHeader()
+
+## macro to include the application header files
+#applicationHeaderH( ${inputFilePlugin} )
+
+#applicationStruct( $systemModel.selectedApplication )
+
+/* DDS function wrappers */
+int DDS_Configure();
+
+int DDS_Init();
+
+int DDS_Run();
+
+extern void
+Application_help(char *appname);
+
+extern struct Application*
+Application_create();
+
+${hashtag}ifndef RTI_CERT
+extern void
+Application_delete(struct Application *application);
+${hashtag}endif /* RTI_CERT */
+
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #typedWriteFunctionDeclaration( $datawriter )
+            #end
+        #end
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #typedReadFunctionDeclaration( $datareader )
+            #end
+        #end
+    #end
+#end
+
+${hashtag}endif /* APPLICATION_H */

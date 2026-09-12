@@ -1,0 +1,1105 @@
+#parse( "utils/utils.vm" )
+## =============================================================================
+## QoS Fields                                                                  =
+## =============================================================================
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    PartitionQos                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( partitionQos $partitionQos $qos_name )
+    #if( !$partitionQos )
+        DDS_PARTITION_QOS_POLICY_DEFAULT, \
+    #else
+        #if ( $partitionQos.name )
+            #set ( $partition_name = ${qos_name} + "_partition" )
+            #set ( $partition_size = $partitionQos.name.element.size() )
+        #end
+        {   /* partition */ \
+            #redaStringSeq( $partitionQos.name $partition_name $partition_size ) /* name */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    EntityFactoryQos                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( entityFactoryQos $entityFactoryQos $comma )
+    #if( !$entityFactoryQos )
+        DDS_ENTITY_FACTORY_QOS_POLICY_DEFAULT#if( $comma ),#end \
+    #else
+        {   /* entity_factory */ \
+            #ddsBoolean( $entityFactoryQos.autoenableCreatedEntities, true ) /* autoenable_created_entities */ \
+        }#if( $comma ),#end \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DiscoveryComponent                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( discoveryComponent $discoveryName )
+    #if( !$discoveryName )DDS_DiscoveryComponent_INITIALIZER##
+    #else
+        { \
+            { { "$discoveryName" } }, /* RT_ComponentFactoryId_INITIALIZER */ \
+            NDDS_Discovery_Property_INITIALIZER \
+        }#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DiscoveryQos                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( discoveryQos $discoveryQos, $qos_name )
+    #if( !$discoveryQos )
+        DDS_DISCOVERY_QOS_POLICY_DEFAULT, \
+    #else
+        #if ( $discoveryQos.initialPeers != $null )
+            #set ( $initial_peers_name = ${qos_name} + "_initial_peers" )
+            #set ( $initial_peers_size = $discoveryQos.initialPeers.element.size() )
+        #end
+        #if ( $discoveryQos.microEnabledTransports != $null )
+            #set ( $enabled_transport_name = ${qos_name} + "_discovery_enabled_transports" )
+            #set ( $initial_transport_size = $discoveryQos.microEnabledTransports.element.size() )
+        #end
+        {   /* discovery */ \
+            #stringSeq( $discoveryQos.initialPeers $initial_peers_name $initial_peers_size ), /* initial_peers */ \
+            #stringSeq( $discoveryQos.microEnabledTransports $enabled_transport_name $initial_transport_size ), /* enabled_transports */ \
+            #discoveryComponent( $discoveryQos.discoveryName ), /* discovery_component */ \
+            #ddsBoolean( $discoveryQos.acceptUnknownPeers, true ), /* accept_unknown_peers */ \
+            #ddsBoolean( $discoveryQos.enableParticipantDiscoveryByName, false ), /* enable_participant_discovery_by_name */ \
+            #ddsBoolean( $discoveryQos.enableEndpointDiscoveryQueue, false ), /* enable_endpoint_discovery_queue */ \
+            #propertyValueWithDefault( $discoveryQos.metatrafficTransportPriority "DDS_DISCOVERY_METATRAFFIC_TRANSPORT_PRIORITY_DEFAULT" "metatraffic_transport_priority" false )
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DomainParticipantResourceLimitsQos                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( domainParticipantResourceLimitsQos $dprlQos )
+    #if( !$dprlQos )
+        DDS_DOMAIN_PARTICIPANT_RESOURCE_LIMITS_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* resource_limits  */ \
+            ${dprlQos.localWriterAllocation.maxCount}L, /* local_writer_allocation */ \
+            ${dprlQos.localReaderAllocation.maxCount}L, /* local_reader_allocation */ \
+            ${dprlQos.localPublisherAllocation.maxCount}L, /* local_publisher_allocation */ \
+            ${dprlQos.localSubscriberAllocation.maxCount}L, /* local_subscriber_allocation */ \
+            ${dprlQos.localTopicAllocation.maxCount}L, /* local_topic_allocation */ \
+            ${dprlQos.localTypeAllocation.maxCount}L, /* local_type_allocation */ \
+            ${dprlQos.remoteParticipantAllocation.maxCount}L, /* remote_participant_allocation */ \
+            ${dprlQos.remoteWriterAllocation.maxCount}L, /* remote_writer_allocation */ \
+            ${dprlQos.remoteReaderAllocation.maxCount}L, /* remote_reader_allocation */ \
+            ${dprlQos.matchingWriterReaderPairAllocation.maxCount}L, /* matching_writer_reader_pair_allocation */ \
+            ${dprlQos.matchingReaderWriterPairAllocation.maxCount}L, /* matching_reader_writer_pair_allocation */ \
+            ${dprlQos.maxReceivePorts}L, /* max_receive_ports */ \
+            ${dprlQos.maxDestinationPorts}L, /* max_destination_ports */ \
+            65536, /* unbound_data_buffer_size */ \
+            ${dprlQos.shmemRefTransferModeMaxSegments}UL, /* shmem_ref_transfer_mode_max_segments */ \
+            ${dprlQos.participantUserDataMaxLength}L, /* participant_user_data_max_length */ \
+            $QosUtils.integerOrSizeAuto( "$dprlQos.participantUserDataMaxCount" ), /* participant_user_data_max_count */ \
+            ${dprlQos.topicDataMaxLength}L, /* topic_data_max_length */ \
+            $QosUtils.integerOrSizeAuto( "$dprlQos.topicDataMaxCount" ), /* topic_data_max_count */ \
+            ${dprlQos.publisherGroupDataMaxLength}L, /* publisher_group_data_max_length */ \
+            $QosUtils.integerOrSizeAuto( "$dprlQos.publisherGroupDataMaxCount" ), /* publisher_group_data_max_count */ \
+            ${dprlQos.subscriberGroupDataMaxLength}L, /* subscriber_group_data_max_length */ \
+            $QosUtils.integerOrSizeAuto( "$dprlQos.subscriberGroupDataMaxCount" ), /* subscriber_group_data_max_count */ \
+            ${dprlQos.writerUserDataMaxLength}L, /* writer_user_data_max_length */ \
+            $QosUtils.integerOrSizeAuto( "$dprlQos.writerUserDataMaxCount" ), /* writer_user_data_max_count */ \
+            ${dprlQos.readerUserDataMaxLength}L, /* reader_user_data_max_length */ \
+            $QosUtils.integerOrSizeAuto( "$dprlQos.readerUserDataMaxCount" ), /* reader_user_data_max_count */ \
+            ${dprlQos.maxPartitions}L, /* max_partitions */ \
+            ${dprlQos.maxPartitionCumulativeCharacters}L, /* max_partition_cumulative_characters */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dprlQos.maxPartitionStringSize" ), /* max_partition_string_size */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dprlQos.maxPartitionStringAllocation" ), /* max_partition_string_allocation */ \
+            ${dprlQos.participantPropertyListMaxLength}L, /* participant_property_list_max_length */ \
+            ${dprlQos.participantPropertyStringMaxLength}L, /* participant_property_string_max_length */ \
+            ${dprlQos.writerPropertyListMaxLength}L, /* writer_property_list_max_length */ \
+            ${dprlQos.writerPropertyStringMaxLength}L, /* writer_property_string_max_length */ \
+            ${dprlQos.readerPropertyListMaxLength}L, /* reader_property_list_max_length */ \
+            ${dprlQos.readerPropertyStringMaxLength}L /* reader_property_string_max_length */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    EntityNameQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( entityNameQos $entityNameQos $comma )
+    #if( !$entityNameQos || !$entityNameQos.name )
+        DDS_ENTITY_NAME_QOS_POLICY_DEFAULT#if( $comma ),#end \
+    #else
+        {   /* entity_name */ \
+            "${entityNameQos.name.value}" /* name */ \
+        }#if( $comma ),#end \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    integerOrRtpsAutoId                                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( integerOrRtpsAutoId $field )$QosUtils.integerOrRtpsAutoIdToCpp($field)#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    RtpsWellKnownPorts                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( rtpsWellKnownPorts $rtpsWellKnownPorts )
+    #if( !$rtpsWellKnownPorts )
+        DDS_RTPS_WELL_KNOWN_PORTS_DEFAULT, \
+    #else
+        { /* rtps_well_known_ports */ \
+            ${rtpsWellKnownPorts.portBase}L, /* port_base */ \
+            ${rtpsWellKnownPorts.domainIdGain}L, /* domain_id_gain */ \
+            ${rtpsWellKnownPorts.participantIdGain}L, /* participant_id_gain */ \
+            ${rtpsWellKnownPorts.builtinMulticastPortOffset}L, /* builtin_multicast_port_offset */ \
+            ${rtpsWellKnownPorts.builtinUnicastPortOffset}L, /* builtin_unicast_port_offset */ \
+            ${rtpsWellKnownPorts.userMulticastPortOffset}L, /* user_multicast_port_offset */ \
+            ${rtpsWellKnownPorts.userUnicastPortOffset}L /* user_unicast_port_offset */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    WireProtocolQos                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( wireProtocolQos $wireProtocolQos )
+    #if( !$wireProtocolQos )
+        DDS_WIRE_PROTOCOL_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* protocol */ \
+            ${wireProtocolQos.participantId}L, /* participant_id */ \
+            #integerOrRtpsAutoId( $wireProtocolQos.rtpsHostId ), /* rtps_host_id */ \
+            #integerOrRtpsAutoId( $wireProtocolQos.rtpsAppId ), /* rtps_app_id */ \
+            #integerOrRtpsAutoId( $wireProtocolQos.rtpsInstanceId ), /* rtps_instance_id */ \
+            #rtpsWellKnownPorts( $wireProtocolQos.rtpsWellKnownPorts )
+            #ddsBoolean($wireProtocolQos.computeCrc, false), /* compute_crc */ \
+            #ddsBoolean($wireProtocolQos.checkCrc, false), /* check_crc */ \
+            #ddsBoolean($wireProtocolQos.requireCrc, false), /* require_crc */ \
+            #enum( $wireProtocolQos.computedCrcKind.value() ), /* computed_crc_kind */ \
+            #mask( $wireProtocolQos.allowedCrcMask ) /* allowed_crc_mask */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TransportQos                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( transportQos $transportQos, $qos_name )
+    #if( !$transportQos )
+        DDS_TRANSPORT_QOS_POLICY_DEFAULT, \
+    #else
+        #if ( $transportQos.enabledTransports )
+            #set ( $transports_name = ${qos_name} + "_transport_enabled_transports" )
+            #set ( $transports_size = $transportQos.enabledTransports.element.size() )
+        #end
+        {   /* transports */ \
+            #redaStringSeq( $transportQos.enabledTransports $transports_name $transports_size ) /* enabled_transports */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    UserTrafficQos                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( userTrafficQos $userTrafficQos, $qos_name )
+    #if( !$userTrafficQos.enabledTransports )
+        DDS_USERTRAFFIC_QOS_POLICY_DEFAULT, \
+    #else
+        #if ( $userTrafficQos.enabledTransports )
+            #set ( $transports_name = ${qos_name} + "_user_traffic_enabled_transports" )
+            #set ( $transports_size = $userTrafficQos.enabledTransports.element.size() )
+        #end
+        {   /* user_traffic */ \
+            #redaStringSeq($userTrafficQos.enabledTransports $transports_name $transports_size ) /* enabled_transports */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TrustQos                                                               |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( trustQos $trustQosPolicy )
+    #if ( !$trustQosPolicy )
+        DDS_TRUST_QOS_POLICY_DEFAULT, \
+    #else
+        { /* trust */ \
+            {{ "$trustQosPolicy.name" }} /* name */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    FilterQos Resource Limits                                                             |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( filterQosPolicyResourceLimits $filterQosPolicyResourceLimitsValue )
+    #if( !$filterQosPolicyResourceLimitsValue )
+        DDS_FILTER_RESOURCE_LIMITS_DEFAULT, \
+    #else
+        { /* resource_limits */ \
+            ${filterQosPolicyResourceLimitsValue.filterClassMaxLength}L, /* filter_class_max_length */ \
+            ${filterQosPolicyResourceLimitsValue.filterClassMaxCount}L, /* filter_class_max_count */ \
+            ${filterQosPolicyResourceLimitsValue.filterExpressionMaxLength}L, /* filter_expression_max_length */ \
+            $QosUtils.integerOrLengthAutoToCpp( ${filterQosPolicyResourceLimitsValue.filterExpressionMaxCount} ), /* filter_expression_max_count */ \
+            ${filterQosPolicyResourceLimitsValue.filterParameterMaxCountPerExpression}L, /* filter_parameter_max_count_per_expression */ \
+            ${filterQosPolicyResourceLimitsValue.filterParameterMaxLength}L /* filter_parameter_max_length */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    FilterQos                                                              |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( filterQosPolicy $filterQosPolicyValue )
+    #if( !$filterQosPolicyValue )
+        ,DDS_FilterQosPolicy_INITIALIZER \
+    #else
+        ,{ /* filter */ \
+            DDS_FILTER_PLUGIN_FACTORY_DEFAULT_ID, /* name */ \
+            #filterQosPolicyResourceLimits( $filterQosPolicyValue.resourceLimits )
+            #ddsBoolean(${filterQosPolicyValue.disableWriterFiltering}, false), /* disable_writer_filtering */ \
+            ## If the user set sqlPredicateMaxCountPerExpression in XML, the
+            ## builtin SQL filter must be disabled here so we can re-register
+            ## it below with a DDS_SqlFilterProperty carrying the custom value.
+            ## An explicit user-set disableBuiltinSqlFilter=TRUE also wins.
+            #if( $filterQosPolicyValue.sqlPredicateMaxCountPerExpression
+                 || $filterQosPolicyValue.disableBuiltinSqlFilter )
+                DDS_BOOLEAN_TRUE /* disable_builtin_sql_filter */ \
+            #else
+                #ddsBoolean(${filterQosPolicyValue.disableBuiltinSqlFilter}, false) /* disable_builtin_sql_filter */ \
+            #end
+        } \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    SqlFilterProperty                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Emits the DDS_SqlFilterProperty companion variable when the user has
+## set sqlPredicateMaxCountPerExpression in XML AND has not explicitly
+## disabled the builtin SQL filter. The variable is referenced by the
+## APPGEN_ContentFilterRegistration array in entities.h.vm.
+#macro( sqlFilterProperty $sqlPredMaxCount $userDisabledBuiltin $name )
+    #if( $sqlPredMaxCount && !$userDisabledBuiltin )
+
+        ${hashtag}if DDS_ENABLE_SQL_FILTER
+        static const struct DDS_SqlFilterProperty
+            ${name}_sql_filter_prop =
+        {
+            ${sqlPredMaxCount}L
+        };
+        ${hashtag}endif /* DDS_ENABLE_SQL_FILTER */
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    ContentFilterQos                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( contentFilterQosPolicy $contentFilterValueQos, $qos_name )
+    #if( !$contentFilterValueQos )
+        DDS_CONTENT_FILTER_QOS_POLICY_DEFAULT, \
+    #else
+        #if ( $contentFilterValueQos.expressionParameters != $null )
+            #set ( $expression_parameters_name = ${qos_name} + "_expression_parameters" )
+            #set ( $expression_parameters_size = $contentFilterValueQos.expressionParameters.element.size() )
+        #end
+        { /* content_filter */ \
+            "${contentFilterValueQos.name}", /* filter_name */ \
+            "$ConverterUtils.convertFilterKind( $contentFilterValueQos.kind )", /* filter_class_name */ \
+            "${contentFilterValueQos.expression}", /* filter_expression */ \
+            #stringSeq( $contentFilterValueQos.expressionParameters $expression_parameters_name $expression_parameters_size ) /* expression_parameters */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    ContentFilterProperty                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( contentFilterProperty $topic_name, $contentFilterValueQos, $qos_name )
+    #if( !$contentFilterValueQos )
+        DDS_CONTENT_FILTER_PROPERTY_DEFAULT \
+    #else
+        #if ( $contentFilterValueQos.expressionParameters != $null )
+            #set ( $expression_parameters_name = ${qos_name} + "_expression_parameters" )
+            #set ( $expression_parameters_size = $contentFilterValueQos.expressionParameters.element.size() )
+        #end
+        { /* content_filter */ \
+            "$ConverterUtils.getContentFilteredTopicName( $topic_name, $contentFilterValueQos.name )", /* content_filtered_topic_name */ \
+            "${topic_name}", /* related_topic_name */ \
+            "$ConverterUtils.convertFilterKind( $contentFilterValueQos.kind )", /* filter_class_name */ \
+            "${contentFilterValueQos.expression}", /* filter_expression */ \
+            #stringSeq( $contentFilterValueQos.expressionParameters $expression_parameters_name $expression_parameters_size ) /* expression_parameters */ \
+        } \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |   PropertyQos                                                             |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( propertiesQosPolicy, $propertyValueQos, $qos_name )
+    #if( !$propertyValueQos )
+        DDS_PROPERTY_QOS_POLICY_DEFAULT, \
+    #else
+        #set ( $property_name = ${qos_name} + "_properties" )
+        {   /* property */ \
+            #redaSequenceWLoan( $propertyValueQos $property_name $propertyValueQos.size() "struct CDR_Property" ) /* value */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    SystemResourceLimitsQos                                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( systemResourceLimitsQos $systemResourceLimitsQos )
+    #if( !$systemResourceLimitsQos )
+        DDS_SYSTEM_RESOURCE_LIMITS_QOS_POLICY_DEFAULT \
+    #else
+        {   /* resource_limits */ \
+            ${systemResourceLimitsQos.maxParticipants}L, /* max_participants  */ \
+            ${systemResourceLimitsQos.maxComponents}L /* max_components */ \
+        } \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DeadlineQos                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( deadlineQos $deadlineQos )
+    #if( !$deadlineQos )
+        DDS_DEADLINE_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* deadline */ \
+            { /* period */ \
+                #duration( $deadlineQos.period, "DDS_DURATION_INFINITE_SEC",
+                        "DDS_DURATION_INFINITE_NSEC" )
+            } \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Rtps_reliable_reader                                                   |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( rtpsReliableReaderQos $rtpsReliableReaderQos )
+    #if( !$rtpsReliableReaderQos )
+        DDS_RTPS_RELIABLE_READER_PROTOCOL_DEFAULT \
+    #else
+        {   /* rtps_reliable_reader */ \
+            { /* nack_period */ \
+                #duration( $rtpsReliableReaderQos.nack_period, "0",
+                        "50000000" )
+            } \
+        } \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    LivelinessQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( livelinessQos $livelinessQos )
+    #if( !$livelinessQos )
+        DDS_LIVELINESS_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* liveliness */ \
+            #enum( $livelinessQos.kind ), /* kind */ \
+            { /* duration */ \
+                #duration( $livelinessQos.leaseDuration, "DDS_DURATION_INFINITE_SEC",
+                        "DDS_DURATION_INFINITE_NSEC" )
+            } \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    HistoryQos                                                             |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( historyQos $historyQos )
+    #if( !$historyQos )
+        DDS_HISTORY_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* history */ \
+            #enum( $historyQos.kind ), /* kind */ \
+            ${historyQos.depth}L /* depth */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    ResourceLimitsQos                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( resourceLimitsQos $resourceLimitsQos )
+    #if( !$resourceLimitsQos )
+        DDS_RESOURCE_LIMITS_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* resource_limits */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$resourceLimitsQos.maxSamples" ), /* max_samples */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$resourceLimitsQos.maxInstances" ), /* max_instances */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$resourceLimitsQos.maxSamplesPerInstance" ) /* max_samples_per_instance */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    OwnershipQos                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( ownershipQos $ownershipQos )
+    #if( !$ownershipQos )
+        DDS_OWNERSHIP_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* ownership */ \
+            #enum( $ownershipQos.kind ) /* kind */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    OwnershipStrengthQos                                                   |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( ownershipStrengthQos $ownershipStrengthQos )
+    #if( !$ownershipStrengthQos )
+        DDS_OWNERSHIP_STRENGTH_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* ownership_strength */ \
+            ${ownershipStrengthQos.value}L /* value */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    ReliabilityQos                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( reliabilityQos $reliabilityQos, $writer, $reader )
+    #if( !$reliabilityQos )
+        #if( $writer != $null && $writer )
+            DDS_DATAWRITER_RELIABILITY_QOS_POLICY_DEFAULT, \
+        #elseif ( $reader != $null && $reader )
+            DDS_DATAREADER_RELIABILITY_QOS_POLICY_DEFAULT, \
+        #else
+            DDS_RELIABILITY_QOS_POLICY_DEFAULT, \
+        #end
+    #else
+        {   /* reliability */ \
+            #enum( $reliabilityQos.kind ), /* kind */ \
+            {   /* max_blocking_time */ \
+                #duration( $reliabilityQos.maxBlockingTime, "0", "0" )
+            } \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DurabilityQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( durabilityQos $durabilityQos )
+    #if( !$durabilityQos )
+        DDS_DURABILITY_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* durability */ \
+            #enum( $durabilityQos.kind ) /* kind */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | RtpsReliableWriterProtocol                                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( rtpsReliableWriterProtocol $protocol )
+    #if( !$protocol )
+        DDS_RTPS_RELIABLE_WRITER_PROTOCOL_DEFAULT, \
+    #else
+        { /* rtps_reliable_writer */ \
+            {   /* heartbeat_period */ \
+                #duration( $protocol.heartbeatPeriod, "3", "0" )
+            },  \
+            ${protocol.heartbeatsPerMaxSamples}L, /* heartbeats_per_max_samples */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$protocol.maxSendWindow" ), /* max_send_window */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$protocol.maxHeartbeatRetries" ), /* max_heartbeat_retries */ \
+            {   /* first_write_sequence_number */ \
+                0, /* high */ \
+                1  /* low */ \
+            } \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DestinationOrderQos                                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( destinationOrderQos $destinationOrderQos )
+    #if( !$destinationOrderQos )
+        DDS_DESTINATION_ORDER_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* destination_order */ \
+            #enum( $destinationOrderQos.kind ), /* kind */ \
+            {   /*source_timestamp_tolerance */ \
+                #duration( $destinationOrderQos.sourceTimestampTolerance,
+                        "0", "100000000" )
+            } \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Latency Budget                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( latencyBudgetQos $latencyBudgetQos )
+    #if( !$latencyBudgetQos )
+        DDS_LATENCY_BUDGET_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* latency_budget */ \
+            {   /* duration */ \
+                #duration( $latencyBudgetQos.duration, "0", "0" )
+            } \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TypeSupportQos                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( typeSupportQos )
+    ## not expecting an actual QoS value
+    DDS_TYPESUPPORT_QOS_POLICY_DEFAULT, \
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataWriterProtocolQos                                                  |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataWriterProtocolQos $dataWriterProtocolQos )
+    #if( !$dataWriterProtocolQos )
+        DDS_DATA_WRITER_PROTOCOL_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* protocol */ \
+            #integerOrRtpsAutoId( $dataWriterProtocolQos.rtpsObjectId ), /* rtps_object_id */ \
+            #rtpsReliableWriterProtocol( $dataWriterProtocolQos.rtpsReliableWriter )
+            #ddsBoolean(true, true) /* serialize_on_write */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    PublishModeQos                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( publishModeQos $publishModeQos )
+    #if( !$publishModeQos )
+        DDS_PUBLISH_MODE_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* publish_mode */ \
+            #if( !$publishModeQos.kind )DDS_DEFAULT_PUBLISH_MODE_QOS#else#enum( $publishModeQos.kind )#end, /* kind */ \
+            #if( !$publishModeQos.flowControllerName )NULL#else"${publishModeQos.flowControllerName}"#end, /* flow_controller_name */ \
+            ${publishModeQos.priority} /* priority */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |                                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataWriterResourceLimitsQos $dataWriterResourceLimitsQos )
+    #if( !$dataWriterResourceLimitsQos )
+        DDS_DATAWRITERRESOURCE_LIMITS_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* writer_resource_limits */ \
+            ${dataWriterResourceLimitsQos.maxRemoteReaders}L, /* max_remote_readers */ \
+            ${dataWriterResourceLimitsQos.maxRoutesPerReader}L, /* max_routes_per_reader */ \
+            $QosUtils.integerOrSizeAuto(${dataWriterResourceLimitsQos.writerLoanedSampleAllocation.maxCount}), /* writer_loaned_sample_allocation */ \
+            #ddsBoolean(${dataWriterResourceLimitsQos.initializeWriterLoanedSample}, false), /* initialize_writer_loaned_sample */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dataWriterResourceLimitsQos.maxRemoteReaderFilters" ) /* max_remote_reader_filters */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    ManagementQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( managementQos, $comma)
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+    RTI_MANAGEMENT_QOS_POLICY_DEFAULT#if( $comma ),#end \
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataWriter TrustQos                                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataWriterTrustQos )
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataReaderData                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataReaderData )
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+    NULL, \
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    EncapsulationQos                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( encapsulationQos )
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+    DDS_TRANSPORT_ENCAPSULATION_QOS_POLICY_DEFAULT, \
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    RepresentationQos                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( representationQos $representationQos , $qos_name, $comma )
+    #if( !$representationQos )
+        DDS_DATA_REPRESENTATION_QOS_POLICY_DEFAULT#if( $comma ),#end \
+    #else
+        {   /* representation */ \
+            #if ( $representationQos.value != $null )
+                #set ( $representation_name = ${qos_name} + "_representation" )
+                #set ( $representation_size = $representationQos.value.element.size() )
+            #end
+            #representationIdSeq( $representationQos.value, $representation_name, $representation_size ) /* value */ \
+        }#if( $comma ),#end \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    PresentationQos                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( presentationQos $presentationQos )
+    #if( !$presentationQos )
+        DDS_PRESENTATION_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* presentation */ \
+            #enum( $presentationQos.accessScope ), /* kind */ \
+            #ddsBoolean( $presentationQos.coherentAccess, false ), /* coherent_access */ \
+            #ddsBoolean( $presentationQos.ordered_access, false ) /* ordered_access */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataReader TrustQos                                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataReaderTrustQos )
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataWriterData                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataWriterData )
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+    NULL, \
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TransferMode                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( transferMode $transferMode )
+    #if( !$$transferMode )
+        DDS_DataWriterTransferModeQosPolicy_INITIALIZER, \
+    #else
+        {  /* transfer_mode */ \
+            { /* shmem_ref_settings */ \
+                #ddsBoolean( $transferMode.shmemRefSettings.enableDataConsistencyCheck, true ) /* enable_data_consistency_check */ \
+            } \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataReaderProtocolQos                                                  |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataReaderProtocolQos $dataReaderProtocolQos )
+    #if( !$dataReaderProtocolQos )
+        DDS_DATA_READER_PROTOCOL_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* protocol */ \
+            #integerOrRtpsAutoId( $dataReaderProtocolQos.rtpsObjectId ), /* rtps_object_id */ \
+            #rtpsReliableReaderQos( $dataReaderProtocolQos.rtpsReliableReader ), \
+            #ddsBoolean($dataReaderProtocolQos.propagateDisposeOfUnregisteredInstances, true) /* propagate_dispose_of_unregistered_instances */\
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataReaderResourceLimitsQos                                            |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataReaderResourceLimitsQos $dataReaderResourceLimitsQos )
+    #if( !$dataReaderResourceLimitsQos )
+        DDS_DATAREADERRESOURCE_LIMITS_QOS_POLICY_DEFAULT, \
+    #else
+        {   /* reader_resource_limits */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dataReaderResourceLimitsQos.maxRemoteWriters" ), /* max_remote_writers */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dataReaderResourceLimitsQos.maxRemoteWritersPerInstance" ), /* max_remote_writers_per_instance */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dataReaderResourceLimitsQos.maxSamplesPerRemoteWriter" ), /* max_samples_per_remote_writer */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dataReaderResourceLimitsQos.maxOutstandingReads" ), /* max_outstanding_reads */ \
+            #instanceReplacement( $dataReaderResourceLimitsQos.instanceReplacement ), /* instance_replacement */ \
+            $QosUtils.integerOrLengthUnlimitedToCpp( "$dataReaderResourceLimitsQos.maxRoutesPerWriter" ), /* max_routes_per_writer */ \
+            $QosUtils.integerOrMaxAuto( "$dataReaderResourceLimitsQos.maxFragmentedSamples" ), /* max_fragmented_samples */ \
+            $QosUtils.integerOrMaxAuto( "$dataReaderResourceLimitsQos.maxFragmentedSamplesPerRemoteWriter" ), /* max_fragmented_samples_per_remote_writer */ \
+            $QosUtils.integerOrSizeAuto( "$dataReaderResourceLimitsQos.shmemRefTransferModeAttachedSegmentAllocation.maxCount" ) /* shmem_ref_transfer_mode_attached_segment_allocation */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    UserDataQosPolicy                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( userDataQosPolicy $userDataQosPolicy $qos_name $comma )
+    #if( !$userDataQosPolicy )
+        DDS_USER_DATA_QOS_POLICY_DEFAULT#if( $comma ),#end \
+    #else
+        #if ( $userDataQosPolicy.value )
+            #set ( $user_data_name = ${qos_name} + "_user_data" )
+            #set ( $user_data_size = $userDataQosPolicy.value.size() )
+        #end
+        {   /* user_data */ \
+            #redaSequenceWLoan( $userDataQosPolicy.value $user_data_name $user_data_size "DDS_Octet" ) /* value */ \
+        }#if( $comma ),#end \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    GroupDataQosPolicy                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( groupDataQosPolicy $groupDataQosPolicy $qos_name $comma )
+    #if( !$groupDataQosPolicy )
+        DDS_GROUP_DATA_QOS_POLICY_DEFAULT#if( $comma ),#end \
+    #else
+        #if ( $groupDataQosPolicy.value )
+            #set ( $user_data_name = ${qos_name} + "_group_data" )
+            #set ( $user_data_size = $groupDataQosPolicy.value.size() )
+        #end
+        {   /* group_data */ \
+            #redaSequenceWLoan( $groupDataQosPolicy.value $user_data_name $user_data_size "DDS_Octet" ) /* value */ \
+        }#if( $comma ),#end \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TopicDataQosPolicy                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( topicDataQosPolicy $topicDataQosPolicy $qos_name $comma)
+    #if( !$topicDataQosPolicy )
+        DDS_TOPIC_DATA_QOS_POLICY_DEFAULT#if( $comma ),#end \
+    #else
+        #if ( $topicDataQosPolicy.value )
+            #set ( $user_data_name = ${qos_name} + "_topic_data" )
+            #set ( $user_data_size = $topicDataQosPolicy.value.size() )
+        #end
+        {   /* topic_data */ \
+            #redaSequenceWLoan( $topicDataQosPolicy.value $user_data_name $user_data_size "DDS_Octet" ) /* value */ \
+        }#if( $comma ),#end \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TransportPriority Qos Policy                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( transportPriorityQos $transport_priority)
+    #if( !$transport_priority)
+        DDS_TRANSPORT_PRIORITY_QOS_POLICY_DEFAULT \
+    #else
+        {   /* transport_priority */ \
+            $transport_priority.value /*priority*/\
+        } \
+    #end
+#end
+
+## =============================================================================
+## Top-level QoS                                                               =
+## =============================================================================
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DomainParticipantFactoryQos                                            |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( domainParticipantFactoryQos $dpfQos, $name )
+    ${hashtag}define $name \
+    { \
+    #if (!$dpfQos)
+        DDS_DomainParticipantFactoryQos_INITIALIZER \
+    #else
+        #entityFactoryQos( $dpfQos.entityFactory, true )
+        #systemResourceLimitsQos( $dpfQos.resourceLimits )
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DomainParticipantQos                                                   |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( domainParticipantQos $dpQos, $name )
+    #set( $microProperties = $null )
+    #if( $dpQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the initial_peers in discovery or not
+        #if ( $dpQos.discovery && $dpQos.discovery.initialPeers != $null && !$dpQos.discovery.initialPeers.element.isEmpty() )
+            extern const char *const ${qos_name}_initial_peers[$dpQos.discovery.initialPeers.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the enabled_transport in discovery or not
+        #if ( $dpQos.discovery && $dpQos.discovery.microEnabledTransports != $null && !$dpQos.discovery.microEnabledTransports.element.isEmpty() )
+            extern const char *const ${qos_name}_discovery_enabled_transports[$dpQos.discovery.microEnabledTransports.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in transport or not
+        #if ( $dpQos.microTransports && $dpQos.microTransports.enabledTransports != $null && !$dpQos.microTransports.enabledTransports.element.isEmpty() )
+            extern const char *const ${qos_name}_transport_enabled_transports[$dpQos.microTransports.enabledTransports.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in user_traffic or not
+        #if ( $dpQos.microUserTraffic && $dpQos.microUserTraffic.enabledTransports != $null && !$dpQos.microUserTraffic.enabledTransports.element.isEmpty() )
+            extern const char *const ${qos_name}_user_traffic_enabled_transports[$dpQos.microUserTraffic.enabledTransports.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the user_data or not
+        #if ( $dpQos.userData && $dpQos.userData.value != $null && !$dpQos.userData.value.isEmpty() )
+            extern const DDS_Octet ${qos_name}_user_data[$dpQos.userData.value.size()];
+        #end
+        ## Checking if we need to add a variable to include the properties or not
+        #set( $microProperties = $QosUtils.microProperties( $dpQos.property ) )
+        #if ( $microProperties && !$microProperties.isEmpty() )
+            extern const struct CDR_Property ${qos_name}_properties[$microProperties.size()];
+        #end
+    #end
+
+    ${hashtag}define $name \
+    { \
+    #if ( !$dpQos )
+        DDS_DomainParticipantQos_INITIALIZER \
+    #else
+        #entityFactoryQos( $dpQos.entityFactory, true )
+        #discoveryQos( $dpQos.discovery, $qos_name )
+        #domainParticipantResourceLimitsQos( $dpQos.resourceLimits )
+        #entityNameQos( $dpQos.participantName, true )
+        #wireProtocolQos( $dpQos.wireProtocol )
+        #transportQos( $dpQos.microTransports, $qos_name )
+        #userTrafficQos( $dpQos.microUserTraffic, $qos_name )
+        #trustQos( $dpQos.trustQosPolicy )
+        #propertiesQosPolicy( $microProperties, $qos_name )
+        #userDataQosPolicy( $dpQos.userData, $qos_name )
+        #filterQosPolicy( $dpQos.filterQosPolicy )
+    #end
+    }
+    ## Emit SQL filter property companion variable when the user set
+    ## sqlPredicateMaxCountPerExpression in XML and did not explicitly
+    ## disable the builtin SQL filter.
+    #if( $dpQos.filterQosPolicy )
+        #sqlFilterProperty(
+            $dpQos.filterQosPolicy.sqlPredicateMaxCountPerExpression,
+            $dpQos.filterQosPolicy.disableBuiltinSqlFilter,
+            $name )
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    PublisherQos                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( publisherQos $publisherQos, $name )
+    #if( $publisherQos != $null )
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the partition or not
+        #if ( $publisherQos.partition && $publisherQos.partition.name != $null && !$publisherQos.partition.name.element.isEmpty() )
+            extern const char *const ${qos_name}_partition[$publisherQos.partition.name.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the group_data or not
+        #if ( $publisherQos.groupData && $publisherQos.groupData.value != $null && !$publisherQos.groupData.value.isEmpty() )
+            extern const DDS_Octet ${qos_name}_group_data[$publisherQos.groupData.value.size()];
+        #end
+    #end
+
+    ${hashtag}define $name \
+    { \
+    #if( !$publisherQos )
+        DDS_PublisherQos_INITIALIZER \
+    #else
+        #entityFactoryQos( $publisherQos.entityFactory, true )
+        #partitionQos( $publisherQos.partition ${qos_name} )
+        #managementQos( true )
+        #groupDataQosPolicy( $publisherQos.groupData, ${qos_name}, $publisherQos.publisherName )
+        #if ( !$publisherQos.publisherName )DDS_PUBLISHERQOS_APPGEN_INITIALIZER \
+        #else#entityNameQos( $publisherQos.publisherName, false )#end
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataWriterQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataWriterQos $dataWriterQos, $name )
+    #set( $microProperties = $null )
+    #if( $dataWriterQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the data representation in representation or not
+        #if ( $dataWriterQos.representation && $dataWriterQos.representation.value != $null && !$dataWriterQos.representation.value.element.isEmpty() )
+            extern const DDS_DataRepresentationId_t ${qos_name}_representation[$dataWriterQos.representation.value.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in transport or not
+        #if ( $dataWriterQos.microTransports && $dataWriterQos.microTransports.enabledTransports != $null && !$dataWriterQos.microTransports.enabledTransports.element.isEmpty() )
+            extern const char *const ${qos_name}_transport_enabled_transports[$dataWriterQos.microTransports.enabledTransports.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the user_data or not
+        #if ( $dataWriterQos.userData && $dataWriterQos.userData.value != $null && !$dataWriterQos.userData.value.isEmpty() )
+            extern const DDS_Octet ${qos_name}_user_data[$dataWriterQos.userData.value.size()];
+        #end
+        ## Checking if we need to add a variable to include the properties or not
+        #set( $microProperties = $QosUtils.microProperties( $dataWriterQos.property ) )
+        #if ( $microProperties && !$microProperties.isEmpty() )
+            extern const struct CDR_Property ${qos_name}_properties[$microProperties.size()];
+        #end
+    #end
+
+    ${hashtag}define $name \
+    { \
+    #if( !$dataWriterQos )
+        DDS_DataWriterQos_INITIALIZER \
+    #else
+        #deadlineQos( $dataWriterQos.deadline )
+        #livelinessQos( $dataWriterQos.liveliness )
+        #historyQos( $dataWriterQos.history )
+        #resourceLimitsQos( $dataWriterQos.resourceLimits )
+        #ownershipQos( $dataWriterQos.ownership )
+        #ownershipStrengthQos( $dataWriterQos.ownershipStrength )
+        #latencyBudgetQos( $dataWriterQos.latencyBudget )
+        #reliabilityQos( $dataWriterQos.reliability, true, false )
+        #durabilityQos( $dataWriterQos.durability )
+        #destinationOrderQos( $dataWriterQos.destinationOrder )
+        #encapsulationQos()
+        #representationQos( $dataWriterQos.representation, $qos_name, true )
+        #dataWriterProtocolQos( $dataWriterQos.protocol )
+        #typeSupportQos()
+        #transportQos( $dataWriterQos.microTransports $qos_name )
+        #managementQos( true )
+        #dataWriterResourceLimitsQos( $dataWriterQos.writerResourceLimits )
+        #publishModeQos( $dataWriterQos.publishMode )
+        #userDataQosPolicy( $dataWriterQos.userData, $qos_name, true )
+        #propertiesQosPolicy( $microProperties, $qos_name )
+        #dataWriterTrustQos()
+        #if ( !$dataWriterQos.publicationName )DDS_DATAWRITERQOS_APPGEN_INITIALIZER \
+        #else#entityNameQos( $dataWriterQos.publicationName, true )#end
+        #transferMode( $dataWriterQos.transferMode )
+        #transportPriorityQos( $dataWriterQos.transportPriority)
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    SubscriberQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( subscriberQos $subscriberQos, $name )
+    #if( $subscriberQos != $null )
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the partition or not
+        #if ( $subscriberQos.partition && $subscriberQos.partition.name != $null && !$subscriberQos.partition.name.element.isEmpty() )
+            extern const char *const ${qos_name}_partition[$subscriberQos.partition.name.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the group_data or not
+        #if ( $subscriberQos.groupData && $subscriberQos.groupData.value != $null && !$subscriberQos.groupData.value.isEmpty() )
+            extern const DDS_Octet ${qos_name}_group_data[$subscriberQos.groupData.value.size()];
+        #end
+    #end
+
+    ${hashtag}define $name \
+    { \
+    #if( !$subscriberQos )
+        DDS_SubscriberQos_INITIALIZER \
+    #else
+        #entityFactoryQos( $subscriberQos.entityFactory, true )
+        #partitionQos( $subscriberQos.partition ${qos_name} )
+        #managementQos( true )
+        #groupDataQosPolicy( $subscriberQos.groupData, ${qos_name}, $subscriberQos.subscriberName )
+        #if ( !$subscriberQos.subscriberName )DDS_SUBSCRIBERQOS_APPGEN_INITIALIZER \
+        #else#entityNameQos( $subscriberQos.subscriberName, false )#end
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataReaderQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataReaderQos $dataReaderQos, $name )
+    #if( $dataReaderQos != $null )
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the data representation in representation or not
+        #if ( $dataReaderQos.representation && $dataReaderQos.representation.value != $null && !$dataReaderQos.representation.value.element.isEmpty() )
+            extern const DDS_DataRepresentationId_t ${qos_name}_representation[$dataReaderQos.representation.value.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in transport or not
+        #if ( $dataReaderQos.microTransports && $dataReaderQos.microTransports.enabledTransports != $null && !$dataReaderQos.microTransports.enabledTransports.element.isEmpty() )
+            extern const char *const ${qos_name}_transport_enabled_transports[$dataReaderQos.microTransports.enabledTransports.element.size()];
+        #end
+        ## Checking if we need to add a variable to include the user_data or not
+        #if ( $dataReaderQos.userData && $dataReaderQos.userData.value != $null && !$dataReaderQos.userData.value.isEmpty() )
+            extern const DDS_Octet ${qos_name}_user_data[$dataReaderQos.userData.value.size()];
+        #end
+        ## Checking if we need to add a variable to include the content filter or not
+        #if ( $dataReaderQos.contentFilterTopicQos && $dataReaderQos.contentFilterTopicQos.expressionParameters != $null && !$dataReaderQos.contentFilterTopicQos.expressionParameters.element.isEmpty() )
+            extern const char *const ${qos_name}_expression_parameters[$dataReaderQos.contentFilterTopicQos.expressionParameters.element.size()];
+        #end
+    #end
+
+    ${hashtag}define $name \
+    { \
+    #if( !$dataReaderQos )
+        DDS_DataReaderQos_INITIALIZER \
+    #else
+        #deadlineQos( $dataReaderQos.deadline )
+        #livelinessQos( $dataReaderQos.liveliness )
+        #historyQos( $dataReaderQos.history )
+        #resourceLimitsQos( $dataReaderQos.resourceLimits )
+        #ownershipQos( $dataReaderQos.ownership )
+        #latencyBudgetQos( $dataReaderQos.latencyBudget )
+        #reliabilityQos( $dataReaderQos.reliability false true)
+        #durabilityQos( $dataReaderQos.durability )
+        #destinationOrderQos( $dataReaderQos.destinationOrder )
+        #encapsulationQos()
+        #representationQos( $dataReaderQos.representation, $qos_name, true )
+        #typeSupportQos()
+        #dataReaderProtocolQos( $dataReaderQos.protocol )
+        #transportQos( $dataReaderQos.microTransports $qos_name )
+        #dataReaderResourceLimitsQos( $dataReaderQos.readerResourceLimits )
+        #managementQos( true )
+        #userDataQosPolicy( $dataReaderQos.userData, $qos_name, true )
+        #propertiesQosPolicy( $null, $qos_name )## properties are not supported yet
+        #contentFilterQosPolicy( $dataReaderQos.contentFilterTopicQos, $qos_name )
+        #dataReaderTrustQos()
+        #if ( !$dataReaderQos.subscriptionName )DDS_DATAREADERQOS_APPGEN_INITIALIZER \
+        #else#entityNameQos( $dataReaderQos.subscriptionName, true )#end
+        #dataReaderData()
+        #transportPriorityQos( $dataReaderQos.transportPriority)
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TopicQos                                                               |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( topicQos $topicQos, $name )
+    #if( $topicQos != $null )
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the topic_data or not
+        #if ( $topicQos.topicData && $topicQos.topicData.value != $null && !$topicQos.topicData.value.isEmpty() )
+            extern const DDS_Octet ${qos_name}_topic_data[$topicQos.topicData.value.size()];
+        #end
+    #end
+
+    ${hashtag}define $name \
+    { \
+    #if( !$topicQos )
+        DDS_TopicQos_INITIALIZER \
+    #else
+        #managementQos( true )
+        #topicDataQosPolicy( $topicQos.topicData ${qos_name} false)
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    FlowControllerTokenBucketProperty                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( flowControllerTokenBucketProperty $flowControllerTokenBucketProperty )
+    #if( !$flowControllerTokenBucketProperty )
+        DDS_FlowControllerTokenBucketProperty_t_INITIALIZER, \
+    #else
+        { /* token_bucket */ \
+            ${flowControllerTokenBucketProperty.maxTokens}L, /* max_tokens */ \
+            ${flowControllerTokenBucketProperty.tokensAddedPerPeriod}L, /* tokens_added_per_period */ \
+            ${flowControllerTokenBucketProperty.tokensLeakedPerPeriod}L, /* tokens_leaked_per_period */ \
+            { /* period */ \
+                #duration( $flowControllerTokenBucketProperty.period, "1", "0" )
+            }, \
+            ${flowControllerTokenBucketProperty.bytesPerToken}L /* bytes_per_token */ \
+        }, \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    FlowControllersProperty                                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( flowControllerProperty $flowControllerProperty, $name )
+    ${hashtag}define $name \
+    { \
+    #if( !$flowControllerProperty )
+        DDS_FlowControllerProperty_t_INITIALIZER \
+    #else
+        NETIO_FlowControllerProperty_INITIALIZER, \
+        $flowControllerProperty.schedulingPolicy, /* scheduling_policy */ \
+        #flowControllerTokenBucketProperty( $flowControllerProperty.tokenBucket )
+        DDS_BOOLEAN_FALSE /* is_vendor_specific */ \
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Qos Initializer                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( qosInitializer $name $qos )
+    #addLocation( $qos )
+    #if( !$name )
+        ERROR: qosInitializer(): name value was null which is not supported.
+        #logError( "qosInitializer(): name value was null which is not supported." )
+        #stop
+    #end
+    #if( !$qos )
+        ERROR: qosInitializer(): QoS value was null which is not supported.
+        #logError( "qosInitializer(): QoS value was null which is not supported." )
+        #stop
+    #end
+    #set( $className = $qos.class.simpleName )
+    #if( $className.equals("DomainParticipantFactoryQosProfileChild" ) )
+        #domainParticipantFactoryQos( $qos, $name )
+    #elseif ( $className.equals("DomainParticipantQosProfileChild" ) )
+        #domainParticipantQos( $qos, $name )
+    #elseif ( $className.equals("PublisherQosProfileChild" ) )
+        #publisherQos( $qos, $name )
+    #elseif ( $className.equals("DataWriterQosProfileChild" ) )
+        #dataWriterQos( $qos, $name )
+    #elseif ( $className.equals("SubscriberQosProfileChild" ) )
+        #subscriberQos( $qos, $name )
+    #elseif ( $className.equals("DataReaderQosProfileChild" ) )
+        #dataReaderQos( $qos, $name )
+    #elseif ( $className.equals("TopicQosProfileChild" ) )
+        #topicQos( $qos, $name )
+    #elseif ( $className.equals("FlowControllerProperty" ) )
+        #flowControllerProperty( $qos, $name )
+    #else
+        ERROR: QoS class not recognized: $className  $qos
+        #logError( "QoS class not recognized: $className  $qos" )
+    #end
+#end

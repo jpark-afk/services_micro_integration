@@ -1,0 +1,43 @@
+{
+  "source": "task/PLATFORMS-6094",
+  "source_kind": "branch",
+  "repo_url": "https://bitbucket.rti.com/scm/connext/connextmicro.git",
+  "pr_id": null,
+  "source_commit": "f8261d3297e8ea985bc9722fcecb7e528addc0a1",
+  "compare_ref": "refs/remotes/origin/pr-base",
+  "source_prefix": "rti/ndds_lite/rti_me_psl.2.0",
+  "download_root": "C:\\Users\\jpark\\Documents\\rti_workspace\\DdsCdd_workspace\\fix_psl\\repository",
+  "created_utc": "2026-09-09T11:25:40.477721+00:00",
+  "files": [
+    {
+      "status": "M",
+      "repo_path": "rti/ndds_lite/rti_me_psl.2.0/include/rti_me_psl/ospsl/ospsl_os_autosar.h",
+      "relative_path": "include/rti_me_psl/ospsl/ospsl_os_autosar.h"
+    },
+    {
+      "status": "M",
+      "repo_path": "rti/ndds_lite/rti_me_psl.2.0/srcC/netiopsl/udp/autosar/autosarSocket.c",
+      "relative_path": "srcC/netiopsl/udp/autosar/autosarSocket.c"
+    },
+    {
+      "status": "M",
+      "repo_path": "rti/ndds_lite/rti_me_psl.2.0/srcC/netiopsl/udp/autosar/autosarSocket.h",
+      "relative_path": "srcC/netiopsl/udp/autosar/autosarSocket.h"
+    },
+    {
+      "status": "M",
+      "repo_path": "rti/ndds_lite/rti_me_psl.2.0/srcC/ospsl/autosar/autosarMutex.c",
+      "relative_path": "srcC/ospsl/autosar/autosarMutex.c"
+    },
+    {
+      "status": "M",
+      "repo_path": "rti/ndds_lite/rti_me_psl.2.0/srcC/ospsl/autosar/autosarMutex.h",
+      "relative_path": "srcC/ospsl/autosar/autosarMutex.h"
+    },
+    {
+      "status": "M",
+      "repo_path": "rti/ndds_lite/rti_me_psl.2.0/srcC/ospsl/autosar/autosarSystem.c",
+      "relative_path": "srcC/ospsl/autosar/autosarSystem.c"
+    }
+  ]
+}

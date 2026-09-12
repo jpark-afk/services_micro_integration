@@ -1,0 +1,9 @@
+mirrors:
+  docs:
+    source: TBD
+    ref: TBD
+    destination: ../mirrors/docs
+  integrationKit:
+    source: TBD
+    ref: TBD
+    destination: ../mirrors/Integration kit

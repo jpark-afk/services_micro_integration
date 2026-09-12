@@ -1,0 +1,346 @@
+#parse( "utils/utils.vm" )
+#parse( "autosar/CDD/autosar_gen/DdsCdd_macros.c.vm" )
+/**********************************************************************************************************************
+ *  FILE REQUIRES USER MODIFICATIONS
+ *  Template Scope: sections marked with Start and End comments
+ *  -------------------------------------------------------------------------------------------------------------------
+ *  This file includes template code that must be completed and/or adapted during BSW integration.
+ *  The template code is incomplete and only intended for providing a signature and an empty implementation.
+ *  It is neither intended nor qualified for use in series production without applying suitable quality measures.
+ *  The template code must be completed as described in the instructions given within this file and/or in the.
+ *  Technical Reference.
+ *  The completed implementation must be tested with diligent care and must comply with all quality requirements which.
+ *  are necessary according to the state of the art before its use.
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ *  FILE DESCRIPTION
+ *  -------------------------------------------------------------------------------------------------------------------
+ *             File:  DdsCdd.c
+ *           Config:  ddsref.dpa
+ *        SW-C Type:  DdsCdd
+ *
+ *        Generator:  MICROSAR RTE Generator Version 4.31.0
+ *                    RTE Core Version 4.31.0
+ *          License:  CBD2201090
+ *
+ *      Description:  C-Code implementation template for SW-C <DdsCddType>
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of version logging area >>                DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+/* PRQA S 0777, 0779 EOF */ /* MD_MSR_Rule5.1, MD_MSR_Rule5.2 */
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of version logging area >>                  DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+${hashtag}include "Rte_DdsCddType.h"
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of include and declaration area >>        DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+/**
+ * @file DdsCdd.c
+ * @brief DDS Complex Device Driver - AUTOSAR Runnable Template
+ * 
+ * Provides AUTOSAR runnable implementations for DDS communication. Runnables
+ * handle RTE interaction and delegate to adapter layer for DDS operations.
+ * 
+ * This file is partially generated from ARXML. Only implementation sections
+ * between Start/End markers should be modified. Keep implementations simple.
+ * 
+ */
+
+${hashtag}include "../adaptation/dds_cdd_adapter.h"
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of include and declaration area >>          DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+
+/* workaround#HAE - section naming rule */
+${hashtag}ifdef VVIRTUALTARGET
+${hashtag}define DdsCdd_START_SEC_CODE
+${hashtag}else
+${hashtag}define DdsCddType_START_SEC_CODE
+${hashtag}endif
+${hashtag}include "DdsCddType_MemMap.h" /* PRQA S 5087 */ /* MD_MSR_MemMap */
+
+/**********************************************************************************************************************
+ *
+ * Runnable Entity Name: ProcessData
+ *
+ *---------------------------------------------------------------------------------------------------------------------
+ *
+ * Executed if at least one of the following trigger conditions occurred:
+ *   - triggered by InternalTriggerOccurredEvent for InternalTriggeringPoint #angleBrackets("ITP_DdsCdd_RxIndication") of runnable #angleBrackets("RxIndication")
+ *
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of documentation area >>                  DO NOT CHANGE THIS COMMENT!
+ * Symbol: ProcessData_doc
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of documentation area >>                    DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+FUNC(void, DdsCdd_CODE) DdsCddProcessData(void) /* PRQA S 0624, 3206 */ /* MD_Rte_0624, MD_Rte_3206 */
+{
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of runnable implementation >>             DO NOT CHANGE THIS COMMENT!
+ * Symbol: DdsCddProcessData
+ *********************************************************************************************************************/
+    /* Processing received UDP packet, invoking NETIO_Autosar_udp_receive_callback */
+    NETIO_Autosar_udp_receive_callback(); 
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of runnable implementation >>               DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+}
+
+
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #DdsCddReadRunnableImplementation( $datareader )
+            #end
+        #end
+    #end
+#end
+
+/* workaround#COMMON - task overrun issue */
+/**********************************************************************************************************************
+ *
+ * Runnable Entity Name: TimerTick
+ *
+ *---------------------------------------------------------------------------------------------------------------------
+ *
+ * Executed if at least one of the following trigger conditions occurred:
+ *   - triggered on TimingEvent every 10ms
+ *
+ **********************************************************************************************************************
+ *
+ * Internal Trigger Interfaces:
+ * ============================
+ *   Unqueued Internal Triggering:
+ *   -----------------------------
+ *   void Rte_IrTrigger_TimerTick_ITP_TimerUpdate(void)
+ *
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of documentation area >>                  DO NOT CHANGE THIS COMMENT!
+ * Symbol: TimerTick_doc
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of documentation area >>                    DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+FUNC(void, DdsCdd_CODE) DdsCddTimerTick(void) /* PRQA S 0624, 3206 */ /* MD_Rte_0624, MD_Rte_3206 */
+{
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of runnable implementation >>             DO NOT CHANGE THIS COMMENT!
+ * Symbol: DdsCddTimerTick
+ *********************************************************************************************************************/
+
+    OSAPI_SystemAutosar_timer_callback();
+
+    Rte_IrTrigger_TimerTick_ITP_TimerUpdate();
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of runnable implementation >>               DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+}
+
+/* workaround#COMMON - task overrun issue */
+/**********************************************************************************************************************
+ *
+ * Runnable Entity Name: TimerUpdate
+ *
+ *---------------------------------------------------------------------------------------------------------------------
+ *
+ * Executed if at least one of the following trigger conditions occurred:
+ *   - triggered by InternalTriggerOccurredEvent for InternalTriggeringPoint <ITP_TimerUpdate> of runnable <TimerTick>
+ *
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of documentation area >>                  DO NOT CHANGE THIS COMMENT!
+ * Symbol: TimerUpdate_doc
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of documentation area >>                    DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+FUNC(void, DdsCdd_CODE) DdsCddTimerUpdate(void) /* PRQA S 0624, 3206 */ /* MD_Rte_0624, MD_Rte_3206 */
+{
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of runnable implementation >>             DO NOT CHANGE THIS COMMENT!
+ * Symbol: DdsCddTimerUpdate
+ *********************************************************************************************************************/
+
+  OSAPI_SystemAutosar_handler_callback();
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of runnable implementation >>               DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+}
+
+
+/**********************************************************************************************************************
+ *
+ * Runnable Entity Name: RxIndication
+ *
+ *---------------------------------------------------------------------------------------------------------------------
+ *
+ * This runnable is never executed by the RTE.
+ *
+ **********************************************************************************************************************
+ *
+ * Internal Trigger Interfaces:
+ * ============================
+ *   Unqueued Internal Triggering:
+ *   -----------------------------
+ *   void Rte_IrTrigger_RxIndication_ITP_DdsCdd_RxIndication(void)
+ *
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of documentation area >>                  DO NOT CHANGE THIS COMMENT!
+ * Symbol: RxIndication_doc
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of documentation area >>                    DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+FUNC(void, DdsCdd_CODE) DdsCddRxIndication(void) /* PRQA S 0624, 3206 */ /* MD_Rte_0624, MD_Rte_3206 */
+{
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of runnable implementation >>             DO NOT CHANGE THIS COMMENT!
+ * Symbol: DdsCddRxIndication
+ *********************************************************************************************************************/
+    /* UDP packet received, triggering DdsCddProcessDdsData */
+    Trigger_DdsCdd_RxIndication(); 
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of runnable implementation >>               DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+}
+
+
+/**********************************************************************************************************************
+ *
+ * Runnable Entity Name: Start
+ *
+ *---------------------------------------------------------------------------------------------------------------------
+ *
+ * Executed once after the RTE is started
+ *
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of documentation area >>                  DO NOT CHANGE THIS COMMENT!
+ * Symbol: Start_doc
+ *********************************************************************************************************************/
+/**
+ * @brief Initialization runnable triggered at ECU startup
+ * 
+ * Initializes DDS adapter on startup.
+ */
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of documentation area >>                    DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+FUNC(void, DdsCdd_CODE) DdsCddStart(void) /* PRQA S 0624, 3206 */ /* MD_Rte_0624, MD_Rte_3206 */
+{
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of runnable implementation >>             DO NOT CHANGE THIS COMMENT!
+ * Symbol: DdsCddStart
+ *********************************************************************************************************************/
+    /* workaround#COMMON - task overrun issue */
+    /* Enable DDS Entities */
+    DdsCdd_Adapter_Enable_DDSEntities();
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of runnable implementation >>               DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+}
+
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #DdsCddWriteRunnableImplementation( $datawriter )
+            #end
+        #end
+    #end
+#end
+
+/* workaround#COMMON - wrong position, DdsCdd_Init placed outside. */
+${hashtag}if 0
+${hashtag}define DdsCdd_STOP_SEC_CODE
+${hashtag}include "DdsCddType_MemMap.h" /* PRQA S 5087 */ /* MD_MSR_MemMap */
+${hashtag}endif
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of function definition area >>            DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+  FUNC(void, DdsCdd_CODE) DdsCdd_Init(void) 
+{
+  /* TODO: Create entities once micro allows doing so before rte*/
+  /* workaround#COMMON - task overrun issue */
+  /* Initialize DDS adapter layer */
+  DdsCdd_Adapter_Init();    //This function will be called by EcuM directly before StartOs.
+}
+
+/* workaround#HAE - right position and senction name */
+${hashtag}ifdef VVIRTUALTARGET
+${hashtag}define DdsCdd_STOP_SEC_CODE
+${hashtag}else
+${hashtag}define DdsCddType_STOP_SEC_CODE
+${hashtag}endif
+${hashtag}include "DdsCddType_MemMap.h" /* PRQA S 5087 */ /* MD_MSR_MemMap */
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of function definition area >>              DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of removed code area >>                   DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of removed code area >>                     DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+/**********************************************************************************************************************
+ MISRA 2012 violations and justifications
+ *********************************************************************************************************************/
+
+/* module specific MISRA deviations:
+   MD_Rte_0624:  MISRA rule: Rule8.3
+     Reason:     This MISRA violation is a consequence from the RTE requirements [SWS_Rte_01007] [SWS_Rte_01150].
+                 The typedefs are never used in the same context.
+     Risk:       No functional risk. Only a cast to uint8* is performed.
+     Prevention: Not required.
+
+   MD_Rte_3206:  MISRA rule: Rule2.7
+     Reason:     The parameter are not used by the code in all possible code variants.
+     Risk:       No functional risk.
+     Prevention: Not required.
+
+*/

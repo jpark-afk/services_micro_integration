@@ -1,0 +1,159 @@
+#parse( "utils/utils.vm" )
+#parse( "autosar/CDD/adaptation/dds_cdd_adapter_macro.h.vm" )
+
+#ddsCddAdapterH_Header( ${systemModel} )
+
+${hashtag}ifndef DDSCDD_ADAPTER_H
+${hashtag}define DDSCDD_ADAPTER_H
+
+#ddsCddAdapterH_IncludeHeaders( ${inputFilePlugin} )
+
+/*==============================================================================
+ *                        AUTOSAR MEMORY/CODE SECTIONS
+ *============================================================================*/
+
+/* Define memory section for DDS CDD code */
+${hashtag}ifndef DDSCDD_CODE
+${hashtag}define DDSCDD_CODE
+${hashtag}endif
+
+
+/*==============================================================================
+ *                        CONFIGURABLE SETTINGS
+ *============================================================================*/
+/* Trigger_DdsCdd_RxIndication - TODO: Update if callback for the ITP has different name */
+${hashtag}define Trigger_DdsCdd_RxIndication Rte_IrTrigger_DdsCdd_RxIndication_ITP_DdsCdd_RxIndication
+
+/*==============================================================================
+ *                                TYPES
+ *============================================================================*/
+
+/**
+ * @brief DDS initialization state tracking
+ */
+typedef enum
+{
+    /* workaround#COMMON - task overrun issue */
+    //DdsCdd_InitState_TcpIpNotReady = 0,
+    //DdsCdd_InitState_TcpIpReady,
+    DdsCdd_InitState_Uninitialized = 0,
+
+    DdsCdd_InitState_SystemPropertiesSet,
+    DdsCdd_InitState_EntitiesCreated,
+    DdsCdd_InitState_EntitiesEnabled,
+    DdsCdd_InitState_Error
+} DdsCdd_InitState_t;
+
+/*==============================================================================
+ *                        FUNCTION DECLARATIONS
+ *============================================================================*/
+
+/**
+ * @brief Request socket from TcpIp stack
+ *
+ * @param[in] domain Protocol domain (IPv4/IPv6)
+ * @param[in] protocol Protocol type (UDP/TCP)
+ * @param[out] socket_id Pointer to store allocated socket ID
+ * @return E_OK if successful, E_NOT_OK otherwise
+ *
+ * @note Must be registered in TcpIp BSW config. Update DDSCDD_SOCKET_OWNER_GET_SOCKET
+ *       macro if SocketOwner name differs from default.
+ */
+Std_ReturnType DdsCdd_GetSocket(
+    TcpIp_DomainType domain,
+    TcpIp_ProtocolType protocol,
+    P2VAR(TcpIp_SocketIdType, AUTOMATIC, TCPIP_APPL_DATA) socket_id
+);
+
+/**
+ * @brief TcpIp local IP address assignment change notification
+ *
+ * Callback invoked when local IP address state changes. Monitors LocalAddrId 0
+ * for ASSIGNED state.
+ *
+ * @param[in] LocalAddrId Local address identifier
+ * @param[in] State New IP address state
+ *
+ * @note Must be registered as LocalIpAddrAssignmentChg callback in TcpIp BSW config
+ */
+void DdsCdd_LocalIpAddrAssignmentChg(
+    TcpIp_LocalAddrIdType LocalAddrId,
+    TcpIp_IpAddrStateType State
+);
+
+/**
+ * @brief TcpIp UDP packet reception notification
+ *
+ * Callback invoked when UDP data is received. Forwards data for RTPS processing.
+ *
+ * @param[in] SocketId Socket that received data
+ * @param[in] RemoteAddrPtr Remote address information
+ * @param[in] BufPtr Received data buffer
+ * @param[in] Length Length of received data
+ *
+ * @note Must be registered as SocketOwner RxIndication callback in TcpIp BSW config
+ */
+void DdsCdd_RxIndication(
+    TcpIp_SocketIdType SocketId,
+    P2CONST(TcpIp_SockAddrType, AUTOMATIC, TCPIP_APPL_DATA) RemoteAddrPtr,
+    P2VAR(uint8, AUTOMATIC, TCPIP_APPL_DATA) BufPtr,
+    uint16 Length
+);
+
+/**
+ * @brief TcpIp socket event notification
+ *
+ * Callback for TCP/IP events on managed sockets.
+ *
+ * @param[in] SocketId Socket identifier
+ * @param[in] Event Event type
+ *
+ * @note Must be registered as SocketOwner TcpIpEvent callback in TcpIp BSW config
+ */
+void DdsCdd_TcpIpEvent(
+    TcpIp_SocketIdType SocketId,
+    TcpIp_EventType Event
+);
+
+/*==============================================================================
+ *                        ADAPTER FUNCTION DECLARATIONS
+ *============================================================================*/
+
+/**
+ * @brief Initialize DDS adapter
+ * 
+ * Sets system properties and creates DDS entities.
+ */
+void DdsCdd_Adapter_Init(void);
+
+/* workaround#COMMON - task overrun issue */
+/**
+ * @brief Enable DDS entities
+ * 
+ * Enables DDS entities after creation.
+ */
+void DdsCdd_Adapter_Enable_DDSEntities(void);
+
+/**
+ * @brief Run DDS adapter periodic tasks
+ * 
+ * Enables entities (first call) and maintains DDS timer. Must be called regularly.
+ */
+void DdsCdd_Adapter_Run(void);
+
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #DdsCdd_Adapter_WriteFuncDeclaration( $datawriter )
+            #end
+        #end
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #DdsCdd_Adapter_ReadFuncDeclaration( $datareader )
+            #end
+        #end
+    #end
+#end
+
+${hashtag}endif /* DDSCDD_ADAPTER_H */

@@ -1,0 +1,36 @@
+#warningHeader()
+
+${hashtag}include "${inputFilePlugin}Plugin.h"
+${hashtag}include "${inputFilePrefix}AppgenPlugin.h"
+
+${hashtag}ifdef __cplusplus
+extern "C"
+{
+${hashtag}endif
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | Entity Declarations                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Go through each participant and generate a wrapper for each get_plugin_type
+## and get_key_kind call.
+## its configuration.
+#set( $typeName = {} )
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $registerType in $participant.registerTypes )
+            ## We need to store the typeRef name or the registeredName so we
+            ## don't create duplicates functions
+            #if( ! $registerType.typeRef )#set( $registeredName = ${registerType.registeredName} )#else#set( $registeredName = ${registerType.typeRef} )#end
+            #if( $typeName.get($registeredName) == $null )
+                struct DDS_TypePluginI *#typePlugin( $registerType )_cpp(void)
+                {
+                    return #typePluginCPP( $registerType )();
+                }
+                $!typeName.put($registeredName, true)
+            #end
+        #end
+    #end
+#end
+${hashtag}ifdef __cplusplus
+}       /* extern "C" */
+${hashtag}endif

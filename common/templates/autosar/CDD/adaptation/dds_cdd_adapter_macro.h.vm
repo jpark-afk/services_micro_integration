@@ -1,0 +1,189 @@
+#parse( "utils/utils.vm" )
+
+## This file contains macros to generate the dds_cdd_adapter.h file
+
+#macro( ddsCddAdapterH_Header $systemModel)
+/**
+ * @file dds_cdd_adapter.h
+ * @brief DDS CDD Adapter Layer Interface (Layer 2)
+ * 
+ * This file provides the adapter layer interface between AUTOSAR and RTI DDS Micro.
+ * It bridges the AUTOSAR SW-C (Layer 1) and pure DDS implementation (Layer 3).
+ * 
+ * @details
+ * **Three-Layer Architecture**:
+ * - **Layer 1: RTE Template** (DdsCdd.c)
+ *   - AUTOSAR runnables called by RTE
+ *   - Partially generated from ARXML (signatures), integrator implements by calling Layer 2
+ *   - Delegates all work to Layer 2
+ * 
+ * - **Layer 2: Adapter** (dds_cdd_adapter.c/h) **[THIS FILE]**
+ *   - Bridges AUTOSAR and DDS
+ *   - Type conversion
+ *   - State machine for initialization sequencing
+ *   - AUTOSAR callbacks (TcpIp, IP address assignment)
+ * 
+ * - **Layer 3: DDS Implementation** (dds_impl.c/h)
+ *   - Pure DDS operations
+ *   - Entity creation and management
+ *   - Read/write operations
+ *   - No AUTOSAR dependencies
+ * 
+ * **State Machine**:
+ * The adapter manages DDS initialization through these states:
+ * 1. TCPIP_NOT_READY - Waiting for IP address assignment
+ * 2. TCPIP_READY - IP assigned, ready to set system properties
+ * 3. SYSTEM_PROPERTIES_SET - Properties configured, ready to create entities
+ * 4. ENTITIES_CREATED - DDS entities created but disabled
+ * 5. ENTITIES_ENABLED - Fully operational, can send/receive data
+ * 6. ERROR - Initialization failed
+ * 
+ * **Configuration Requirements**:
+ * 
+ * 1. **TcpIp BSW Configuration**:
+ *    - Define SocketOwner named \"DdsSocketOwner\" (or customize via macro)
+ *    - Register callbacks: LocalIpAddrAssignmentChg, RxIndication
+ *    - Allocate sufficient sockets (2-3 depending on multicast)
+ * 
+ * 2. **OS Configuration**:
+ *    - Define Resources: DDS_Resource001 through DDS_Resource037
+ *    - Configure Task_DdsCdd with appropriate priority
+ *    - Timer resolution: 10ms
+ * 
+ * 3. **Memory Configuration**:
+ *    - Default heap: 240KB (configurable via DDSCDD_HEAP_AREA_1_SIZE)
+ *    - Adjust based on application needs (more topics, larger samples)
+ * 
+ * 4. **SocketOwner Name Override**:
+ *    If your TcpIp BSW uses a different SocketOwner name, define before including:
+ *    ```c
+ *    ${hashtag}define DDSCDD_SOCKET_OWNER_NAME YourSocketOwnerName
+ *    ${hashtag}include "dds_cdd_adapter.h"
+ *    ```
+ *    This generates the correct function call: TcpIp_YourSocketOwnerNameGetSocket(...)
+ * 
+ * **Usage Example**:
+ * ```c
+ * // Called automatically by RTE, application code doesn't call these directly
+ * 
+ * // 1. Initialization (once at startup)
+ * DdsCddStart()  // -> DdsCdd_Adapter_Init()
+ * 
+ * // 2. Cyclic execution (every 10ms)
+ * DdsCddRun()    // -> DdsCdd_Adapter_Run()
+ * 
+ * // 3. Receive data (every 100ms or as needed)
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+            #foreach( $subscriber in $participant.subscribers )
+                #foreach( $datareader in $subscriber.dataReaders )
+                    #set( $topic = $datareader.topicName )
+ * DdsCddRead_${topic}()  // -> DdsCdd_Adapter_Read_${topic}
+                #end
+            #end
+        #end
+    #end
+ * 
+ * // 4. Transmit data (event-driven when app writes to RTE)
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+            #foreach( $publisher in $participant.publishers )
+                #foreach( $datawriter in $publisher.dataWriters )
+                    #set( $topic = $datawriter.topicName )
+ * DdsCddWrite_${topic}() // -> DdsCdd_Adapter_Write_${topic}()
+                #end
+            #end
+        #end
+    #end
+ * ```
+ * 
+ * @note This layer has AUTOSAR dependencies and is specific to AUTOSAR integration.
+ *       For non-AUTOSAR use, only Layer 3 (dds_impl) would be needed.
+ * 
+ * @see dds_impl.h for Layer 3 DDS implementation
+ * @see DdsCdd.c for Layer 1 RTE template
+ */
+#end
+
+## macro to include the necessary headers for the dds_cdd_adapter.h file
+#macro( ddsCddAdapterH_IncludeHeaders $inputFilePlugin )
+    /* AUTOSAR Standard Includes */
+    /* TODO: Adjust includes based on your BSW configuration */
+    ${hashtag}include "Std_Types.h"
+    ${hashtag}include "Os_Cfg.h"
+    ${hashtag}include "TcpIp.h"
+    ${hashtag}include "Rte_DdsCddType.h"  /* Provides ${inputFilePlugin} type definition and RTE function signatures */
+
+    /* workaround#HAE */
+    /* RTI DDS Micro includes are intentionally kept out of this public header.
+    * Include them in implementation files only to avoid macro conflicts with
+    * AUTOSAR compiler abstraction (e.g., CONST/VAR macros). */
+    ${hashtag}ifndef VVIRTUALTARGET
+    ${hashtag}include "dds_impl.h"
+    ${hashtag}endif
+
+    /* workaround#HAE - add an user_stub header file */
+    ${hashtag}include "dds_cdd_userstub.h" //SHOULD BE CREATED EXTERNALLY
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## macro to declare write functions that RTE will call when application writes to RTE
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( rteWriteFunctionDeclaration $datawriter )
+    #set( $type = $datawriter.typeRef )
+    #set( $topic = $datawriter.topicName )
+/**
+* @brief RTE write function for ${topic} data
+* @param[in] data Pointer to data to write to RTE
+* @return Std_ReturnType E_OK if successful
+*/
+extern FUNC(Std_ReturnType, RTE_CODE) Rte_Write_S_${topic}(
+    P2CONST(${type}, AUTOMATIC, RTE_APPL_DATA) data
+);
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## macro to declare read functions that RTE will call when to pull data
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( rteReadFunctionDeclaration $datareader )
+    #set( $type = $datareader.typeRef )
+    #set( $topic = $datareader.topicName )
+/**
+* @brief RTE read function for ${topic} data
+* @param[out] data Pointer to receive data from RTE
+* @return Std_ReturnType E_OK if successful
+*/
+extern FUNC(Std_ReturnType, RTE_CODE) Rte_Read_R_${topic}(
+    P2VAR(${type}, AUTOMATIC, RTE_APPL_DATA) data
+);
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## macro to declare read functions for layer 2
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( DdsCdd_Adapter_ReadFuncDeclaration $datareader )
+    #set( $topic = $datareader.topicName )
+    #set( $type = $datareader.typeRef )
+/**
+ * @brief Read DataReader for TopicC and convert DDS type to RTE type
+ *
+ * @param[out] rte_data Pointer to RTE type structure to receive converted data
+ * @return 0 on success (valid data returned), -1 if no data or error
+ */
+int DdsCdd_Adapter_Read_${topic}(${type}* rte_data);
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## macro to declare writer functions for layer 2
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( DdsCdd_Adapter_WriteFuncDeclaration $datawriter )
+    #set( $topic = $datawriter.topicName )
+    #set( $type = $datawriter.typeRef )
+/**
+ * @brief Convert RTE type to DDS type and write to TopicC DataWriter
+ *
+ * @param[in] rte_data Pointer to RTE type structure containing data to transmit
+ * @return 0 on success, -1 on error
+ */
+int DdsCdd_Adapter_Write_${topic}(const ${type}* rte_data);
+#end

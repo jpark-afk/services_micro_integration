@@ -1,0 +1,14 @@
+{
+  "name": "arcgen_fix_499",
+  "description": "Patch rtiarcgen/rtiaragen executables in a Connext Professional installation.",
+  "files": [
+    {
+      "source": "rtiarcgen.exe",
+      "target": "resource/app/bin/x64Win64VS2017/rtiarcgen.exe"
+    },
+    {
+      "source": "rtiaragen.exe",
+      "target": "resource/app/bin/x64Win64VS2017/rtiaragen.exe"
+    }
+  ]
+}

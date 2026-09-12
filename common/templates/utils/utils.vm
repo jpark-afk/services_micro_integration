@@ -1,0 +1,452 @@
+## =============================================================================
+## Utilities
+## =============================================================================
+## define the hastag character
+#set( $hashtag = '#' )
+## define a macro for < >
+#macro( angleBrackets $text )
+<${text}>
+#end
+## define a macro for ${}
+#macro( braces $text )
+${${text}}#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DdsProductVersion                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( ddsProductVersion $ddsProductVersion )
+    #if( !$ddsProductVersion )
+        DDS_PRODUCTVERSION_UNKNOWN \
+    #else
+        {   /* pro_minimum_compatiblity_version */ \
+            '$ddsProductVersion.major', /* major */ \
+            '$ddsProductVersion.minor', /* minor */ \
+            '$ddsProductVersion.release', /* release */ \
+            '$ddsProductVersion.revision' /* revision */ \
+        }  \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    OSAPI_ThreadProperty                                            |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( threadProperty $threadProperty, $defaultValue, $comment, $comma )
+    #if( !$threadProperty )
+        $defaultValue#if( $comma ),#end \
+    #else
+        {   /* ${comment} */ \
+            $threadProperty.stackSize, /* stack_size */ \
+            $threadProperty.priority, /* priority */ \
+            $threadProperty.mask /* options */ \
+        }#if( $comma ),#end  \
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Duration                                                               |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( duration $duration $defaultSec $defaultNanosec )
+    #if( !$duration )
+        ${defaultSec}L, /* sec */ \
+        ${defaultNanosec}UL /* nanosec */ \
+    #else
+        #if( $QosUtils.isInfiniteDuration( $duration.sec ) )
+            DDS_DURATION_INFINITE_SEC_INITIALIZER, /* sec */ \
+        #else
+            #if( !$duration.sec )
+                ${defaultSec}L, /* sec */ \
+            #else
+                ${duration.sec}L, /* sec */ \
+            #end
+        #end
+        #if( $QosUtils.isInfiniteDuration( $duration.nanosec ) )
+            DDS_DURATION_INFINITE_NSEC_INITIALIZER /* nanosec */ \
+        #else
+            #if( !$duration.nanosec )
+                ${defaultNanosec}L /* nanosec */ \
+            #else
+                ${duration.nanosec}L /* nanosec */ \
+            #end
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    InstanceReplacement                                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( instanceReplacement $instanceReplacement )
+    #if ( !$instanceReplacement )
+        #set( $enum = "NO_INSTANCE_REPLACEMENT_QOS" )
+    #else
+## We can just use aliveInstanceRemoval as the rest of the instances values
+## has to be the same at this point
+        #if( $instanceReplacement.aliveInstanceRemoval.name().equals("ANY_INSTANCE_REMOVAL") )
+            #set( $enum = "REPLACE_OLDEST_INSTANCE_REPLACEMENT_QOS" )
+        #else
+            #set( $enum = "NO_INSTANCE_REPLACEMENT_QOS" )
+        #end
+    #end
+    DDS_$enum##
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Enum                                                                   |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( enum $enum )
+    DDS_$enum##
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Mask                                                                   |
+## A mask is a list of enums separated by |, the following macro adds DDS_ to
+## each enum
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( mask $mask )
+    #foreach( $enum in $mask.split("[|]") )DDS_${enum.trim()}#if( $foreach.hasNext ) | #end#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    RepresentationIdSeq                                                    |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( representationIdSeq $representationIdSeq $name $size )
+    #if( !$representationIdSeq || $representationIdSeq.element.empty )DDS_SEQUENCE_INITIALIZER#{else}DDS_DataRepresentationIdSeq_INITIALIZER_W_LOAN($name, $size, $size)#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    StringSeq                                                              |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( stringSeq $stringSeq $name $size )
+    #if( !$stringSeq || $stringSeq.element.empty )DDS_SEQUENCE_INITIALIZER#{else}REDA_StringSeq_INITIALIZER_W_LOAN($name, $size, $size)#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    REDA_StringSeq                                                         |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( redaStringSeq $redaStringSeq $name $size )
+    #if( !$redaStringSeq || $redaStringSeq.element.empty )REDA_StringSeq_INITIALIZER#{else}REDA_StringSeq_INITIALIZER_W_LOAN($name, $size, $size)#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    REDA_StringArray                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( redaStringArray $redaStringArray $name $size )
+    #if( !$redaStringArray || $redaStringArray.size() == 0 )REDA_StringSeq_INITIALIZER#{else}REDA_StringSeq_INITIALIZER_W_LOAN($name, $size, $size)#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    REDA_String                                                            |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( redaString $redaString )
+    #if( !$redaString )NULL#{else}"$redaString"#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    CDR Boolean                                                            |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( cdrBoolean $cdrBoolean $defaultValue )
+    #if( $cdrBoolean == $null )
+        #if( $defaultValue == $null )
+            #logError( "cdrBoolean(): Both the value and default value were not specified." )
+            #stop
+        #else
+            #cdrBoolean( $defaultValue, $defaultValue )#end
+    #else
+        #if( $cdrBoolean )CDR_BOOLEAN_TRUE#else CDR_BOOLEAN_FALSE#end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    UDP_InterfaceTableEntrySeq                                             |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( interfaceTableSeq $interfaceTableSeq $name $size )
+    #if( !$interfaceTableSeq || $interfaceTableSeq.element.empty )UDP_InterfaceTableEntrySeq_INITIALIZER#{else}UDP_InterfaceTableEntrySeq_INITIALIZER_W_LOAN($name, $size, $size)#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    redaSequenceWLoan                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( redaSequenceWLoan $sequence $name $size $type )
+    #if( !$sequence || $sequence.element.empty )REDA_DEFINE_SEQUENCE_INITIALIZER#{else}REDA_DEFINE_SEQUENCE_INITIALIZER_W_LOAN($name, $size, $size, $type)#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DDS Boolean                                                            |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( ddsBoolean $boolean $defaultValue )
+    #if( $boolean == $null )
+        #if( $defaultValue == $null )
+            #logError( "ddsBoolean(): Both the value and default value were not specified." )
+            #stop
+        #else
+            #ddsBoolean( $defaultValue, $defaultValue )#end
+    #else
+        #if( $boolean )DDS_BOOLEAN_TRUE#else DDS_BOOLEAN_FALSE#end
+    #end
+#end
+## -----------------------------------------------------------------------------
+## | addLocation                                                               |
+## -----------------------------------------------------------------------------
+#macro( addLocation $object )
+    #if( $addingLocations )
+        #if( $object )
+            #set( $location = $object.location )
+            #if( !$location )
+                #set( $location = $systemModel.getLocation( $object ) )
+            #end
+            #if( $location )
+                /* XML Source Location: $location */
+            #end
+        #end
+    #end
+#end
+## | addComponentRefLocation                                                   |
+## -----------------------------------------------------------------------------
+#macro( addComponentRefLocation $componentRef )
+    #addLocation( ${systemModel.components.get( $componentRef ).location} )
+#end
+## -----------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+## | formatDomainParticipantName                                               |
+## CANNOT BE INDENTED                                                          |
+## -----------------------------------------------------------------------------
+#macro( formatDomainParticipantName $library $domainParticipant $separator )
+${library.variableName}${separator}${domainParticipant.variableName}##
+#end
+## -----------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+## | formatRemoteDomainParticipantName                                               |
+## CANNOT BE INDENTED                                                          |
+## -----------------------------------------------------------------------------
+#macro( formatRemoteDomainParticipantName $libraryName $domainParticipant $separator )
+${libraryName}${separator}${domainParticipant.variableName}##
+#end
+## -----------------------------------------------------------------------------
+## | logError                                                                  |
+## -----------------------------------------------------------------------------
+#macro( logError $message )
+$templateLogger.error( $message )##
+#end
+## -----------------------------------------------------------------------------
+## | logWarning                                                                |
+## -----------------------------------------------------------------------------
+#macro( logWarning $message )
+$templateLogger.warn( $message )##
+#end
+## -----------------------------------------------------------------------------
+## | reda variables                                                            |
+## -----------------------------------------------------------------------------
+#macro( fillStringSequenceData $data )
+{
+#foreach( $element in $data )
+    "${element}"#if( $foreach.hasNext ),
+    #end
+#end
+
+};
+
+#end
+## -----------------------------------------------------------------------------
+## | fill an udp interface table variable                                      |
+## -----------------------------------------------------------------------------
+#macro( fillUDPInterfaceTableEntry $data, $name )
+{
+#foreach( $element in $data )
+    #addLocation( $element  )
+    #set ( $element_name = $name + $foreach.count )
+    $element_name#if( $foreach.hasNext ),
+    #end
+#end
+
+};
+
+#end
+## -----------------------------------------------------------------------------
+## | fill a non string variable                                                |
+## -----------------------------------------------------------------------------
+#macro( fillSequenceEnumData $data, $pattern )
+{
+#foreach( $element in $data )
+    #if ( !$pattern )#enum(${element.value()})#else#enum(${element})#end#if( $foreach.hasNext ),
+    #end
+#end
+
+};
+
+#end
+## -----------------------------------------------------------------------------
+## | fill an octet sequence variable                                            |
+## -----------------------------------------------------------------------------
+#macro( fillOctetSequenceData $data )
+{
+#foreach( $element in $data )
+    $ConverterUtils.convertByteToHex( $element )#if( $foreach.hasNext ),
+    #end
+#end
+
+};
+
+#end
+## -----------------------------------------------------------------------------
+## | fill a property sequence variable                                            |
+## -----------------------------------------------------------------------------
+#macro( fillPropertySequenceData $data )
+{
+#foreach( $element in $data )
+    {
+        #redaString( $element.name ), /* name */
+        #redaString( $element.value ), /* value */
+        #cdrBoolean( $element.propagate, true ) /* propagate */
+    }#if( $foreach.hasNext ),
+    #end
+#end
+
+};
+
+#end
+## -----------------------------------------------------------------------------
+## | Split QoS Name                                                            |
+## -----------------------------------------------------------------------------
+#macro( splitQosName, $name )
+    #set( $split_string = $name.split("QOS_") )
+    #set( $qos_name = $split_string[$split_string.size() - 1] )
+#end
+## -----------------------------------------------------------------------------
+## | Split Component Name                                                      |
+## -----------------------------------------------------------------------------
+#macro( splitComponentName, $name )
+    #set( $split_string = $name.split("COMPONENT_") )
+    #set( $component_name = $split_string[$split_string.size() - 1] )
+#end
+## -----------------------------------------------------------------------------
+## | Component Includes                                                        |
+## -----------------------------------------------------------------------------
+#macro( componentIncludes, $systemModel )
+    #foreach( $entry in $systemModel.components.entrySet() )
+        #set( $className = $entry.value.class.simpleName )
+        #if ( $className.equals("StaticDiscovery") && !$dpse_include )
+            #set ( $dpse_include = true )
+            ${hashtag}include "disc_dpse/disc_dpse_dpsediscovery.h"
+        #elseif ( $className.equals("DynamicDiscovery") && !$dpde_include )
+            #set ( $dpde_include = true )
+            ${hashtag}include "disc_dpde/disc_dpde_discovery_plugin.h"
+        #elseif ( $className.equals("Udpv4") && !$udpv4_include )
+            #set ( $udpv4_include = true )
+            ${hashtag}include "netio/netio_udp.h"
+        #elseif ( $className.equals("Shmem") && !$shmem_include )
+            #set ( $shmem_include = true )
+            ${hashtag}include "netio_shmem/netio_shmem.h"
+        #elseif ( $className.equals("ZeroCopy") && !$zcopy_include )
+            #set ( $zcopy_include = true )
+            ${hashtag}if RTIME_HAVE_ZCOPYV2
+            ${hashtag}include "netio_zcopy/netio_zcopy.h"
+            ${hashtag}include "netio_zcopy/netio_zcopy_default_notif_mech.h"
+            ${hashtag}endif
+        #elseif ( $className.equals("PskSecurity") && !$psk_include )
+            #set ( $psk_include = true )
+            ${hashtag}include "dds_psk/dds_psk.h"
+            ${hashtag}include "rti_me_psl/pskpsl/psk_ossl_transform.h"
+            ${hashtag}include "rti_me_psl/pskpsl/psk_file_pass_tracker.h"
+        #end
+    #end
+    #if ( $QosUtils.isCftEnabled( $systemModel ) )
+        ${hashtag}include "dds_filter/dds_filter.h"
+    #end
+#end
+## -----------------------------------------------------------------------------
+## |   TypePlugin name                                                         |
+## -----------------------------------------------------------------------------
+#macro( typePlugin, $registerType )
+    #if( $systemModel.getApplicationType() == "AUTOSAR_CDD" )
+        #set( $typeRefPrefix = "dds_" )
+    #else
+        #set( $typeRefPrefix = "" )
+    #end
+    #if( ! $registerType.typeRef )${typeRefPrefix}#namespaces(${registerType.registeredName})Plugin_get#else${typeRefPrefix}#namespaces(${registerType.typeRef})TypePlugin_get#end
+#end
+## -----------------------------------------------------------------------------
+## |   TypePlugin CPP name                                                     |
+## -----------------------------------------------------------------------------
+#macro( typePluginCPP, $registerType )
+    #if( $systemModel.getApplicationType() == "AUTOSAR_CDD" )
+        #set( $typeRefPrefix = "dds_" )
+    #else
+        #set( $typeRefPrefix = "" )
+    #end
+    #if( ! $registerType.typeRef )${typeRefPrefix}#namespacesCPP(${registerType.registeredName})Plugin_get#else${typeRefPrefix}#namespacesCPP(${registerType.typeRef})TypePlugin_get#end
+#end
+## -----------------------------------------------------------------------------
+## |   TypePlugin name                                                         |
+## -----------------------------------------------------------------------------
+#macro( typePluginRemote, $model )
+    #if( $systemModel.getApplicationType() == "AUTOSAR_CDD" )
+        #set( $typeRefPrefix = "dds_" )
+    #else
+        #set( $typeRefPrefix = "" )
+    #end
+    #if( ! $model.typeRef )${typeRefPrefix}#namespaces(${model.typeName})Plugin_get#else${typeRefPrefix}#namespaces(${model.typeRef})TypePlugin_get#end
+#end
+## -----------------------------------------------------------------------------
+## |   Namespaces - we need to replace :: to _                                 |
+## -----------------------------------------------------------------------------
+#macro( namespaces, $name )
+$name.replaceAll("::", "_")#end
+## -----------------------------------------------------------------------------
+## |   NamespacesCPP - we need to replace :: to _ if namespace is not used     |
+## -----------------------------------------------------------------------------
+#macro( namespacesCPP, $name )
+#if( $NAMESPACE )$name#else$name.replaceAll("::", "_")#end#end
+## -----------------------------------------------------------------------------
+## | Auto Register Includes                                                    |
+## -----------------------------------------------------------------------------
+#macro( autoRegIncludes, $systemModel )
+    #foreach( $participant in $systemModel.participants )
+        #if ( $participant.factoryModel.isUnregisterINTRATransport() && !$intra_include )
+            #set ( $intra_include = true )
+            ${hashtag}include "netio/netio_loopback.h"
+        #end
+    #end
+#end
+## -----------------------------------------------------------------------------
+## | WarningHeader                                                             |
+## -----------------------------------------------------------------------------
+#macro( warningHeader )
+/*
+WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+This file was generated from ${inputFilePrefix}.xml using "rtiddsmag."
+The rtiddsmag tool is part of the RTI Connext distribution.
+For more information, type 'rtiddsmag -help' at a command shell
+or consult the RTI Connext manual.
+*/
+#end
+## -----------------------------------------------------------------------------
+## | Add tab                                                                   |
+## -----------------------------------------------------------------------------
+#macro ( addTab )
+<-->#end
+
+#macro(generate_topic_list $topicsList )
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+            #foreach( $publisher in $participant.publishers )
+                #foreach( $datawriter in $publisher.dataWriters )
+                    #if(!$topicsList.contains($datawriter.topicName))
+                        #if($topicsList.add($datawriter.topicName))#end
+                    #end
+                #end
+            #end
+            #foreach( $subscriber in $participant.subscribers )
+                #foreach( $datareader in $subscriber.dataReaders )
+                    #if(!$topicsList.contains($datareader.topicName))
+                        #if($topicsList.add($datareader.topicName))#end
+                    #end
+                #end
+            #end
+        #end
+    #end
+#end
+
+## -----------------------------------------------------------------------------
+## |   include header name                                                         |
+## -----------------------------------------------------------------------------
+#macro( headerInclude )
+    #if( $systemModel.getApplicationType() == "AUTOSAR_CDD" )../dds_gen/#end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Helper macro for property values with defaults                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## This macro outputs a property value or its default with consistent formatting
+## Parameters:
+##   $value - the property value (may be null)
+##   $default - the default value to use if $value is null
+##   $comment - the comment text for the property
+##   $hasComma - whether to include a trailing comma (true/false)
+#macro( propertyValueWithDefault $value $default $comment $hasComma )
+#if( $value != $null )$value#{else}$default#end#if($hasComma),#end /* $comment */ \
+#end
+

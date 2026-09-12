@@ -1,0 +1,430 @@
+#parse( "utils/utils.vm" )
+
+## This file contains macros to generate the application .c file
+## Use mainly with application.c.vm
+## Think of this file as defining content for .c
+## And the application.c.vm file is defining the layout of the .c file
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |   macro to include the application header files                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( applicationHeaderC $type_file $app_name $isDpde $isDpse)
+    ${hashtag}include "rti_me_c.h"
+
+    ${hashtag}include #angleBrackets("stdio.h")
+    ${hashtag}include #angleBrackets("stdlib.h")
+    ${hashtag}include #angleBrackets("string.h")
+
+    /* RTI Connext Micro DDS API */
+    #if( $isDpde )
+        ${hashtag}include "disc_dpde/disc_dpde_discovery_plugin.h"
+    #end
+    #if( $isDpse )
+        ${hashtag}include "disc_dpse/disc_dpse_dpsediscovery.h"
+    #end
+    ${hashtag}include "wh_sm/wh_sm_history.h"
+    ${hashtag}include "rh_sm/rh_sm_history.h"
+    ${hashtag}include "netio/netio_udp.h"
+    ${hashtag}include "app_gen/app_gen.h"
+    ${hashtag}include "app_gen/app_gen_plugin.h"
+
+    /* Type specific header files */
+    ${hashtag}include "${type_file}Appgen.h"
+
+    ${hashtag}include "${type_file}.h"
+    ${hashtag}include "${type_file}Plugin.h"
+    ${hashtag}include "${type_file}Support.h"
+
+    ${hashtag}include "${app_name}.h"
+#end
+
+#macro( DDSConfigureFunc )
+int DDS_Configure()
+{
+
+   /* Any OS specific configuration can be added here */
+
+    return 0;
+}
+#end
+
+#macro( DDSInitFunc )
+int DDS_Init()
+{
+    /* Call Application_Create */
+    struct Application *application = Application_create();
+    if (!application)
+    {
+        printf("Failed to create DDS\n");
+        return -1;
+    }
+    printf("DDS initialized successfully\n");
+
+    return 0;
+}
+#end
+
+## macro to define the DDS_Run function to publisher data
+#macro( DDSRunFunc $systemModel )
+int DDS_Run()
+{
+    int counter = 0;
+    DDS_ReturnCode_t retcode;
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+            #foreach( $publisher in $participant.publishers )
+                #foreach( $datawriter in $publisher.dataWriters )
+                    #set( $type = $datawriter.typeRef )
+                    #set( $topic = $datawriter.topicName )
+                    ${type} * ${topic} = NULL;
+                    ${topic} = ${type}_create();
+
+                #end
+            #end
+        #end
+    #end
+
+    if (g_application == NULL) {
+        printf("DDS_Run: g_application is NULL\n");      
+        return -1;
+    }
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+    retcode = DDS_Entity_enable(DDS_DomainParticipant_as_entity(g_application->${participant.name}));
+    if (retcode != DDS_RETCODE_OK) {
+        printf("DDS_Run: Failed to enable participant "
+            "${participant.libraryName}::${participant.name}\n");
+        return -1;
+    }
+        #end
+    #end
+
+    /* Main application loop */
+    while (true)
+    {
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+            #foreach( $publisher in $participant.publishers )
+                #foreach( $datawriter in $publisher.dataWriters )
+                    #set( $type = $datawriter.typeRef )
+                    #set( $topic = $datawriter.topicName )
+        /* Write $topic data */
+        if (${topic}_write(${topic}))
+        {
+            printf("Published ${topic} of ${type} (count=%d)\n", counter);
+        }
+        else
+        {
+            printf("Failed to write ${topic}\n");
+        }
+                #end
+            #end
+        #end
+    #end
+
+        counter++;
+
+        /* Sleep for 100ms between writes */
+        OSAPI_Thread_sleep(100);
+    }
+}
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | macros to define on_data_available functions for each topic               |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( onDataAvailableTopicFunction $datareader )
+    #set( $type = $datareader.typeRef )
+    #set( $topic = $datareader.topicName )
+/* Listener callback for data available event for $topic */
+static void ${topic}_on_data_available(
+    void *listener_data,
+    DDS_DataReader *reader)
+{
+    ${type}DataReader *typed_reader = NULL;
+    struct DDS_SampleInfoSeq info_seq = DDS_SEQUENCE_INITIALIZER;
+    struct ${type}Seq data_seq = DDS_SEQUENCE_INITIALIZER;
+    DDS_ReturnCode_t retcode;
+    DDS_Long i;
+
+    typed_reader = ${type}DataReader_narrow(reader);
+    if (typed_reader == NULL)
+    {
+        printf("Error: Failed to narrow reader\n");
+        return;
+    }
+
+    /* Take all available samples */
+    retcode = ${type}DataReader_take(
+        typed_reader,
+        &data_seq,
+        &info_seq,
+        DDS_LENGTH_UNLIMITED,
+        DDS_ANY_SAMPLE_STATE,
+        DDS_ANY_VIEW_STATE,
+        DDS_ANY_INSTANCE_STATE);
+
+    if (retcode != DDS_RETCODE_OK)
+    {
+        printf("Error taking data: %d\n", retcode);
+        return;
+    }
+
+    /* Process each sample */
+    for (i = 0; i < ${type}Seq_get_length(&data_seq); ++i)
+    {
+        if (DDS_SampleInfoSeq_get_reference(&info_seq, i)->valid_data)
+        {
+            /* Pass valid data to the read handler */
+            ${topic}_read(${type}Seq_get_reference(&data_seq, i));
+        }
+    }
+
+    /* Return the loan */
+    retcode = ${type}DataReader_return_loan(typed_reader, &data_seq, &info_seq);
+    if (retcode != DDS_RETCODE_OK)
+    {
+        printf("Error returning loan: %d\n", retcode);
+    }
+}
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | macro to define Application_create function                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Implement the selectedParticipant (The Participant Model, not the DOM participant)
+#macro( applicationCreateFunc $systemModel )
+struct Application *
+Application_create()
+{
+    DDS_DomainParticipantFactory *factory = NULL;
+    DDS_Boolean success = DDS_BOOLEAN_FALSE;
+    struct Application *application = NULL;
+    RT_Registry_T *registry = NULL;
+    struct APPGEN_FactoryProperty model_xml = APPGEN_FactoryProperty_INITIALIZER;
+
+    /* Uncomment to increase verbosity level:
+    OSAPI_Log_set_verbosity(OSAPI_LOG_VERBOSITY_WARNING);
+    */
+
+    OSAPI_Heap_allocate_struct(&application, struct Application);
+    if (application == NULL)
+    {
+        printf("failed to allocate application\n");
+        goto done;
+    }
+
+    factory = DDS_DomainParticipantFactory_get_instance();
+
+    registry = DDS_DomainParticipantFactory_get_registry(factory);
+
+    /* This pointer must be valid as long as the Micro
+    * Application Generation plugin is registered
+    */
+    model_xml._model = APPGEN_get_library_seq();
+    if (!APPGEN_Factory_register(registry, &model_xml))
+    {
+        printf("failed to register Application Generation\n");
+        goto done;
+    }
+
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+    application->${participant.name} =
+        DDS_DomainParticipantFactory_create_participant_from_config(
+            factory,
+            "${participant.libraryName}::${participant.name}");
+
+    if (application->${participant.name} == NULL)
+    {
+        printf("failed to create participant\n");
+        goto done;
+    }
+        #end
+    #end
+
+    #set( $isDefined = false )
+    #foreach( $library in $systemModel.libraries )
+        #foreach( $participant in $library.participants )
+            #foreach( $subscriber in $participant.subscribers )
+                #foreach( $datareader in $subscriber.dataReaders )
+                    ## Only need to define these variables once
+                    #if(!$isDefined )
+                        #set( $isDefined = true )
+    /* Setup data reader listener */
+    DDS_DataReader *datareader = NULL;
+    struct DDS_DataReaderListener dr_listener = DDS_DataReaderListener_INITIALIZER;
+    DDS_ReturnCode_t retcode;
+                    #end
+
+    datareader = DDS_DomainParticipant_lookup_datareader_by_name(
+        application->${participant.name},
+        "${subscriber.name}::${datareader.name}");
+
+    if (datareader == NULL)
+    {
+        printf("failed to lookup datareader\n");
+        goto done;
+    }
+
+    dr_listener.on_data_available = ${datareader.topicName}_on_data_available;
+
+    retcode = DDS_DataReader_set_listener(
+        datareader,
+        &dr_listener,
+        DDS_DATA_AVAILABLE_STATUS);
+
+    if (retcode != DDS_RETCODE_OK)
+    {
+        printf("failed to set reader listener\n");
+        goto done;
+    }
+                #end
+            #end
+        #end
+    #end
+
+    success = DDS_BOOLEAN_TRUE;
+
+done:
+
+    if (!success)
+    {
+        #ifndef RTI_CERT
+        if (application != NULL)
+        {
+            OSAPI_Heap_free_struct(application);
+        }
+        #endif
+        application = NULL;
+    }
+    else
+    {
+        g_application = application;
+    }
+
+    return application;
+}
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | macro to define Application_delete function                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( applicationDeleteFunc $application )
+#ifndef RTI_CERT
+void
+Application_delete(struct Application *application)
+{
+    DDS_ReturnCode_t retcode;
+    RT_Registry_T *registry = NULL;
+    DDS_DomainParticipantFactory *factory = NULL;
+
+    factory = DDS_DomainParticipantFactory_get_instance();
+    registry = DDS_DomainParticipantFactory_get_registry(factory);
+
+    #foreach( $participant in $application.domainParticipant )
+    retcode = DDS_DomainParticipant_delete_contained_entities(
+        application->${participant.name});
+    if (retcode != DDS_RETCODE_OK)
+    {
+        printf("failed to delete contained entities: %d\n",retcode);
+    }
+
+    retcode = DDS_DomainParticipantFactory_delete_participant(
+        factory, application->${participant.name});
+    if (retcode != DDS_RETCODE_OK)
+    {
+        printf("failed to delete participant: %d\n", retcode);
+        return;
+    }
+    #end
+
+    if (!APPGEN_Factory_unregister(registry, NULL))
+    {
+        printf("failed to unregister Application Generation\n");
+    }
+
+    OSAPI_Heap_free_struct(application);
+
+    retcode = DDS_DomainParticipantFactory_finalize_instance();
+    if (retcode != DDS_RETCODE_OK)
+    {
+        printf("failed to finalize domain participant factory: %d\n", retcode);
+        return;
+    }
+}
+#endif
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | macro to define read function for a topic                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( readFunction $datareader )
+    #set( $type = $datareader.typeRef )
+    #set( $topic = $datareader.topicName )
+void ${topic}_read(const $type *data)
+{
+    if (data == NULL)
+    {
+        printf("Received NULL data\n");
+        return;
+    }
+
+    ## How to print the data depend on the type
+    /* Print ${topic} fields */
+    printf("Received a message of ${type}::${topic}\n");
+}
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | macro to define write function for a topic                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( writeFunction $datawriter $dpName $pubName)
+    #set( $type = $datawriter.typeRef )
+    #set( $topic = $datawriter.topicName )
+/* Write ${type} data to ${topic} topic */
+bool ${topic}_write(const ${type} *data)
+{
+    DDS_DataWriter *datawriter = NULL;
+    ${type}DataWriter *hw_datawriter = NULL;
+    DDS_ReturnCode_t retcode;
+
+    if (g_application == NULL || g_application->${dpName} == NULL)
+    {
+        printf("Application not initialized\n");
+        return false;
+    }
+
+    /* Lookup the data writer by name */
+    datawriter = DDS_DomainParticipant_lookup_datawriter_by_name(
+        g_application->${dpName},
+        "${pubName}::${datawriter.name}");
+
+    if (datawriter == NULL)
+    {
+        printf("Failed to lookup datawriter\n");
+        return false;
+    }
+
+    /* Narrow to typed data writer */
+    hw_datawriter = ${type}DataWriter_narrow(datawriter);
+    if (hw_datawriter == NULL)
+    {
+        printf("Failed to narrow datawriter\n");
+        return false;
+    }
+
+    /* Write the sample */
+    retcode = ${type}DataWriter_write(
+        hw_datawriter,
+        data,
+        &DDS_HANDLE_NIL);
+
+    if (retcode != DDS_RETCODE_OK)
+    {
+        printf("Failed to write sample: %d\n", retcode);
+        return false;
+    }
+
+    return true;
+}
+#end

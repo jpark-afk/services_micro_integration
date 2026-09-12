@@ -1,0 +1,78 @@
+#parse( "utils/utils.vm" )
+#parse( "application/app.c.vm" )
+
+#warningHeader()
+
+## Include the application header files
+#if($QosUtils.isDpseSpecified($systemModel))
+    #set( $isDpse = true )
+#else
+    #set( $isDpse = false )
+#end
+#if($QosUtils.isDpdeSpecified($systemModel))
+    #set( $isDpde = true )
+#else
+    #set( $isDpde = false )
+#end
+#applicationHeaderC( ${inputFilePlugin} ${systemModel.appName} $isDpde $isDpse )
+
+/* Global application pointer */
+static struct Application *g_application = NULL;
+ 
+#DDSConfigureFunc()
+
+#DDSInitFunc()
+
+## macro to define the DDS_Run function
+#DDSRunFunc( $systemModel )
+
+## macro to define on_data_available functions for each topic
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #onDataAvailableTopicFunction( $datareader )
+
+            #end
+        #end
+    #end
+#end
+
+void
+Application_help(char *appname)
+{
+    printf("%s [options]\n", appname);
+    printf("options:\n");
+    printf("-h                      - This text\n");
+    printf("-count <count>          - count (default 0. Runs forever.)\n");
+    printf("-sleep <ms>             - sleep between sends (default 1s)\n");
+    printf("\n");
+}
+
+## macro to define Application_create function
+#applicationCreateFunc( $systemModel )
+
+## Application_delete function
+#applicationDeleteFunc( $systemModel.selectedApplication )
+
+## macro to define read functions for each topic
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #readFunction( $datareader )
+            #end
+        #end
+    #end
+#end
+
+## macro to define write functions for each datawriter
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #writeFunction( $datawriter $participant.name $publisher.name )
+            #end
+        #end
+    #end
+#end

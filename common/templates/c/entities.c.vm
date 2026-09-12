@@ -1,0 +1,160 @@
+#parse( "utils/utils.vm" )
+## =============================================================================
+## DDS System Entities (targeting C files)
+## =============================================================================
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    RegisterType                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( registerType $registerType )
+    {
+        "${registerType.name}", /* registered_type_name */
+        #typePlugin( $registerType )#if( $outputLanguage.equals( $CPP ) )_cpp#end /* get_type_plugin */
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataReader                                                             |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataReader $dataReader )
+    {
+        "$dataReader.name", /* name */
+        ${dataReader.multiplicity}UL, /* multiplicity */
+        "$dataReader.topicName", /* topic_name */
+    #if( !$dataReader.dataReaderQosRef )
+        DDS_DataReaderQos_INITIALIZER /* reader_qos */
+    #else
+        $dataReader.dataReaderQosRef /* reader_qos */
+    #end
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataWriter                                                             |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( dataWriter $dataWriter )
+    {
+        "$dataWriter.name", /* name */
+        ${dataWriter.multiplicity}UL, /* multiplicity */
+        "$dataWriter.topicName", /* topic_name */
+    #if( !$dataWriter.dataWriterQosRef )
+        DDS_DataWriterQos_INITIALIZER /* writer_qos */
+    #else
+        $dataWriter.dataWriterQosRef /* writer_qos */
+    #end
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Topic                                                                  |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( topic $topic )
+    {
+        "$topic.name", /* topic_name */
+        "${topic.typeName}", /* type_name */
+    #if( !$topic.topicQosRef )
+        DDS_TopicQos_INITIALIZER /* topic_qos */
+    #else
+        $topic.topicQosRef /* topic_qos */
+    #end
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Publisher                                                              |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( publisher $publisher, $formattedName )
+    {
+        "$publisher.name", /* name */
+        ${publisher.multiplicity}UL, /* multiplicity */
+    #if( !$publisher.publisherQosRef )
+        DDS_PublisherQos_INITIALIZER, /* publisher_qos */
+    #else
+        $publisher.publisherQosRef, /* publisher_qos */
+    #end
+        ${publisher.dataWriters.size()}UL, /* writer_count */
+    #if( $publisher.dataWriters.empty )
+        NULL /* data_writers */
+    #else
+        ${formattedName}_publisher_${publisher.variableName}_data_writers /* data_writers */
+    #end
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Subscriber                                                             |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( subscriber $subscriber, $formattedName )
+    {
+        "$subscriber.name", /* name */
+        ${subscriber.multiplicity}UL, /* multiplicity */
+    #if( !$subscriber.subscriberQosRef )
+        DDS_SubscriberQos_INITIALIZER, /* subscriber_qos */
+    #else
+        $subscriber.subscriberQosRef, /* subscriber_qos */
+    #end
+        ${subscriber.dataReaders.size()}UL, /* reader_count */
+    #if( $subscriber.dataReaders.empty )
+        NULL /* data_readers */
+    #else
+        ${formattedName}_subscriber_${subscriber.variableName}_data_readers /* data_readers */
+    #end
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    RemoteParticipant                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( remoteParticipant $remoteParticipant, $formattedName )
+    {
+        "$remoteParticipant.name", /* name */
+        ${remoteParticipant.remoteWriters.size()}UL, /* remote_publisher_count */
+    ## --- remote writers ----
+    #if( $remoteParticipant.remoteWriters.empty )
+        NULL, /* remote_publishers */
+    #else
+        ${formattedName}_remote_publishers, /* remote_publishers */
+    #end
+        ${remoteParticipant.remoteReaders.size()}UL, /* remote_subscriber_count */
+    ## --- remote readers ----
+    #if( $remoteParticipant.remoteReaders.empty )
+        NULL /* remote_subscribers */
+    #else
+        ${formattedName}_remote_subscribers /* remote_subscribers */
+    #end
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    FlowControllers                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( customFlowControllers $flowController, $formattedName )
+    {
+        "$flowController.name", /* name */
+    #if( !$flowController.flowControllerQosRef )
+        DDS_FlowControllerProperty_t_INITIALIZER /* flow_controller_property */
+    #else
+        $flowController.flowControllerQosRef /* flow_controller_property */
+    #end
+    }#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Participants                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( participants $library)
+const struct APPGEN_DomainParticipantModel ${library.variableName}_participants[${library.participants.size()}] =
+{
+    #foreach( $participant in $library.participants )
+        #set( $formattedDpName = "#formatDomainParticipantName( $library, $participant, '_' )" )
+        #addLocation( $participant )
+        RTI_APP_GEN__DP_${formattedDpName}#if( $foreach.hasNext ),
+        #end
+    #end
+
+};
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Libraries                                                              |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( libraries $libraries)
+const struct APPGEN_LibraryModel ${inputFilePrefix}_libraries[${libraries.size()}] =
+{
+    #foreach( $library in $libraries )
+        #addLocation( $library )
+        RTI_APP_GEN__LIB_${library.variableName}#if( $foreach.hasNext ),
+        #end
+    #end
+
+};
+
+const struct APPGEN_LibraryModelSeq ${inputFilePrefix}_libraries_sequence =
+#addTab()#addTab()REDA_DEFINE_SEQUENCE_INITIALIZER_W_LOAN(
+#addTab()#addTab()${inputFilePrefix}_libraries,
+#addTab()#addTab()${libraries.size()},
+#addTab()#addTab()${libraries.size()},
+#addTab()#addTab()struct APPGEN_LibraryModel);
+#end

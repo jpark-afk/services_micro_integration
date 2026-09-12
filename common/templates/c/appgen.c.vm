@@ -1,0 +1,204 @@
+#parse( "utils/utils.vm" )
+#parse( "c/components.c.vm" )
+#parse( "c/entities.c.vm" )
+#parse( "c/qos.c.vm" )
+#warningHeader()
+
+${hashtag}include "${inputFilePrefix}Appgen.h"
+## Adding includes depending on the values
+#autoRegIncludes( $systemModel )
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | Variable Declarations                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Go through the list of QoSes and generate a constant data to hold the value
+## of initial_peers and transports.
+#foreach( $entry in $systemModel.qoses.entrySet() )
+    #fillQosInitializer( $entry.key, $entry.value )
+#end
+## Then go through the list of components and cgenerate a constant data to hold
+## the value of allow_interface and deny_interface.
+#foreach( $entry in $systemModel.components.entrySet() )
+    #fillComponentInitializer( $entry.key, $entry.value )
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## | Entity Declarations                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Go through each participant and generate a constant data structure to hold
+## its configuration.
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #set( $formattedDpName = "#formatDomainParticipantName( $library, $participant, '_' )" )
+        ##${hashtag}ifndef EXCLUDE_RTI_APP_GEN__APP_${formattedDpName}
+        ##
+        #set( $factory = $participant.factoryModel )
+        #set( $references = $participant.factoryModel.getComponentReferencesSize() )
+        ## Unregister components
+        #unregister_components( $factory )
+        ## Fill information about each component
+        #if( $references > 0 )
+            #components( $factory )
+
+            #register_components( $factory $references )
+
+        #end
+
+        ## --- register types ---
+        #if( !$participant.registerTypes.empty )
+            const struct APPGEN_TypeRegistrationModel ${formattedDpName}_type_registrations[${participant.registerTypes.size()}] =
+            {
+            #foreach( $registerType in $participant.registerTypes )
+                #addLocation( $registerType )
+                #registerType( $registerType )#if( $foreach.hasNext ),
+                #end
+            #end
+
+            };
+        #end
+
+        ## --- topics ---
+        #if( !$participant.topics.empty )
+            const struct APPGEN_TopicModel ${formattedDpName}_topics[${participant.topics.size()}] =
+            {
+            #foreach( $topic in $participant.topics )
+                #addLocation( $topic )
+                #topic( $topic )#if( $foreach.hasNext ),
+                #end
+            #end
+
+            };
+        #end
+
+        ## --- Publishers & DataWriters---
+        #if( !$participant.publishers.empty )
+            ## do the DataWriters first
+            #foreach( $publisher in $participant.publishers )
+                #if ( !$publisher.dataWriters.empty )
+                    const struct APPGEN_DataWriterModel ${formattedDpName}_publisher_${publisher.variableName}_data_writers[${publisher.dataWriters.size()}] =
+                    {
+                    #foreach( $dataWriter in $publisher.dataWriters )
+                        #addLocation( $dataWriter )
+                        #dataWriter( $dataWriter )#if( $foreach.hasNext ),
+                        #end
+                    #end
+
+                    };
+
+                #end
+            #end
+            ## now the Publisher
+            const struct APPGEN_PublisherModel ${formattedDpName}_publishers[${participant.publishers.size()}] =
+            {
+            #foreach( $publisher in $participant.publishers )
+                #addLocation( $publisher )
+                #publisher( $publisher, $formattedDpName )#if( $foreach.hasNext ),
+                #end
+            #end
+
+            };
+
+        #end
+        ## --- Subscribers & DataReaders ---
+        #if( !$participant.subscribers.empty )
+            ## do the DataReaders first
+            #foreach( $subscriber in $participant.subscribers )
+                #if ( !$subscriber.dataReaders.empty )
+                    const struct APPGEN_DataReaderModel ${formattedDpName}_subscriber_${subscriber.variableName}_data_readers[${subscriber.dataReaders.size()}] =
+                    {
+                    #foreach( $dataReader in $subscriber.dataReaders )
+                        #addLocation( $dataReader )
+                        #dataReader( $dataReader )#if( $foreach.hasNext ),
+                        #end
+                    #end
+
+                    };
+
+                #end
+            #end
+            ## now the Subscriber
+            const struct APPGEN_SubscriberModel ${formattedDpName}_subscribers[${participant.subscribers.size()}] =
+            {
+            #foreach( $subscriber in $participant.subscribers )
+                #addLocation( $subscriber )
+                #subscriber( $subscriber, $formattedDpName )#if( $foreach.hasNext ),
+                #end
+            #end
+
+            };
+
+        #end
+        ##
+        ## === Configure DPSE Discovery ===
+        ##
+        #foreach( $remoteParticipant in $participant.remoteParticipants )
+            #set( $formattedRemoteDpName = "#formatRemoteDomainParticipantName( $remoteParticipant.libraryName, $remoteParticipant, '_' )" )
+            ## --- Remote Writers ---
+            #if ( !$remoteParticipant.remoteWriters.empty )
+                const struct APPGEN_RemotePublicationModel ${formattedDpName}_${formattedRemoteDpName}_remote_publishers[${remoteParticipant.remoteWriters.size()}] =
+                {
+                #foreach( $remoteWriter in $remoteParticipant.remoteWriters )
+                    #addLocation( $remoteWriter )
+                    RTI_APP_GEN__RPD_${formattedDpName}_${formattedRemoteDpName}_${remoteWriter.publisherName}_${remoteWriter.variableName}#if( $foreach.hasNext ),
+                    #end
+                #end
+
+                };
+
+            #end
+            ## --- Remote Readers ---
+            #if ( !$remoteParticipant.remoteReaders.empty )
+                const struct APPGEN_RemoteSubscriptionModel ${formattedDpName}_${formattedRemoteDpName}_remote_subscribers[${remoteParticipant.remoteReaders.size()}] =
+                {
+                #foreach( $remoteReader in $remoteParticipant.remoteReaders )
+                    #addLocation( $remoteReader )
+                    RTI_APP_GEN__RSD_${formattedDpName}_${formattedRemoteDpName}_${remoteReader.subscriberName}_${remoteReader.variableName}#if( $foreach.hasNext ),
+                    #end
+                #end
+
+                };
+
+            #end
+        #end
+        #if( ${participant.getRemoteParticipants().size()} > 0 )
+            ## --- Remote Participants ---
+            const struct APPGEN_RemoteParticipantModel ${formattedDpName}_remote_participants[${participant.getRemoteParticipants().size()}] =
+            {
+            #foreach( $remoteParticipant in $participant.remoteParticipants )
+                #set( $formattedRemoteDpName = "#formatRemoteDomainParticipantName( $remoteParticipant.libraryName, $remoteParticipant, '_' )" )
+                #addLocation( $remoteParticipant )
+                #remoteParticipant( $remoteParticipant, "${formattedDpName}_${formattedRemoteDpName}" )#if( $foreach.hasNext ),
+                #end
+            #end
+
+            };
+
+        #end
+
+        #if( ${participant.getCustomFlowControllers().size()} > 0 )
+            ## --- Remote Participants ---
+            const struct APPGEN_CustomFlowControllerModel ${formattedDpName}_flow_controllers[${participant.getCustomFlowControllers().size()}] =
+            {
+            #foreach( $flowController in $participant.customFlowControllers )
+                #addLocation( $flowController.location )
+                #customFlowControllers( $flowController, $formattedDpName )#if( $foreach.hasNext ),
+                #end
+            #end
+
+            };
+
+        #end
+
+        ##${hashtag}endif
+    #end
+
+    #participants( $library )
+
+#end
+
+#libraries( $systemModel.libraries )
+
+APPGENDllExport const struct APPGEN_LibraryModelSeq*
+#addTab()#addTab()APPGEN_get_library_seq(void)
+{
+    return &${inputFilePrefix}_libraries_sequence;
+}

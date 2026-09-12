@@ -1,0 +1,359 @@
+#parse( "utils/utils.vm" )
+## =============================================================================
+## Components (targeting C files)
+## =============================================================================
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |   Define components                                                       |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( components $factory )
+    #if( !$factory.dpseReferences.empty )
+        const struct DPSE_DiscoveryPluginProperty ${formattedDpName}_dpse[${factory.dpseReferences.size()}] =
+        {
+        #foreach( $dpseReference in $factory.dpseReferences )
+            #addComponentRefLocation( $dpseReference )
+            ${dpseReference}#if( $foreach.hasNext ),
+            #end
+        #end
+
+    };
+    #end
+    #if( !$factory.dpdeReferences.empty )
+
+        const struct DPDE_DiscoveryPluginProperty ${formattedDpName}_dpde[${factory.dpdeReferences.size()}] =
+        {
+        #foreach( $dpdeReference in $factory.dpdeReferences )
+            #addComponentRefLocation( $dpdeReference )
+            ${dpdeReference}#if( $foreach.hasNext ),
+            #end
+        #end
+
+        };
+    #end
+    #if( !$factory.udpv4References.empty )
+
+        const struct UDP_InterfaceFactoryProperty ${formattedDpName}_udpv4[${factory.udpv4References.size()}] =
+        {
+        #foreach( $udpv4Reference in $factory.udpv4References )
+            #addComponentRefLocation( $udpv4Reference )
+            ${udpv4Reference}#if( $foreach.hasNext ),
+            #end
+        #end
+
+        };
+    #end
+    #if( !$factory.shmemReferences.empty )
+
+        const struct NETIO_SHMEMInterfaceFactoryProperty ${formattedDpName}_shmem[${factory.shmemReferences.size()}] =
+        {
+        #foreach( $shmemReference in $factory.shmemReferences )
+            #addComponentRefLocation( $shmemReference )
+            ${shmemReference}#if( $foreach.hasNext ),
+            #end
+        #end
+
+        };
+    #end
+    #if( !$factory.zCopyReferences.empty )
+    #[[
+
+#if RTIME_HAVE_ZCOPYV2
+]]#
+
+        const struct ZCOPY_NotifLoaderFactoryProperty ${formattedDpName}_zcopy[${factory.zCopyReferences.size()}] =
+        {
+        #foreach( $zCopyReference in $factory.zCopyReferences )
+            #addComponentRefLocation( $zCopyReference )
+            ${zCopyReference}#if( $foreach.hasNext ),
+            #end
+        #end
+
+        };
+    #[[
+
+#endif
+]]#
+    #end
+    #if( !$factory.pskReferences.empty )
+
+        const struct DDS_PskServiceFactoryProperty ${formattedDpName}_psk[${factory.pskReferences.size()}] =
+        {
+        #foreach( $pskReference in $factory.pskReferences )
+            #addComponentRefLocation( $pskReference )
+            ${pskReference}#if( $foreach.hasNext ),
+            #end
+        #end
+
+        };
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |   Register Components                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( register_components $factory $references )
+    #set( $base_references = $references )
+    #if( !$factory.zCopyReferences.empty )
+        #set( $base_references = $references - $factory.zCopyReferences.size() )
+    #end
+    #if( !$factory.zCopyReferences.empty )
+    #[[
+#if RTIME_HAVE_ZCOPYV2
+#define REGISTER_COMPONENTS_SIZE ]]#${references}#[[
+
+#else
+#define REGISTER_COMPONENTS_SIZE ]]#${base_references}#[[
+
+#endif
+]]#
+    const struct ComponentFactoryRegisterModel ${formattedDpName}_register_components[REGISTER_COMPONENTS_SIZE] =
+    #else
+    const struct ComponentFactoryRegisterModel ${formattedDpName}_register_components[$references] =
+    #end
+    {
+    #if( !$factory.dpseReferences.empty )
+        #set ( $count = 0 )
+        #foreach( $dpseReference in $factory.dpseReferences )
+            #addComponentRefLocation( $dpseReference )
+            {
+                "${factory.getDpseRegisteredName( ${dpseReference} )}", /* register_name */
+                DPSE_DiscoveryFactory_get_interface, /* register_intf */
+                &${formattedDpName}_dpse[${count}]._parent, /* register_property */
+                NULL /* register_listener */
+            }#if( $foreach.hasNext ),
+            #end
+            #set ( $count = $count + 1 )
+        #end
+    #end
+    #if( !$factory.dpdeReferences.empty )
+        #if( !$factory.dpseReferences.empty ),
+        #end
+        #set ( $count = 0 )
+        #foreach( $dpdeReference in $factory.dpdeReferences )
+            #addComponentRefLocation( $dpdeReference )
+            {
+                "${factory.getDpdeRegisteredName( ${dpdeReference} )}", /* register_name */
+                DPDE_DiscoveryFactory_get_interface, /* register_intf */
+                &${formattedDpName}_dpde[${count}]._parent, /* register_property */
+                NULL /* register_listener */
+            }#if( $foreach.hasNext ),
+            #end
+            #set ( $count = $count + 1 )
+        #end
+    #end
+    #if( !$factory.udpv4References.empty )
+        #if( !$factory.dpseReferences.empty || !$factory.dpdeReferences.empty ),
+        #end
+        #set ( $count = 0 )
+        #foreach( $udpv4Reference in $factory.udpv4References )
+            #addComponentRefLocation( $udpv4Reference )
+            {
+                "${factory.getUdpv4RegisteredName( ${udpv4Reference} )}", /* register_name */
+                UDP_InterfaceFactory_get_interface, /* register_intf */
+                &${formattedDpName}_udpv4[${count}]._parent._parent, /* register_property */
+                NULL /* register_listener */
+            }#if( $foreach.hasNext ),
+            #end
+            #set ( $count = $count + 1 )
+        #end
+    #end
+    #if( !$factory.shmemReferences.empty )
+        #if( !$factory.dpseReferences.empty || !$factory.dpdeReferences.empty || !$factory.udpv4References.empty ),
+        #end
+        #set ( $count = 0 )
+        #foreach( $shmemReference in $factory.shmemReferences )
+            #addComponentRefLocation( $shmemReference )
+            {
+                "${factory.getShmemRegisteredName( ${shmemReference} )}", /* register_name */
+                NETIO_SHMEMInterfaceFactory_get_interface, /* register_intf */
+                &${formattedDpName}_shmem[${count}]._parent._parent, /* register_property */
+                NULL /* register_listener */
+            }#if( $foreach.hasNext ),
+            #end
+            #set ( $count = $count + 1 )
+        #end
+    #end
+    #if( !$factory.pskReferences.empty )
+        #if( !$factory.dpseReferences.empty || !$factory.dpdeReferences.empty || !$factory.udpv4References.empty || !$factory.shmemReferences.empty ),
+        #end
+        #set ( $count = 0 )
+        #foreach( $pskReference in $factory.pskReferences )
+            #addComponentRefLocation( $pskReference )
+            {
+                "${factory.getPskRegisteredName( ${pskReference} )}", /* register_name */
+                DDS_PskServiceFactory_get_interface, /* register_intf */
+                &${formattedDpName}_psk[${count}]._parent, /* register_property */
+                NULL /* register_listener */
+            }#if( $foreach.hasNext ),
+            #end
+            #set ( $count = $count + 1 )
+        #end
+    #end
+    #if( $factory.contentFilter )
+        #if( !$factory.dpseReferences.empty || !$factory.dpdeReferences.empty || !$factory.udpv4References.empty || !$factory.shmemReferences.empty || !$factory.pskReferences.empty ),
+        #end
+        {
+            DDS_FILTER_PLUGIN_FACTORY_DEFAULT_NAME, /* register_name */
+            DDS_FilterPluginFactory_get_interface, /* register_intf */
+            NULL, /* register_property */
+            NULL /* register_listener */
+        }
+    #end
+    #if( !$factory.zCopyReferences.empty )
+        #if( !$factory.dpseReferences.empty ||
+                !$factory.dpdeReferences.empty || !$factory.udpv4References.empty ||
+                !$factory.shmemReferences.empty || !$factory.pskReferences.empty || $factory.contentFilter ),
+        #end
+    #[[
+
+#if RTIME_HAVE_ZCOPYV2
+]]#
+        #set ( $count = 0 )
+        #foreach( $zCopyReference in $factory.zCopyReferences )
+            #addComponentRefLocation( $zCopyReference )
+            {
+                "${factory.getZCopyRegisteredName( ${zCopyReference} )}", /* register_name */
+                ZCOPY_Loader_get_interface, /* register_intf */
+                &${formattedDpName}_zcopy[${count}]._parent._parent._parent, /* register_property */
+                NULL /* register_listener */
+            }#if( $foreach.hasNext ),
+            #end
+            #set ( $count = $count + 1 )
+        #end
+    #[[
+
+#endif
+]]#
+    #end
+
+    };
+    #if( !$factory.zCopyReferences.empty )
+    #[[
+#undef REGISTER_COMPONENTS_SIZE
+]]#
+    #end
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |   Unregister Components                                                   |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( unregister_components $factory )
+    ## Always unregister the default UDP component
+    #set( $unregister_references = 1 )
+    #if( $factory.isUnregisterINTRATransport() )
+        #set( $unregister_references = $unregister_references + 1 )
+    #end
+    #if( $unregister_references >= 1 )
+        const struct ComponentFactoryUnregisterModel ${formattedDpName}_unregister_components[${unregister_references}] =
+        {
+            {
+                "_udp", /* NETIO_DEFAULT_UDP_NAME */
+                NULL, /* udp struct RT_ComponentFactoryProperty** */
+                NULL  /* udp struct RT_ComponentFactoryListener** */
+            }#if( $factory.isUnregisterINTRATransport() ),
+            #else
+
+            #end
+            #if( $factory.isUnregisterINTRATransport() )
+                {
+                    "_intra", /* NETIO_DEFAULT_INTRA_NAME */
+                    NULL, /* _intra struct RT_ComponentFactoryProperty** */
+                    NULL  /* _intra struct RT_ComponentFactoryListener** */
+                }
+            #end
+    };
+
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Fill UDPv4 Transport                                                   |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillUdpComponent $udpInterfaceFactory, $name )
+    #if( $udpInterfaceFactory != $null)
+        #splitComponentName( $name )
+        ## Checking if we need to add a variable to include the allow_interface or not
+        #if ( $udpInterfaceFactory.allowInterface != $null && !$udpInterfaceFactory.allowInterface.element.empty )
+            const char *const ${component_name}_allow_interface[$udpInterfaceFactory.allowInterface.element.size()] =
+            #fillStringSequenceData( $udpInterfaceFactory.allowInterface.element )
+        #end
+        ## Checking if we need to add a variable to include the deny_interface or not
+        #if ( $udpInterfaceFactory.denyInterface != $null && !$udpInterfaceFactory.denyInterface.element.empty )
+            const char *const ${component_name}_deny_interface[$udpInterfaceFactory.denyInterface.element.size()] =
+            #fillStringSequenceData( $udpInterfaceFactory.denyInterface.element )
+        #end
+        ## Checking if we need to add a variable to include the deny_interface or not
+        #if ( $udpInterfaceFactory.interfaceTable != $null && !$udpInterfaceFactory.interfaceTable.element.empty )
+            #set ( $interface_table_name = ${component_name} + "_interface_table" )
+            const struct UDP_InterfaceTableEntry ${component_name}_interface_table[$udpInterfaceFactory.interfaceTable.element.size()] =
+            #fillUDPInterfaceTableEntry( $udpInterfaceFactory.interfaceTable.element ${interface_table_name} )
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Fill Zero Copy Transport                                               |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillZCopyComponent $zCopyTransport, $name )
+    ${hashtag}if RTIME_HAVE_ZCOPYV2
+    #if( $zCopyTransport != $null)
+        ## Checking if we need to add a variable for the user interface
+        #if ( $zCopyTransport.userIntf != $null && !$DISABLE_USER_INTF )
+            const struct ZCOPY_NotifUserInterfaceI ${zCopyTransport.name}_user_intf = ${name}_NOTIF_USER_INTERFACE;
+
+        #end
+        ## Checking if we need to add a variable for the user property
+        #if ( $zCopyTransport.userProperty != $null )
+            const struct ZCOPY_NotifMechanismProperty ${zCopyTransport.name}_user_property = ${name}_NOTIF_USER_PROPERTY;
+
+        #end
+        ${hashtag}endif
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Fill PSK Security Component                                            |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillPskComponent $pskComponent, $name )
+    #if( $pskComponent != $null)
+        ## Checking if we need to add a variable for the transform configuration
+        #if ( $pskComponent.pslConfig != $null && !$DISABLE_PSL_CONFIG )
+            ## Checking if we need to add a variable for the err listener
+            #if ( $pskComponent.pslConfig.errorListener != $null )
+                const struct PSK_ErrListener ${pskComponent.name}_configuration_err_listener = ${name}_PSL_CONFIG_ERROR_LISTENER;
+
+            #end
+            const struct DDS_SecTransform_Configuration ${pskComponent.name}_configuration = ${name}_PSL_CONFIG;
+
+        #end
+
+        ## Checking if we need to add a variable for the pass tracker configuration
+        #if ( $pskComponent.passTrackerConfig != $null && !$DISABLE_PSL_CONFIG )
+            ## Checking if we need to add a variable for the err listener
+            #if ( $pskComponent.passTrackerConfig.errorListener != $null )
+                struct PSK_FilePassTrackerErrListener ${pskComponent.name}_pass_tracker_configuration_err_listener = ${name}_PASS_TRACKER_CONFIG_ERROR_LISTENER;
+
+            #end
+            struct PSK_PassTrackerConfiguration ${pskComponent.name}_pass_tracker_configuration = ${name}_PASS_TRACKER_CONFIG;
+
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Fill Components                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillComponentInitializer $name $qos )
+    #if( !$name )
+        ERROR: fillComponentInitializer(): name value was null which is not supported.
+        #logError( "fillComponentInitializer(): name value was null which is not supported." )
+        #stop
+    #end
+    #if( !$qos )
+        ERROR: fillComponentInitializer(): QoS value was null which is not supported.
+        #logError( "fillComponentInitializer(): QoS value was null which is not supported." )
+        #stop
+    #end
+    #set( $className = $qos.class.simpleName )
+    #if ( $className.equals("Udpv4") )
+        #fillUdpComponent( $qos, $name )
+    #elseif ( $className.equals("ZeroCopy" ) )
+        #fillZCopyComponent( $qos, $name )
+    #elseif ( $className.equals("PskSecurity" ) )
+        #fillPskComponent( $qos, $name )
+    #end
+#end

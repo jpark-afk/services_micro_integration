@@ -1,0 +1,48 @@
+#parse( "utils/utils.vm" )
+
+## This file contains macros to generate the application header file
+## Use mainly with application.h.vm
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |   macro to include the application header files                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( applicationHeaderH $type_file )
+    ${hashtag}include "rti_me_c.h"
+    ${hashtag}include #angleBrackets("stdbool.h")
+    ${hashtag}include "${type_file}.h"
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## macro to define the Application struct with all DomainParticipants in an
+## application
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( applicationStruct $application )
+    struct Application
+    {
+    #foreach( $participant in $application.domainParticipant )
+        DDS_DomainParticipant *${participant.name};
+    #end
+    };
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## macro to declare typed write functions based on the types
+## this datawriter can write
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( typedWriteFunctionDeclaration $datawriter )
+    #set( $type = $datawriter.typeRef )
+    #set( $topic = $datawriter.topicName )
+    /* Write $datawriter.typeName data to ${topic} topic */
+    bool ${topic}_write(const ${type} *data);
+#end
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## macro to declare typed read functions based on the types
+## this datareader can read
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( typedReadFunctionDeclaration $datareader )
+    #set( $type = $datareader.typeRef )
+    #set( $topic = $datareader.topicName )
+    /* Read $datareader.typeName data from ${topic} topic (called by listener) */
+    void ${topic}_read(const ${type} *data);
+#end

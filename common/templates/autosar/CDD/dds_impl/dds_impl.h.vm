@@ -1,0 +1,34 @@
+#parse( "utils/utils.vm" )
+#parse( "autosar/CDD/dds_impl/dds_impl_macro.h.vm" )
+
+#ddsImplH_Header( $inputFilePrefix )
+
+${hashtag}ifndef DDS_IMPL_H
+${hashtag}define DDS_IMPL_H
+
+#ddsImplH_includeHeader( ${typeFilePrefix} )
+
+#applicationStruct( $systemModel.selectedApplication )
+
+#ddsImplH_createEntitiesFunctionDeclaration( $inputFilePrefix )
+
+#ddsImplH_enableEntitiesFunctionDeclaration()
+
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #ddsImplH_writeFunctionDeclaration( $datawriter )
+
+            #end
+        #end
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #ddsImplH_takeSampleFunctionDeclaration( $datareader )
+
+            #end
+        #end
+    #end
+#end
+
+${hashtag}endif // DDS_IMPL_H

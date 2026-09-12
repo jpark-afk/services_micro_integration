@@ -1,0 +1,175 @@
+#parse( "utils/utils.vm" )
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DomainParticipantQos                                                   |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillDomainParticipantQos $dpQos, $name )
+    #if( $dpQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the initial_peers in discovery or not
+        #if ( $dpQos.discovery && $dpQos.discovery.initialPeers != $null && !$dpQos.discovery.initialPeers.element.isEmpty() )
+            const char *const ${qos_name}_initial_peers[$dpQos.discovery.initialPeers.element.size()] =
+            #fillStringSequenceData( $dpQos.discovery.initialPeers.element )
+        #end
+        ## Checking if we need to add a variable to include the enabled_transport in discovery or not
+        #if ( $dpQos.discovery && $dpQos.discovery.microEnabledTransports != $null && !$dpQos.discovery.microEnabledTransports.element.isEmpty() )
+            const char *const ${qos_name}_discovery_enabled_transports[$dpQos.discovery.microEnabledTransports.element.size()] =
+            #fillStringSequenceData( $dpQos.discovery.microEnabledTransports.element )
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in transport or not
+        #if ( $dpQos.microTransports && $dpQos.microTransports.enabledTransports != $null && !$dpQos.microTransports.enabledTransports.element.isEmpty() )
+            const char *const ${qos_name}_transport_enabled_transports[$dpQos.microTransports.enabledTransports.element.size()] =
+            #fillStringSequenceData( $dpQos.microTransports.enabledTransports.element )
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in user_traffic or not
+        #if ( $dpQos.microUserTraffic && $dpQos.microUserTraffic.enabledTransports != $null && !$dpQos.microUserTraffic.enabledTransports.element.isEmpty() )
+            const char *const ${qos_name}_user_traffic_enabled_transports[$dpQos.microUserTraffic.enabledTransports.element.size()] =
+            #fillStringSequenceData( $dpQos.microUserTraffic.enabledTransports.element )
+        #end
+        ## Checking if we need to add a variable to include the user_data or not
+        #if ( $dpQos.userData && $dpQos.userData.value != $null && !$dpQos.userData.value.isEmpty() )
+            const DDS_Octet ${qos_name}_user_data[$dpQos.userData.value.size()] =
+            #fillOctetSequenceData( $dpQos.userData.value )
+        #end
+        ## Checking if we need to add a variable to include the properties or not
+        #set( $microProperties = $QosUtils.microProperties( $dpQos.property ) )
+        #if ( $microProperties && !$microProperties.isEmpty() )
+            const struct CDR_Property ${qos_name}_properties[$microProperties.size()] =
+            #fillPropertySequenceData( $microProperties )
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataWriterQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillDataWriterQos $dataWriterQos, $name )
+    #if( $dataWriterQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the data representation in representation or not
+        #if ( $dataWriterQos.representation && $dataWriterQos.representation.value != $null && !$dataWriterQos.representation.value.element.isEmpty() )
+            const DDS_DataRepresentationId_t ${qos_name}_representation[$dataWriterQos.representation.value.element.size()] =
+            #fillSequenceEnumData( $dataWriterQos.representation.value.element )
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in transport or not
+        #if ( $dataWriterQos.microTransports && $dataWriterQos.microTransports.enabledTransports != $null && !$dataWriterQos.microTransports.enabledTransports.element.isEmpty() )
+            const char *const ${qos_name}_transport_enabled_transports[$dataWriterQos.microTransports.enabledTransports.element.size()] =
+            #fillStringSequenceData( $dataWriterQos.microTransports.enabledTransports.element )
+        #end
+        ## Checking if we need to add a variable to include the user_data or not
+        #if ( $dataWriterQos.userData && $dataWriterQos.userData.value != $null && !$dataWriterQos.userData.value.isEmpty() )
+            const DDS_Octet ${qos_name}_user_data[$dataWriterQos.userData.value.size()] =
+            #fillOctetSequenceData( $dataWriterQos.userData.value )
+        #end
+        ## Checking if we need to add a variable to include the properties or not
+        #set( $microProperties = $QosUtils.microProperties( $dataWriterQos.property ) )
+        #if ( $microProperties && !$microProperties.isEmpty() )
+            const struct CDR_Property ${qos_name}_properties[$microProperties.size()] =
+            #fillPropertySequenceData( $microProperties )
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DataReaderQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillDataReaderQos $dataReaderQos, $name )
+    #if( $dataReaderQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the data representation in representation or not
+        #if ( $dataReaderQos.representation && $dataReaderQos.representation.value != $null && !$dataReaderQos.representation.value.element.isEmpty() )
+            const DDS_DataRepresentationId_t ${qos_name}_representation[$dataReaderQos.representation.value.element.size()] =
+            #fillSequenceEnumData( $dataReaderQos.representation.value.element )
+        #end
+        ## Checking if we need to add a variable to include the enabled_transports in transport or not
+        #if ( $dataReaderQos.microTransports && $dataReaderQos.microTransports.enabledTransports != $null && !$dataReaderQos.microTransports.enabledTransports.element.isEmpty() )
+            const char *const ${qos_name}_transport_enabled_transports[$dataReaderQos.microTransports.enabledTransports.element.size()] =
+            #fillStringSequenceData( $dataReaderQos.microTransports.enabledTransports.element )
+        #end
+        ## Checking if we need to add a variable to include the user_data or not
+        #if ( $dataReaderQos.userData && $dataReaderQos.userData.value != $null && !$dataReaderQos.userData.value.isEmpty() )
+            const DDS_Octet ${qos_name}_user_data[$dataReaderQos.userData.value.size()] =
+            #fillOctetSequenceData( $dataReaderQos.userData.value )
+        #end
+        ## Checking if we need to add a variable to include the content filter or not
+        #if ( $dataReaderQos.contentFilterTopicQos && $dataReaderQos.contentFilterTopicQos.expressionParameters != $null && !$dataReaderQos.contentFilterTopicQos.expressionParameters.element.isEmpty() )
+            const char *const ${qos_name}_expression_parameters[$dataReaderQos.contentFilterTopicQos.expressionParameters.element.size()] =
+            #fillStringSequenceData( $dataReaderQos.contentFilterTopicQos.expressionParameters.element )
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    PublisherQos                                                           |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillPublisherQos $publisherQos, $name )
+    #if( $publisherQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the partition or not
+        #if ( $publisherQos.partition && $publisherQos.partition.name != $null && !$publisherQos.partition.name.element.isEmpty() )
+            const char *const ${qos_name}_partition[$publisherQos.partition.name.element.size()] =
+            #fillStringSequenceData( $publisherQos.partition.name.element )
+        #end
+        ## Checking if we need to add a variable to include the group_data or not
+        #if ( $publisherQos.groupData && $publisherQos.groupData.value != $null && !$publisherQos.groupData.value.isEmpty() )
+            const DDS_Octet ${qos_name}_group_data[$publisherQos.groupData.value.size()] =
+            #fillOctetSequenceData( $publisherQos.groupData.value )
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    SubscriberQos                                                          |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillSubscriberQos $subscriberQos, $name )
+    #if( $subscriberQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the partition or not
+        #if ( $subscriberQos.partition && $subscriberQos.partition.name != $null && !$subscriberQos.partition.name.element.isEmpty() )
+            const char *const ${qos_name}_partition[$subscriberQos.partition.name.element.size()] =
+            #fillStringSequenceData( $subscriberQos.partition.name.element )
+        #end
+        ## Checking if we need to add a variable to include the group_data or not
+        #if ( $subscriberQos.groupData && $subscriberQos.groupData.value != $null && !$subscriberQos.groupData.value.isEmpty() )
+            const DDS_Octet ${qos_name}_group_data[$subscriberQos.groupData.value.size()] =
+            #fillOctetSequenceData( $subscriberQos.groupData.value )
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    TopicQos                                                               |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillTopicQos $topicQos, $name )
+    #if( $topicQos != $null)
+        #splitQosName( $name )
+        ## Checking if we need to add a variable to include the group_data or not
+        #if ( $topicQos.topicData && $topicQos.topicData.value != $null && !$topicQos.topicData.value.isEmpty() )
+            const DDS_Octet ${qos_name}_topic_data[$topicQos.topicData.value.size()] =
+            #fillOctetSequenceData( $topicQos.topicData.value )
+        #end
+    #end
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Qos Initializer                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( fillQosInitializer $name $qos )
+    #if( !$name )
+        ERROR: fillQosInitializer(): name value was null which is not supported.
+        #logError( "fillQosInitializer(): name value was null which is not supported." )
+        #stop
+    #end
+    #if( !$qos )
+        ERROR: fillQosInitializer(): QoS value was null which is not supported.
+        #logError( "fillQosInitializer(): QoS value was null which is not supported." )
+        #stop
+    #end
+    #set( $className = $qos.class.simpleName )
+    #if ( $className.equals("DomainParticipantQosProfileChild") )
+        #fillDomainParticipantQos( $qos, $name )
+    #elseif ( $className.equals("DataWriterQosProfileChild") )
+        #fillDataWriterQos( $qos, $name )
+    #elseif ( $className.equals("DataReaderQosProfileChild") )
+        #fillDataReaderQos( $qos, $name )
+    #elseif ( $className.equals("PublisherQosProfileChild") )
+        #fillPublisherQos( $qos, $name )
+    #elseif ( $className.equals("SubscriberQosProfileChild") )
+        #fillSubscriberQos( $qos, $name )
+    #elseif ( $className.equals("TopicQosProfileChild") )
+        #fillTopicQos( $qos, $name )
+    #end
+#end

@@ -1,0 +1,322 @@
+#parse( "utils/utils.vm" )
+## =============================================================================
+## DDS System Entities (targeting header files)
+## =============================================================================
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    builtinTopicKey                                                        |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( builtinTopicKey $rtpsObjectId $name )
+    { \
+        { 0, 0, 0, $rtpsObjectId } /* $name */ \
+    }, \
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Publication Trust                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( publicationTrust )
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Subscription Trust                                                     |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( subscriptionTrust )
+    ## this QoS cannot be configured in XML, we are keeping the macro in case
+    ## we add support in the future
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    RemotePublicationData                                                  |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( remotePublicationData $dataWriter $formattedName $formattedRemoteName $formattedRemotePublisherName $formattedTopicName )
+    #set( $dataWriterQos = $systemModel.qoses.get($dataWriter.dataWriterQosRef) )##
+    #set( $publisherQos = $systemModel.qoses.get($dataWriter.publisherQosRef) )##
+    #set( $topicQos = $systemModel.qoses.get($dataWriter.topicQosRef) )##
+    ${hashtag}define RTI_APP_GEN__RPD_${formattedName} \
+    { \
+        { /* publication_data */ \
+            #builtinTopicKey( ${dataWriterQos.protocol.rtpsObjectId}, "key" )
+            #builtinTopicKey( "0", "participant_key" )
+            "$dataWriter.topicName", /* topic_name */ \
+            "${dataWriter.typeName}", /* type_name */ \
+            #deadlineQos( $dataWriterQos.deadline )
+            #ownershipQos( $dataWriterQos.ownership )
+            #ownershipStrengthQos( $dataWriterQos.ownershipStrength )
+            #latencyBudgetQos( $dataWriterQos.latencyBudget )
+            #reliabilityQos( $dataWriterQos.reliability true false )
+            #livelinessQos( $dataWriterQos.liveliness )
+            #durabilityQos( $dataWriterQos.durability )
+            #destinationOrderQos( $dataWriterQos.destinationOrder )
+            DDS_SEQUENCE_INITIALIZER, \
+            #representationQos( $dataWriterQos.representation, $formattedRemoteName true )
+            #partitionQos( $publisherQos.partition $formattedRemotePublisherName )
+            #userDataQosPolicy( $dataWriterQos.userData $formattedRemoteName true )
+            #groupDataQosPolicy( $publisherQos.groupData $formattedRemotePublisherName true )
+            #topicDataQosPolicy( $topicQos.topicData $formattedTopicName false )
+            #publicationTrust()
+        }, \
+        #typePluginRemote( $dataWriter )#if( $outputLanguage.equals( $CPP ) )_cpp#end /* get_type_plugin */ \
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    RemoteSubscriptionData                                                 |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( remoteSubscriptionData $dataReader $formattedName $formattedRemoteName $formattedRemoteSubscriberName $formattedTopicName )
+    #set( $dataReaderQos = $systemModel.qoses.get( $dataReader.dataReaderQosRef) )##
+    #set( $subscriberQos = $systemModel.qoses.get( $dataReader.subscriberQosRef) )##
+    #set( $topicQos = $systemModel.qoses.get($dataReader.topicQosRef) )##
+    ${hashtag}define RTI_APP_GEN__RSD_${formattedName} \
+    { \
+        { /* subscription_data */ \
+            #builtinTopicKey( ${dataReaderQos.protocol.rtpsObjectId}, "key" )
+            #builtinTopicKey( "0", "participant_key" )
+            "$dataReader.topicName", /* topic_name */ \
+            "${dataReader.typeName}", /* type_name */ \
+            #deadlineQos( $dataReaderQos.deadline )
+            #ownershipQos( $dataReaderQos.ownership )
+            #latencyBudgetQos( $dataReaderQos.latencyBudget )
+            #reliabilityQos( $dataReaderQos.reliability false true )
+            #livelinessQos( $dataReaderQos.liveliness )
+            #durabilityQos( $dataReaderQos.durability )
+            #destinationOrderQos( $dataReaderQos.destinationOrder )
+            DDS_SEQUENCE_INITIALIZER, \
+            DDS_SEQUENCE_INITIALIZER, \
+            #presentationQos( $subscriberQos.presentation )
+            #representationQos( $dataReaderQos.representation $formattedRemoteName true )
+            #partitionQos( $subscriberQos.partition $formattedRemoteSubscriberName )
+            #userDataQosPolicy( $dataReaderQos.userData $formattedRemoteName true )
+            #groupDataQosPolicy( $subscriberQos.groupData $formattedRemoteSubscriberName true )
+            #topicDataQosPolicy( $topicQos.topicData $formattedTopicName true )
+            #contentFilterProperty( $dataReader.topicName, $dataReaderQos.contentFilterTopicQos, $formattedRemoteName )
+            #subscriptionTrust()
+        }, \
+        #typePluginRemote( $dataReader )#if( $outputLanguage.equals( $CPP ) )_cpp#end /* get_type_plugin */ \
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DomainParticipantFactory                                               |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( domainParticipantFactory $factory )
+    #if ( $factory.participantFactoryQosRef )
+        #addLocation( $factory.participantFactoryQosRef )
+    #end
+    #set( $references = $factory.getComponentReferencesSize() )
+    ## Always unregister the default UDP component
+    #set( $unregister_references = 1 )
+    #if( !$factory.dpseReferences.empty )
+        extern const struct DPSE_DiscoveryPluginProperty ${formattedDpName}_dpse[${factory.getDpseReferences().size()}];
+    #end
+    #if( !$factory.dpdeReferences.empty )
+        extern const struct DPDE_DiscoveryPluginProperty ${formattedDpName}_dpde[${factory.getDpdeReferences().size()}];
+    #end
+    #if( !$factory.udpv4References.empty )
+        extern const struct UDP_InterfaceFactoryProperty ${formattedDpName}_udpv4[${factory.getUdpv4References().size()}];
+    #end
+    #if( !$factory.shmemReferences.empty )
+        extern const struct NETIO_SHMEMInterfaceFactoryProperty ${formattedDpName}_shmem[${factory.getShmemReferences().size()}];
+    #end
+    #if( !$factory.zCopyReferences.empty )
+    #[[
+
+#if RTIME_HAVE_ZCOPYV2
+]]#
+        extern const struct ZCOPY_NotifLoaderFactoryProperty ${formattedDpName}_zcopy[${factory.getZCopyReferences().size()}];
+    #[[
+
+#endif
+]]#
+    #end
+    #if( !$factory.pskReferences.empty )
+        extern const struct DDS_PskServiceFactoryProperty ${formattedDpName}_psk[${factory.getPskReferences().size()}];
+    #end
+    #if( $factory.isUnregisterINTRATransport() )
+        #set( $unregister_references = $unregister_references + 1 )
+    #end
+
+    #if( $unregister_references > 0 )
+        extern const struct ComponentFactoryUnregisterModel ${formattedDpName}_unregister_components[${unregister_references}];
+    #end
+    #if( $references > 0 )
+        #set( $base_references = $references )
+        #if( !$factory.zCopyReferences.empty )
+            #set( $base_references = $references - $factory.zCopyReferences.size() )
+        #end
+        #if( !$factory.zCopyReferences.empty )
+        #[[
+#if RTIME_HAVE_ZCOPYV2
+#define REGISTER_COMPONENTS_SIZE ]]#${references}#[[
+
+#else
+#define REGISTER_COMPONENTS_SIZE ]]#${base_references}#[[
+
+#endif
+]]#
+        extern const struct ComponentFactoryRegisterModel ${formattedDpName}_register_components[REGISTER_COMPONENTS_SIZE];
+        #[[
+#undef REGISTER_COMPONENTS_SIZE
+]]#
+        #else
+        extern const struct ComponentFactoryRegisterModel ${formattedDpName}_register_components[${references}];
+        #end
+    #end
+
+    ${hashtag}define RTI_APP_GEN__DPF_${formattedDpName} \
+    { \
+        ${unregister_references}UL, /* unregister_count */ \
+    #if( $unregister_references > 0 )
+        ${formattedDpName}_unregister_components, /* unregister_components */ \
+    #else
+        NULL, /* unregister_components */ \
+    #end
+        ${references}UL, /* register_count */ \
+    #if( $references > 0 )
+        ${formattedDpName}_register_components, /* register_components */ \
+    #else
+        NULL, /* register_components */ \
+    #end
+    #if ( $factory.participantFactoryQosRef )
+        $factory.participantFactoryQosRef /* factory_qos */ \
+    #else
+        DDS_DomainParticipantFactoryQos_INITIALIZER /* factory_qos */ \
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    DomainParticipant                                                      |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( domainParticipant $domainParticipant )
+    #domainParticipantFactory( $domainParticipant.factoryModel )
+
+    #addLocation( $domainParticipant )
+    ## Declare the arrays which are needed by this macro
+    #if( !$domainParticipant.registerTypes.empty )
+        extern const struct APPGEN_TypeRegistrationModel ${formattedDpName}_type_registrations[${domainParticipant.registerTypes.size()}];
+    #end
+    #if( !$domainParticipant.topics.empty )
+        extern const struct APPGEN_TopicModel ${formattedDpName}_topics[${domainParticipant.topics.size()}];
+    #end
+    #if( !$domainParticipant.publishers.empty )
+        extern const struct APPGEN_PublisherModel ${formattedDpName}_publishers[${domainParticipant.publishers.size()}];
+    #end
+    #if( !$domainParticipant.subscribers.empty )
+        extern const struct APPGEN_SubscriberModel ${formattedDpName}_subscribers[${domainParticipant.subscribers.size()}];
+    #end
+    #if( !$domainParticipant.customFlowControllers.empty )
+        extern const struct APPGEN_CustomFlowControllerModel ${formattedDpName}_flow_controllers[${domainParticipant.customFlowControllers.size()}];
+    #end
+    #if( !$domainParticipant.remoteParticipants.empty )
+        extern const struct APPGEN_RemoteParticipantModel ${formattedDpName}_remote_participants[${domainParticipant.remoteParticipants.size()}];
+    #end
+
+    ## --- content filter registrations ---
+    #set( $dpQosObj = $systemModel.qoses.get(
+        $domainParticipant.participantQosRef) )
+    ## Emit an APPGEN_ContentFilterRegistration that re-registers the
+    ## builtin SQL filter with a DDS_SqlFilterProperty when the user set
+    ## sqlPredicateMaxCountPerExpression in XML and did not explicitly
+    ## disable the builtin SQL filter.
+    #set( $hasSqlFilterProp = false )
+    #if( $dpQosObj
+         && $dpQosObj.filterQosPolicy
+         && $dpQosObj.filterQosPolicy.sqlPredicateMaxCountPerExpression
+         && !$dpQosObj.filterQosPolicy.disableBuiltinSqlFilter )
+        #set( $hasSqlFilterProp = true )
+    #end
+    #if( $hasSqlFilterProp )
+        ${hashtag}if DDS_ENABLE_SQL_FILTER
+        static const struct APPGEN_ContentFilterRegistration
+            ${formattedDpName}_content_filter_regs[] =
+        {
+            {
+                DDS_SQL_CONTENT_FILTER_CLASS,
+                DDS_SqlContentFilter_get_interface,
+                &${domainParticipant.participantQosRef}_sql_filter_prop
+            }
+        };
+        ${hashtag}define ${formattedDpName}_CF_REG_COUNT 1UL
+        ${hashtag}define ${formattedDpName}_CF_REGS \
+            ${formattedDpName}_content_filter_regs
+        ${hashtag}else
+        ${hashtag}define ${formattedDpName}_CF_REG_COUNT 0UL
+        ${hashtag}define ${formattedDpName}_CF_REGS NULL
+        ${hashtag}endif
+    #end
+
+    ${hashtag}define RTI_APP_GEN__DP_${formattedDpName} \
+    { \
+        "$domainParticipant.name", /* name */ \
+    ## --- domain participant factory ---
+        RTI_APP_GEN__DPF_${formattedDpName}, /* domain_participant_factory */ \
+    #if( !$domainParticipant.participantQosRef )
+        DDS_DomainParticipantQos_INITIALIZER, /* participant_qos */ \
+    #else
+        $domainParticipant.participantQosRef, /* participant_qos */ \
+    #end
+        ${domainParticipant.domainId}L, /* domain_id */ \
+    ## --- register types ---
+        ${domainParticipant.registerTypes.size()}UL, /* type_registration_count */ \
+    #if( !$domainParticipant.registerTypes.empty )
+        ${formattedDpName}_type_registrations, /* type_registrations */ \
+    #else
+        NULL, /* type_registrations */ \
+    #end
+    ## --- topics ---
+        ${domainParticipant.topics.size()}UL, /* topic_count */ \
+    #if( !$domainParticipant.topics.empty )
+        ${formattedDpName}_topics, /* topics */ \
+    #else
+        NULL, /* topics */ \
+    #end
+    ## --- publishers ---
+        ${domainParticipant.publishers.size()}UL, /* publisher_count */ \
+    #if( $domainParticipant.publishers.empty )
+        NULL, /* publishers */ \
+    #else
+        ${formattedDpName}_publishers, /* publishers */ \
+    #end
+    ## --- subscribers ---
+        ${domainParticipant.subscribers.size()}UL, /* subscriber_count */ \
+    #if( $domainParticipant.subscribers.empty )
+        NULL, /* subscribers */ \
+    #else
+        ${formattedDpName}_subscribers, /* subscribers */ \
+    #end
+    ## --- remote participants ---
+        ${domainParticipant.remoteParticipants.size()}UL, /* remote_participant_count */ \
+    #if( $domainParticipant.remoteParticipants.empty )
+        NULL, /* remote_participants */ \
+    #else
+        ${formattedDpName}_remote_participants, /* remote_participants */ \
+    #end
+    ## --- flow controllers ---
+        ${domainParticipant.customFlowControllers.size()}UL, /* custom_flow_controller_count */ \
+    #if( $domainParticipant.customFlowControllers.empty )
+        NULL, /* custom_flow_controllers */ \
+    #else
+        ${formattedDpName}_flow_controllers, /* custom_flow_controllers */ \
+    #end
+    ## --- content filter registrations ---
+    #if( $hasSqlFilterProp )
+        ${formattedDpName}_CF_REG_COUNT, /* content_filter_registration_count */ \
+        ${formattedDpName}_CF_REGS /* content_filter_registrations */ \
+    #else
+        0UL, /* content_filter_registration_count */ \
+        NULL /* content_filter_registrations */ \
+    #end
+    }
+#end
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## |    Library                                                                |
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#macro( libraryModel $library )
+
+    ## Declare the arrays which are needed by this macro
+    extern const struct APPGEN_DomainParticipantModel ${library.variableName}_participants[${library.participants.size()}];
+
+    ${hashtag}define RTI_APP_GEN__LIB_${library.variableName} \
+    { \
+        "$library.name", /* library_name */ \
+    ## --- participants ---
+        ${library.participants.size()}UL, /* participant_count */ \
+        ${library.variableName}_participants /* participants */ \
+    }
+#end

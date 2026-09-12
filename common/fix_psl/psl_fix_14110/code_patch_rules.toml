@@ -1,0 +1,65 @@
+source_root = "C:\RTI\rti_connext_drive-4.0.0\rti_connext_dds-7.3.1\rti_connext_dds_micro-4.3.0_ER738\src\rti_me_psl\netiopsl\udp"
+output_root = "_patched_tmp"
+marker = "PATCHED_BY_micro430_ER738_services"
+
+# line_hint:
+#   original file line number to anchor the patch.
+# search_window:
+#   allowed drift from line_hint before the script aborts for safety.
+#
+# operation = "disable_block"
+#   Wrap the matched block with #if 0 / #endif.
+#   The original block stays visible and a patch marker comment is added.
+#
+# operation = "replace_line"
+#   Replace one exact line and leave the patch marker in the replacement text.
+
+[[rules]]
+id = "autosarSocket.c-885-comment-rti-cert"
+path_glob = "**/autosarSocket.c"
+operation = "replace_line"
+line_hint = 885
+search_window = 20
+note = "commented !RTI_CERT"
+match = "#ifndef RTI_CERT"
+replacement = "//#ifndef RTI_CERT /* {marker}: commented !RTI_CERT */"
+
+[[rules]]
+id = "autosarSocket.c-928-comment-rti-cert"
+path_glob = "**/autosarSocket.c"
+operation = "replace_line"
+line_hint = 928
+search_window = 20
+note = "commented !RTI_CERT"
+match = "#endif /* !RTI_CERT */"
+replacement = "//#endif /* !RTI_CERT */ /* {marker}: commented !RTI_CERT */"
+
+[[rules]]
+id = "UDPInterface.c-1182-remove-rti-cert-condition"
+path_glob = "**/UDPInterface.c"
+operation = "replace_line"
+line_hint = 1182
+search_window = 5
+note = "deleted the condition of !defined(RTI_CERT)"
+match = "#if defined(RTI_AUTOSAR) && !defined(RTI_CERT)"
+replacement = "#if defined(RTI_AUTOSAR) /* {marker}: deleted the condition of !defined(RTI_CERT) */"
+
+[[rules]]
+id = "autosarSocket.h-357-comment-rti-cert"
+path_glob = "**/autosarSocket.h"
+operation = "replace_line"
+line_hint = 357
+search_window = 10
+note = "commented RTI_CERT"
+match = "#ifndef RTI_CERT"
+replacement = "//#ifndef RTI_CERT /* {marker}: commented !RTI_CERT */"
+
+[[rules]]
+id = "autosarSocket.h-370-comment-rti-cert"
+path_glob = "**/autosarSocket.h"
+operation = "replace_line"
+line_hint = 370
+search_window = 10
+note = "commented RTI_CERT"
+match = "#endif /* !RTI_CERT */"
+replacement = "//#endif /* !RTI_CERT */ /* {marker}: commented !RTI_CERT */"

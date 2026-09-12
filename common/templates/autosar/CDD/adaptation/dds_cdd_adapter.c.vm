@@ -1,0 +1,86 @@
+#parse( "utils/utils.vm" )
+#parse( "autosar/CDD/adaptation/dds_cdd_adapter_macro.c.vm" )
+
+#set($typesList = [])
+#generate_type_list( $typesList )
+
+#ddsCddAdapterC_Header( $typesList )
+
+#ddsCddAdapterC_IncludeHeaders()
+
+/*==============================================================================
+ *                        CONFIGURABLE SETTINGS
+ *============================================================================*/
+
+/**
+ * @defgroup ConfigurableSettings DDS CDD Configurable Settings
+ * @{
+ * 
+ * This section contains all user-configurable settings for the DDS CDD module.
+ * Modify these values based on your application requirements and BSW configuration.
+ * 
+ * For detailed configuration guidance, see the Integration Guide (docs/INTEGRATION.md).
+ */
+
+/*------------------------------------------------------------------------------
+ *                           Memory Configuration
+ *----------------------------------------------------------------------------*/
+#ddsCddAdapterC_heapConfig( $systemModel.autosarConf )
+
+/** @} */ // end of ConfigurableSettings
+
+/*------------------------------------------------------------------------------
+ *                        System Properties Configuration
+ *----------------------------------------------------------------------------*/
+#ddsCddAdapterC_SetSystemProperties( $systemModel.autosarConf )
+
+/*==============================================================================
+ *                            INTERNAL STATE
+ *============================================================================*/
+
+/**
+ * @brief Current DDS initialization state (NOT configurable)
+ */
+ /* workaround#COMMON - task overrun issue */
+DdsCdd_InitState_t dds_cdd_init_state = DdsCdd_InitState_Uninitialized;
+
+/*==============================================================================
+ *                     SW-C RUNNABLE IMPLEMENTATIONS
+ *============================================================================*/
+
+#ddsCddAdapterC_DdsCdd_Adapter_Init()
+
+#ddsCddAdapterC_DdsCdd_Adapter_Enable_DDSEntities()
+
+#ddsCddAdapterC_DdsCdd_Adapter_Run()
+
+#foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #ddsCddAdapterC_DdsCdd_Adapter_Write( $datawriter )
+            #end
+        #end
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #ddsCddAdapterC_DdsCdd_Adapter_Read( $datareader )
+            #end
+        #end
+    #end
+#end
+
+/*==============================================================================
+ *                        SOCKET OWNER INTEGRATION
+ *============================================================================*/
+
+/* TcpIp_[SocketOwnerName]GetSocket - TODO: update if using different SocketOwner name */
+/* Workaround#HAE - mobilgene naming rule, prefix TcpIp_ */
+${hashtag}define DDSCDD_SOCKET_OWNER_GET_SOCKET   TcpIp_TcpIp_DdsCddGetSocket   /* TcpIp_socket_name = TcpIp_DdsCdd */
+
+#ddsCddAdapterC_DdsCdd_GetSocket()
+
+#ddsCddAdapterC_DdsCdd_LocalIpAddrAssignmentChg()
+
+#ddsCddAdapterC_DdsCdd_RxIndication()
+
+#ddsCddAdapterC_DdsCdd_TcpIpEvent()

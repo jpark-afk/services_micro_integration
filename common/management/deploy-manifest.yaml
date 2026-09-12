@@ -1,0 +1,68 @@
+manifestVersion: 1
+name: rti-services-workaround-micro430er738-20260825
+description: workaround for micro430er738 to support RTI Services
+sourceRoot: ..
+targetDir: ../../customer/slcorp04
+
+deploymentMarkerFormat:
+  batchStaticCommentBlock:
+    - "REM RTI INTERNAL TEMPORARY WORKAROUND NOTICE"
+    - "REM Temporary workaround until an official RTI patch is released."
+    - "REM Baseline version: Micro430er738."
+    - "REM Not officially supported by RTI Technical Support."
+    - "REM Must NOT be applied directly to controller mass-production development."
+    - "REM See README.md for details."
+  batchRuntimeOutputBlock:
+    - "[RTI NOTICE] INTERNAL TEMPORARY WORKAROUND"
+    - "[RTI NOTICE] Temporary workaround until an official RTI patch is released."
+    - "[RTI NOTICE] Baseline version: Micro430er738."
+    - "[RTI NOTICE] Not officially supported by RTI Technical Support."
+    - "[RTI NOTICE] Must NOT be applied directly to controller mass-production development."
+    - "[RTI NOTICE] See README.md for details."
+  pythonStaticCommentBlock:
+    - "# RTI INTERNAL TEMPORARY WORKAROUND NOTICE"
+    - "# Temporary workaround until an official RTI patch is released."
+    - "# Baseline version: Micro430er738."
+    - "# Not officially supported by RTI Technical Support."
+    - "# Must NOT be applied directly to controller mass-production development."
+    - "# See README.md for details."
+  xmlStaticCommentBlock:
+    - "<!-- RTI EXAMPLE FILE NOTICE -->"
+    - "<!-- This file is provided as an example configuration. -->"
+    - "<!-- Not intended for direct use in controller mass-production projects. -->"
+    - "<!-- RTI does not provide official support for this file content and assumes no responsibility for errors from its use. -->"
+    - "<!-- Users must review and modify this file for their own environment before use. -->"
+    - "<!-- Refer to the Connext Micro 4.3 online documentation for guidance. -->"
+
+include:
+  - path: README.md
+  - path: xml_example/
+    recursive: true
+  - path: templates/
+    recursive: true
+  - path: fix_tools/
+    recursive: true
+  - path: fix_psl/
+    recursive: true
+  - path: user_work/
+    sourceRoot: ../../projects/slcorp04
+    target: user_work/
+    recursive: true
+  - path: generate_ddscdd.bat
+    sourceRoot: ../../projects/slcorp04
+  - path: generate_testapp_native.bat
+    sourceRoot: ../../projects/slcorp04
+  - path: build_testapp_native.bat
+    sourceRoot: ../../projects/slcorp04
+  - path: build_testapp_native.sh
+    sourceRoot: ../../projects/slcorp04
+
+exclude:
+  - "**/__pycache__/**"
+  - "**/_git_cache/**"
+  - "**/*.pyc"
+  - "**/*.pyo"
+  - "**/.DS_Store"
+  - "**/Thumbs.db"
+  - "**/_patched_tmp/**"
+

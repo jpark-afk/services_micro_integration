@@ -1,0 +1,25 @@
+#parse( "utils/utils.vm" )
+#parse( "application/DDS_app_main.c.vm" )
+
+#warningHeader()
+
+## macro to include the necessary header files
+#applicationMainC( ${systemModel.appName} )
+
+int main()
+{
+    if (DDS_Configure() != DDS_RETCODE_OK)
+    {
+        printf("Failed to configure DDS\n");
+        return -1;
+    }
+
+    if (DDS_Init() != DDS_RETCODE_OK)
+    {
+        printf("Failed to initialize DDS\n");
+        return -1;
+    }
+
+    /* never returns */
+    DDS_Run();
+}

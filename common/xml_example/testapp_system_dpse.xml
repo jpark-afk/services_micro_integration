@@ -1,0 +1,304 @@
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="C:\RTI\rti_connext_drive-4.0.0\rti_connext_dds-7.3.1\rti_connext_dds_micro-4.3.0_ER738\rtiddsmag\resource\schema\dds-xml_system_definitions.xsd">
+    <!-- [REQUIRED] LOCAL CONNEXT MICRO SCHEMA
+         - Update xsi:noNamespaceSchemaLocation for your local Connext Micro installation.
+         - In the example above, C:\RTI\rti_connext_drive-4.0.0\rti_connext_dds-7.3.1\rti_connext_dds_micro-4.3.0_ER738 is RTIMEHOME.
+         - The required schema is %RTIMEHOME%\rtiddsmag\resource\schema\dds-xml_system_definitions.xsd.
+         - rtiddsmag requires this schema to generate MAG output.
+         - A web-hosted version of this Micro MAG schema is not currently available, so a local file path is required. -->
+    <!-- RTI EXAMPLE FILE NOTICE -->
+    <!-- This file is provided as an example configuration. -->
+    <!-- Not intended for direct use in controller mass-production projects. -->
+    <!-- RTI does not provide official support for this file content and assumes no responsibility for errors from its use. -->
+    <!-- Users must review and modify this file for their own environment before use. -->
+    <!-- Refer to the Connext Micro 4.3 online documentation for guidance. -->
+
+    <!-- [REQUIRED] USER ENVIRONMENT SETUP
+         - Values marked as REQUIRED in this file are NOT universal defaults.
+         - You must identify and enter values for your own environment (IP/interface/OS resources/TcpIp local_addr_id).
+         - Do not copy example values without verification on your target MCU and host test PC. -->
+    <types>
+        <struct name="TypeA">
+            <member name="a" type="short" />
+        </struct>
+        <struct name="TypeB">
+            <member name="b" type="long" />
+        </struct>
+        <struct name="TypeC">
+            <member name="c" type="octet" />
+        </struct>
+    </types>
+
+    <qos_library name="QosLibrary">
+        <qos_profile name="DefaultProfile" is_default_participant_factory_profile="true">
+            <!-- Participant Factory Qos -->
+            <participant_factory_qos>
+                <entity_factory>
+                    <autoenable_created_entities>true</autoenable_created_entities>
+                </entity_factory>
+            </participant_factory_qos>
+            <!-- Participant Qos -->
+            <domain_participant_qos>
+                <discovery>
+                    <accept_unknown_peers>false</accept_unknown_peers>
+                    <initial_peers>
+                        <!-- [REQUIRED] Multicast peer for your subnet. (optional) -->
+                        <element>239.255.0.1</element>
+                        <!-- [REQUIRED] Example PC TestApp IP: replace with your actual host test PC IP. -->
+                        <element>192.168.56.105</element>
+                    </initial_peers>
+                    <enabled_transports>
+                        <element>udpv4</element>
+                    </enabled_transports>
+                    <multicast_receive_addresses>
+                        <element>udpv4://239.255.0.1</element>
+                    </multicast_receive_addresses>
+                </discovery>
+                <default_unicast>
+                    <value>
+                        <element>
+                            <transports>
+                                <element>udpv4</element>
+                            </transports>
+                        </element>
+                    </value>
+                </default_unicast>                
+                <transport_builtin>
+                    <mask>UDPv4</mask>
+                    <udpv4>
+                        <disable_auto_interface_config>true</disable_auto_interface_config>
+                    </udpv4>
+                </transport_builtin>
+                <discovery_config>
+                    <builtin_discovery_plugins>DPSE</builtin_discovery_plugins>
+                    <initial_participant_announcements>5</initial_participant_announcements>
+                    <max_initial_participant_announcement_period>
+                        <sec>1</sec>
+                        <nanosec>0</nanosec>
+                    </max_initial_participant_announcement_period>
+                    <participant_liveliness_assert_period>
+                        <sec>10</sec>
+                        <nanosec>0</nanosec>
+                    </participant_liveliness_assert_period>
+                    <participant_liveliness_lease_duration>
+                        <sec>30</sec>
+                        <nanosec>0</nanosec>
+                    </participant_liveliness_lease_duration>
+                </discovery_config>
+                <property>
+                <!-- [REQUIRED] Micro 4.x participant rediscovery by name is not
+                            implicit. MAG expects this to be configured through PROPERTY
+                            QoS in XML. Together with the stable DomainParticipant names in
+                            this file and a runtime-randomized GUID prefix on each boot,
+                            this allows restarted participants to replace stale remote state
+                            without waiting for lease expiry. -->
+                    <value>
+                        <element>
+                            <name>dds.micro.discovery.enable_participant_discovery_by_name</name>
+                            <value>true</value>
+                        </element>
+                    </value>
+                </property>
+
+            </domain_participant_qos>
+            <!-- DataWriter Qos -->
+            <datawriter_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+                <resource_limits>
+                    <max_instances>1</max_instances>
+                    <max_samples>2</max_samples>
+                    <max_samples_per_instance>1</max_samples_per_instance>
+                </resource_limits>
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <deadline>
+                    <period>
+                        <sec>3</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+            </datawriter_qos>
+            <!-- DataReader Qos -->
+            <datareader_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+                <resource_limits>
+                    <max_instances>1</max_instances>
+                    <max_samples>2</max_samples>
+                    <max_samples_per_instance>1</max_samples_per_instance>
+                </resource_limits>
+                <reliability>
+                    <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+                </reliability>
+                <deadline>
+                    <period>
+                        <sec>3</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+                <reader_resource_limits>
+                    <max_remote_writers>2</max_remote_writers>
+                    <max_remote_writers_per_instance>2</max_remote_writers_per_instance>
+                </reader_resource_limits>
+            </datareader_qos>
+        </qos_profile>
+        <qos_profile name="CddProfile" base_name="DefaultProfile">
+            <domain_participant_qos>
+                <transport_builtin>
+                    <!-- Set correct interface name(s)-->
+                    <udpv4>
+                        <ignore_loopback_interface>1</ignore_loopback_interface>
+                        <interface_table>
+                            <element>
+                                <interface_name>eth0</interface_name>
+                                <!-- [REQUIRED] Example MCU interface IP: replace with your actual MCU target interface address. -->
+                                <address>192.168.56.101</address>
+                                <net_mask>255.255.255.0</net_mask>
+                                <flags>
+                                    UDP_INTERFACE_INTERFACE_UP_FLAG|UDP_INTERFACE_INTERFACE_MULTICAST_FLAG</flags>
+                            </element>
+                        </interface_table>
+                        <allow_interfaces_list>
+                            <element>eth0</element>
+                        </allow_interfaces_list>
+                    </udpv4>
+                </transport_builtin>
+            </domain_participant_qos>
+        </qos_profile>
+    </qos_library>
+
+    <qos_library name="TestAppQosLibrary">
+        <qos_profile name="TestAppDefaultProfile" base_name="QosLibrary::DefaultProfile" is_default_participant_factory_profile="true">
+            <domain_participant_qos>
+                <discovery>
+                    <accept_unknown_peers>true</accept_unknown_peers>
+                    <initial_peers>
+                        <!-- [REQUIRED] Example MCU IP: replace with your actual MCU target IP. -->
+                        <element>192.168.56.101</element>
+                        <!-- [REQUIRED] Multicast peer for your subnet. (optional) -->
+                        <element>239.255.0.1</element>
+                    </initial_peers>
+                </discovery>
+                <transport_builtin>
+                    <udpv4>
+                        <disable_auto_interface_config>false</disable_auto_interface_config>
+                    </udpv4>
+                </transport_builtin>
+            </domain_participant_qos>
+        </qos_profile>
+        <qos_profile name="TestAppHostProfile" base_name="TestAppDefaultProfile">
+            <domain_participant_qos>
+                <transport_builtin>
+                    <udpv4>
+                        <ignore_loopback_interface>1</ignore_loopback_interface>
+                        <allow_interfaces_list>
+                            <element>enp0s8</element>
+                        </allow_interfaces_list>
+                    </udpv4>
+                </transport_builtin>
+            </domain_participant_qos>
+        </qos_profile>
+    </qos_library>
+
+    <!-- Domain Library -->
+    <domain_library name="DomainLibrary">
+        <domain name="myDomain" domain_id="0">
+            <register_type name="TypeA" type_ref="TypeA" />
+            <register_type name="TypeB" type_ref="TypeB" />
+            <register_type name="TypeC" type_ref="TypeC" />
+
+            <topic name="TopicA" register_type_ref="TypeA" />
+            <topic name="TopicB" register_type_ref="TypeB" />
+            <topic name="TopicC" register_type_ref="TypeC" />
+        </domain>
+    </domain_library>
+
+    <!-- Participant Library -->
+    <!-- DPSE static discovery: explicit rtps_object_id per endpoint, paired with testapp_system_dpse.xml -->
+    <domain_participant_library name="AppLibrary">       
+
+        <domain_participant name="TestApp"
+            domain_ref="DomainLibrary::myDomain">
+            <publisher name="TestApp_Pub">
+                <data_writer topic_ref="TopicA" name="TestApp_TopicA_DW">
+                    <datawriter_qos base_name="TestAppQosLibrary::TestAppHostProfile">
+                        <protocol>
+                            <rtps_object_id>11</rtps_object_id>
+                        </protocol>
+                    </datawriter_qos>
+                </data_writer>
+                <data_writer topic_ref="TopicC" name="TestApp_TopicC_DW">
+                    <datawriter_qos base_name="TestAppQosLibrary::TestAppHostProfile">
+                        <protocol>
+                            <rtps_object_id>12</rtps_object_id>
+                        </protocol>
+                    </datawriter_qos>
+                </data_writer>
+            </publisher>
+            <subscriber name="TestApp_Sub">
+                <data_reader topic_ref="TopicB" name="TestApp_TopicB_DR">
+                    <datareader_qos base_name="TestAppQosLibrary::TestAppHostProfile">
+                        <protocol>
+                            <rtps_object_id>13</rtps_object_id>
+                        </protocol>
+                    </datareader_qos>
+                </data_reader>
+                <data_reader topic_ref="TopicC" name="TestApp_TopicC_DR">
+                    <datareader_qos base_name="TestAppQosLibrary::TestAppHostProfile">
+                        <protocol>
+                            <rtps_object_id>14</rtps_object_id>
+                        </protocol>
+                    </datareader_qos>
+                </data_reader>
+            </subscriber>
+            <domain_participant_qos base_name="TestAppQosLibrary::TestAppHostProfile" />
+        </domain_participant>
+
+        <domain_participant name="MCU_DDS_CDD"
+            domain_ref="DomainLibrary::myDomain">
+            <publisher name="MCU_DDS_CDD_Pub">
+                <data_writer topic_ref="TopicB" name="MCU_DDS_CDD_TopicB_DW">
+                    <datawriter_qos base_name="QosLibrary::CddProfile">
+                        <!-- peer: TestApp_TopicB_DR (id 13) -->
+                        <protocol>
+                            <rtps_object_id>1</rtps_object_id>
+                        </protocol>
+                    </datawriter_qos>
+                </data_writer>
+                <data_writer topic_ref="TopicC" name="MCU_DDS_CDD_TopicC_DW">
+                    <datawriter_qos base_name="QosLibrary::CddProfile">
+                        <!-- peer: TestApp_TopicC_DR (id 14) -->
+                        <protocol>
+                            <rtps_object_id>2</rtps_object_id>
+                        </protocol>
+                    </datawriter_qos>
+                </data_writer>
+            </publisher>
+            <subscriber name="MCU_DDS_CDD_Sub">
+                <data_reader topic_ref="TopicA" name="MCU_DDS_CDD_TopicA_DR">
+                    <datareader_qos base_name="QosLibrary::CddProfile">
+                        <!-- peer: TestApp_TopicA_DW (id 11) -->
+                        <protocol>
+                            <rtps_object_id>3</rtps_object_id>
+                        </protocol>
+                    </datareader_qos>
+                </data_reader>
+                <data_reader topic_ref="TopicC" name="MCU_DDS_CDD_TopicC_DR">
+                    <datareader_qos base_name="QosLibrary::CddProfile">
+                        <!-- peer: TestApp_TopicC_DW (id 12) -->
+                        <protocol>
+                            <rtps_object_id>4</rtps_object_id>
+                        </protocol>
+                    </datareader_qos>
+                </data_reader>
+            </subscriber>
+            <domain_participant_qos base_name="QosLibrary::CddProfile" />
+        </domain_participant>
+    </domain_participant_library>
+</dds>

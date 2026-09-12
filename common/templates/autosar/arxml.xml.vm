@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="utf-8"?>
+#set($typesList = [])##
+#set($topicsList = [])##
+#generate_ar_topic_list()
+#generate_type_list()
+<!--This file was saved with a tool from Vector Informatik GmbH-->
+<AUTOSAR xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_00053.xsd" xmlns="http://autosar.org/schema/r4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <AR-PACKAGES>
+    <AR-PACKAGE>
+      <SHORT-NAME>AUTOSAR_Platform</SHORT-NAME>
+      <AR-PACKAGES>
+        <AR-PACKAGE>
+          <SHORT-NAME>BaseTypes</SHORT-NAME>
+          <ELEMENTS>
+            <SW-BASE-TYPE>
+              <SHORT-NAME>uint16</SHORT-NAME>
+              <CATEGORY>FIXED_LENGTH</CATEGORY>
+              <BASE-TYPE-SIZE>16</BASE-TYPE-SIZE>
+              <BASE-TYPE-ENCODING>NONE</BASE-TYPE-ENCODING>
+              <NATIVE-DECLARATION>uint16</NATIVE-DECLARATION>
+            </SW-BASE-TYPE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+          <SHORT-NAME>DataConstrs</SHORT-NAME>
+          <ELEMENTS>
+            <DATA-CONSTR>
+              <SHORT-NAME>uint16_DataConstr</SHORT-NAME>
+              <DATA-CONSTR-RULES>
+                <DATA-CONSTR-RULE>
+                  <INTERNAL-CONSTRS>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">65535</UPPER-LIMIT>
+                  </INTERNAL-CONSTRS>
+                </DATA-CONSTR-RULE>
+              </DATA-CONSTR-RULES>
+            </DATA-CONSTR>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+          <SHORT-NAME>ImplementationDataTypes</SHORT-NAME>
+          <ELEMENTS>
+            <IMPLEMENTATION-DATA-TYPE>
+              <SHORT-NAME>uint16</SHORT-NAME>
+              <DESC>
+                <L-2 L="FOR-ALL">uint16 represents integers with a minimum value of 0 and a maximum value of 65535.
+The order-relation on uint16 is: x &lt; y if y - x is positive.
+uint16 has a lexical representation consisting of a finite-length sequence 
+of decimal digits (#x30-#x39).
+
+For example: 1, 0, 1267, +10000.</L-2>
+              </DESC>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/AUTOSAR_Platform/BaseTypes/uint16</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>NOT-ACCESSIBLE</SW-CALIBRATION-ACCESS>
+                    <DATA-CONSTR-REF DEST="DATA-CONSTR">/AUTOSAR_Platform/DataConstrs/uint16_DataConstr</DATA-CONSTR-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+              <TYPE-EMITTER>Platform_Type</TYPE-EMITTER>
+            </IMPLEMENTATION-DATA-TYPE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+      </AR-PACKAGES>
+    </AR-PACKAGE>
+    <AR-PACKAGE>
+      <SHORT-NAME>ComponentTypes</SHORT-NAME>
+      <ELEMENTS>
+        <COMPLEX-DEVICE-DRIVER-SW-COMPONENT-TYPE>
+          <SHORT-NAME>DdsCddType</SHORT-NAME>
+          <PORTS>
+          <!-- For all writers make a Receiving P-Port-Prototype -->
+          #foreach( $library in $systemModel.libraries )
+            #foreach( $participant in $library.participants )
+             #foreach( $publisher in $participant.publishers )
+                #foreach( $datawriter in $publisher.dataWriters )
+                <R-PORT-PROTOTYPE>
+                  <SHORT-NAME>R_$datawriter.topicName</SHORT-NAME>
+                  <REQUIRED-COM-SPECS>
+                    <NONQUEUED-RECEIVER-COM-SPEC>
+                      <DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/PortInterfaces/$datawriter.topicName/$datawriter.typeRef</DATA-ELEMENT-REF>
+                      <USES-END-TO-END-PROTECTION>false</USES-END-TO-END-PROTECTION>
+                      <ALIVE-TIMEOUT>0</ALIVE-TIMEOUT>
+                      <ENABLE-UPDATE>false</ENABLE-UPDATE>
+                      <!-- Workaround#HAE - delete unnecessary elements
+                      <FILTER>
+                        <DATA-FILTER-TYPE>ALWAYS</DATA-FILTER-TYPE>
+                      </FILTER>
+                      -->
+                      <HANDLE-NEVER-RECEIVED>false</HANDLE-NEVER-RECEIVED>
+                      <INIT-VALUE>
+                        <RECORD-VALUE-SPECIFICATION>
+                          <FIELDS>
+                            <NUMERICAL-VALUE-SPECIFICATION>
+                              <SHORT-LABEL>ElementConstant</SHORT-LABEL>
+                              <VALUE>0</VALUE>
+                            </NUMERICAL-VALUE-SPECIFICATION>
+                          </FIELDS>
+                        </RECORD-VALUE-SPECIFICATION>
+                      </INIT-VALUE>
+                    </NONQUEUED-RECEIVER-COM-SPEC>
+                  </REQUIRED-COM-SPECS>
+                  <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/PortInterfaces/$datawriter.topicName</REQUIRED-INTERFACE-TREF>
+                </R-PORT-PROTOTYPE>
+                #end
+             #end
+            #end
+          #end
+         <!-- For all readers make a sending R-Port-Prototype -->
+          #foreach( $library in $systemModel.libraries )
+            #foreach( $participant in $library.participants )
+             #foreach( $subscriber in $participant.subscribers )
+                #foreach( $datareader in $subscriber.dataReaders )
+            <P-PORT-PROTOTYPE>
+              <SHORT-NAME>S_$datareader.topicName</SHORT-NAME>
+              <PROVIDED-COM-SPECS>
+                <NONQUEUED-SENDER-COM-SPEC>
+                  <DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/PortInterfaces/$datareader.topicName/$datareader.typeRef</DATA-ELEMENT-REF>
+                  <USES-END-TO-END-PROTECTION>false</USES-END-TO-END-PROTECTION>
+                  <INIT-VALUE>
+                    <RECORD-VALUE-SPECIFICATION>
+                      <FIELDS>
+                        <NUMERICAL-VALUE-SPECIFICATION>
+                          <SHORT-LABEL>ElementConstant</SHORT-LABEL>
+                          <VALUE>0</VALUE>
+                        </NUMERICAL-VALUE-SPECIFICATION>
+                      </FIELDS>
+                    </RECORD-VALUE-SPECIFICATION>
+                  </INIT-VALUE>
+                </NONQUEUED-SENDER-COM-SPEC>
+              </PROVIDED-COM-SPECS>
+              <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/PortInterfaces/$datareader.topicName</PROVIDED-INTERFACE-TREF>
+            </P-PORT-PROTOTYPE>
+            #end
+             #end
+            #end
+          #end
+          </PORTS>
+          <INTERNAL-BEHAVIORS>
+            <SWC-INTERNAL-BEHAVIOR>
+              <SHORT-NAME>DdsCddType_InternalBehavior</SHORT-NAME>
+              <EXCLUSIVE-AREAS>
+                <EXCLUSIVE-AREA>
+                  <SHORT-NAME>ExclusiveArea_heap</SHORT-NAME>
+                </EXCLUSIVE-AREA>
+                <EXCLUSIVE-AREA>
+                  <SHORT-NAME>ExclusiveArea_netio</SHORT-NAME>
+                </EXCLUSIVE-AREA>
+                <EXCLUSIVE-AREA>
+                  <SHORT-NAME>ExclusiveArea_system</SHORT-NAME>
+                </EXCLUSIVE-AREA>
+                <EXCLUSIVE-AREA>
+                  <SHORT-NAME>ExclusiveArea_tick</SHORT-NAME>
+                </EXCLUSIVE-AREA>
+              </EXCLUSIVE-AREAS>
+              <STATIC-MEMORYS>
+                <VARIABLE-DATA-PROTOTYPE>
+                  <SHORT-NAME>StaticConstantMemory</SHORT-NAME>
+                  <SW-DATA-DEF-PROPS>
+                    <SW-DATA-DEF-PROPS-VARIANTS>
+                      <SW-DATA-DEF-PROPS-CONDITIONAL>
+                        <SW-CALIBRATION-ACCESS>READ-ONLY</SW-CALIBRATION-ACCESS>
+                      </SW-DATA-DEF-PROPS-CONDITIONAL>
+                    </SW-DATA-DEF-PROPS-VARIANTS>
+                  </SW-DATA-DEF-PROPS>
+                  <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/AUTOSAR_Platform/ImplementationDataTypes/uint16</TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+              </STATIC-MEMORYS>
+              <EVENTS>
+              #set( $offset = 0.005 )
+              <!-- For each reader, create a timing event to trigger the read runnable -->
+              #foreach( $library in $systemModel.libraries )
+                #foreach( $participant in $library.participants )
+                  #foreach( $subscriber in $participant.subscribers )
+                    #foreach( $datareader in $subscriber.dataReaders )
+                <TIMING-EVENT>
+                  <SHORT-NAME>TMT_DdsCdd_Read_$datareader.topicName</SHORT-NAME>
+                  <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/Read_$datareader.topicName</START-ON-EVENT-REF>
+                  <!-- TODO: Adjust OFFSET and PERIOD values if needed -->
+                  <OFFSET>$offset</OFFSET>
+                  <PERIOD>0.1</PERIOD>
+                </TIMING-EVENT>
+                      #set( $offset = $offset + 0.002 )
+                    #end
+                  #end
+                #end
+              #end
+                <TIMING-EVENT>
+                  <SHORT-NAME>TMT_DdsCdd_Run</SHORT-NAME>
+                  <!-- Workaround#Common - overrun issue -->
+                  <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/TimerTick</START-ON-EVENT-REF>
+                  <OFFSET>0.002</OFFSET>
+                  <PERIOD>0.01</PERIOD>
+                </TIMING-EVENT>
+                <INIT-EVENT>
+                  <SHORT-NAME>DdsCdd_InitEvent</SHORT-NAME>
+                  <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/Start</START-ON-EVENT-REF>
+                </INIT-EVENT>
+                <!-- For each writer, create a data received event to trigger the write runnable -->
+              #foreach( $library in $systemModel.libraries )
+                #foreach( $participant in $library.participants )
+                  #foreach( $publisher in $participant.publishers )
+                    #foreach( $datawriter in $publisher.dataWriters )
+                <DATA-RECEIVED-EVENT>
+                  <SHORT-NAME>DRT_DdsCdd_Write_${datawriter.topicName}_${datawriter.typeRef}</SHORT-NAME>
+                  <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/Write_${datawriter.topicName}</START-ON-EVENT-REF>
+                  <DATA-IREF>
+                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/ComponentTypes/DdsCddType/R_${datawriter.topicName}</CONTEXT-R-PORT-REF>
+                    <TARGET-DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/PortInterfaces/${datawriter.topicName}/${datawriter.typeRef}</TARGET-DATA-ELEMENT-REF>
+                  </DATA-IREF>
+                </DATA-RECEIVED-EVENT>
+                    #end
+                  #end
+                #end
+              #end
+                <INTERNAL-TRIGGER-OCCURRED-EVENT>
+                  <SHORT-NAME>ITOE_DdsRxIndication_DataReception_ITP_DummyCallout</SHORT-NAME>
+                  <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ProcessData</START-ON-EVENT-REF>
+                  <EVENT-SOURCE-REF DEST="INTERNAL-TRIGGERING-POINT">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/RxIndication/ITP_DdsCdd_RxIndication</EVENT-SOURCE-REF>
+                </INTERNAL-TRIGGER-OCCURRED-EVENT>
+                <!-- Workaround#Common - overrun issue -->
+                <INTERNAL-TRIGGER-OCCURRED-EVENT>
+                  <SHORT-NAME>ITOE_TimerUpdate_ITP_TimerUpdate</SHORT-NAME>
+                  <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/TimerUpdate</START-ON-EVENT-REF>
+                  <EVENT-SOURCE-REF DEST="INTERNAL-TRIGGERING-POINT">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/TimerTick/ITP_TimerUpdate</EVENT-SOURCE-REF>
+                </INTERNAL-TRIGGER-OCCURRED-EVENT>
+              </EVENTS>
+              <HANDLE-TERMINATION-AND-RESTART>NO-SUPPORT</HANDLE-TERMINATION-AND-RESTART>
+              <RUNNABLES>
+              <!-- For each topic create reader/writer -->
+            #foreach( $library in $systemModel.libraries )
+                #foreach( $participant in $library.participants )
+                #foreach( $subscriber in $participant.subscribers )
+                    #foreach( $datareader in $subscriber.dataReaders )
+                    <RUNNABLE-ENTITY >
+                    <SHORT-NAME>Read_$datareader.topicName</SHORT-NAME>
+                    <MINIMUM-START-INTERVAL>0</MINIMUM-START-INTERVAL>
+                    <CAN-BE-INVOKED-CONCURRENTLY>false</CAN-BE-INVOKED-CONCURRENTLY>
+                    <DATA-SEND-POINTS>
+                        <VARIABLE-ACCESS>
+                        <SHORT-NAME>SEND_S_${datareader.topicName}_${datareader.typeRef}</SHORT-NAME>
+                        <ACCESSED-VARIABLE>
+                            <AUTOSAR-VARIABLE-IREF>
+                            <PORT-PROTOTYPE-REF DEST="P-PORT-PROTOTYPE">/ComponentTypes/DdsCddType/S_$datareader.topicName</PORT-PROTOTYPE-REF>
+                            <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/PortInterfaces/$datareader.topicName/$datareader.typeRef</TARGET-DATA-PROTOTYPE-REF>
+                            </AUTOSAR-VARIABLE-IREF>
+                        </ACCESSED-VARIABLE>
+                        </VARIABLE-ACCESS>
+                    </DATA-SEND-POINTS>
+                    <SYMBOL>Read_$datareader.topicName</SYMBOL>
+                    </RUNNABLE-ENTITY>
+                    #end
+                   #end
+                  #end
+                #end
+                <!-- Workaround#Common - overrun issue
+                <RUNNABLE-ENTITY>
+                  <SHORT-NAME>Run</SHORT-NAME>
+                  <CAN-ENTERS>
+                    <EXCLUSIVE-AREA-REF-CONDITIONAL>
+                      <EXCLUSIVE-AREA-REF DEST="EXCLUSIVE-AREA">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ExclusiveArea_tick</EXCLUSIVE-AREA-REF>
+                    </EXCLUSIVE-AREA-REF-CONDITIONAL>
+                    <EXCLUSIVE-AREA-REF-CONDITIONAL>
+                      <EXCLUSIVE-AREA-REF DEST="EXCLUSIVE-AREA">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ExclusiveArea_system</EXCLUSIVE-AREA-REF>
+                    </EXCLUSIVE-AREA-REF-CONDITIONAL>
+                  </CAN-ENTERS>
+                  <MINIMUM-START-INTERVAL>0</MINIMUM-START-INTERVAL>
+                  <CAN-BE-INVOKED-CONCURRENTLY>false</CAN-BE-INVOKED-CONCURRENTLY>
+                  <SYMBOL>Run</SYMBOL>
+                </RUNNABLE-ENTITY>
+                -->
+                <!-- Workaround#Common - overrun issue -->
+                <RUNNABLE-ENTITY>
+                  <SHORT-NAME>TimerTick</SHORT-NAME>
+                  <CAN-ENTERS>
+                    <EXCLUSIVE-AREA-REF-CONDITIONAL>
+                      <EXCLUSIVE-AREA-REF DEST="EXCLUSIVE-AREA">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ExclusiveArea_tick</EXCLUSIVE-AREA-REF>
+                    </EXCLUSIVE-AREA-REF-CONDITIONAL>
+                    <EXCLUSIVE-AREA-REF-CONDITIONAL>
+                      <EXCLUSIVE-AREA-REF DEST="EXCLUSIVE-AREA">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ExclusiveArea_system</EXCLUSIVE-AREA-REF>
+                    </EXCLUSIVE-AREA-REF-CONDITIONAL>
+                  </CAN-ENTERS>
+                  <MINIMUM-START-INTERVAL>0</MINIMUM-START-INTERVAL>
+                  <CAN-BE-INVOKED-CONCURRENTLY>false</CAN-BE-INVOKED-CONCURRENTLY>
+                  <INTERNAL-TRIGGERING-POINTS>
+                    <INTERNAL-TRIGGERING-POINT>
+                      <SHORT-NAME>ITP_TimerUpdate</SHORT-NAME>
+                      <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                    </INTERNAL-TRIGGERING-POINT>
+                  </INTERNAL-TRIGGERING-POINTS>
+                  <SYMBOL>TimerTick</SYMBOL>
+                </RUNNABLE-ENTITY>
+                <RUNNABLE-ENTITY>
+                  <SHORT-NAME>Start</SHORT-NAME>
+                  <ADMIN-DATA>
+                    <SDGS>
+                      <SDG GID="edve:RunnableKind">
+                        <SD>InitRunnable</SD>
+                      </SDG>
+                    </SDGS>
+                  </ADMIN-DATA>
+                  <CAN-ENTERS>
+                    <EXCLUSIVE-AREA-REF-CONDITIONAL>
+                      <EXCLUSIVE-AREA-REF DEST="EXCLUSIVE-AREA">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ExclusiveArea_system</EXCLUSIVE-AREA-REF>
+                    </EXCLUSIVE-AREA-REF-CONDITIONAL>
+                    <EXCLUSIVE-AREA-REF-CONDITIONAL>
+                      <EXCLUSIVE-AREA-REF DEST="EXCLUSIVE-AREA">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ExclusiveArea_heap</EXCLUSIVE-AREA-REF>
+                    </EXCLUSIVE-AREA-REF-CONDITIONAL>
+                  </CAN-ENTERS>
+                  <MINIMUM-START-INTERVAL>0</MINIMUM-START-INTERVAL>
+                  <CAN-BE-INVOKED-CONCURRENTLY>false</CAN-BE-INVOKED-CONCURRENTLY>
+                  <SYMBOL>Start</SYMBOL>
+                </RUNNABLE-ENTITY>                
+        #foreach( $library in $systemModel.libraries )
+            #foreach( $participant in $library.participants )
+            #foreach( $publisher in $participant.publishers )
+                #foreach( $datawriter in $publisher.dataWriters )
+                <RUNNABLE-ENTITY>
+                  <SHORT-NAME>Write_$datawriter.topicName</SHORT-NAME>
+                  <CAN-ENTERS>
+                    <EXCLUSIVE-AREA-REF-CONDITIONAL>
+                      <EXCLUSIVE-AREA-REF DEST="EXCLUSIVE-AREA">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior/ExclusiveArea_heap</EXCLUSIVE-AREA-REF>
+                    </EXCLUSIVE-AREA-REF-CONDITIONAL>
+                  </CAN-ENTERS>
+                  <MINIMUM-START-INTERVAL>0</MINIMUM-START-INTERVAL>
+                  <CAN-BE-INVOKED-CONCURRENTLY>false</CAN-BE-INVOKED-CONCURRENTLY>
+                  <DATA-RECEIVE-POINT-BY-ARGUMENTS>
+                    <VARIABLE-ACCESS>
+                      <SHORT-NAME>REC_${datawriter.topicName}_${datawriter.typeRef}</SHORT-NAME>
+                      <ACCESSED-VARIABLE>
+                        <AUTOSAR-VARIABLE-IREF>
+                          <PORT-PROTOTYPE-REF DEST="R-PORT-PROTOTYPE">/ComponentTypes/DdsCddType/R_$datawriter.topicName</PORT-PROTOTYPE-REF>
+                          <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/PortInterfaces/${datawriter.topicName}/${datawriter.typeRef}</TARGET-DATA-PROTOTYPE-REF>
+                        </AUTOSAR-VARIABLE-IREF>
+                      </ACCESSED-VARIABLE>
+                    </VARIABLE-ACCESS>
+                  </DATA-RECEIVE-POINT-BY-ARGUMENTS>
+                  <SYMBOL>Write_$datawriter.topicName</SYMBOL>
+                </RUNNABLE-ENTITY>
+               #end
+               #end
+               #end
+               #end
+                <RUNNABLE-ENTITY>
+                  <SHORT-NAME>ProcessData</SHORT-NAME>
+                  <SYMBOL>ProcessData</SYMBOL> <!-- Workaround#COMMON - no symbol name -->
+                </RUNNABLE-ENTITY>
+                <RUNNABLE-ENTITY>
+                  <SHORT-NAME>RxIndication</SHORT-NAME>
+                  <INTERNAL-TRIGGERING-POINTS>
+                    <INTERNAL-TRIGGERING-POINT>
+                      <SHORT-NAME>ITP_DdsCdd_RxIndication</SHORT-NAME>
+                      <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                    </INTERNAL-TRIGGERING-POINT>
+                  </INTERNAL-TRIGGERING-POINTS>
+                  <SYMBOL>RxIndication</SYMBOL> <!-- Workaround#COMMON - no symbol name -->
+                </RUNNABLE-ENTITY>
+                <!-- Workaround#Common - overrun issue -->
+                <RUNNABLE-ENTITY>
+                  <SHORT-NAME>TimerUpdate</SHORT-NAME>
+                  <SYMBOL>TimerUpdate</SYMBOL> <!-- Workaround#COMMON - no symbol name -->
+                </RUNNABLE-ENTITY>
+              </RUNNABLES>
+              <SUPPORTS-MULTIPLE-INSTANTIATION>false</SUPPORTS-MULTIPLE-INSTANTIATION>
+            </SWC-INTERNAL-BEHAVIOR>
+          </INTERNAL-BEHAVIORS>
+          <SYMBOL-PROPS>
+            <SHORT-NAME>DdsCdd</SHORT-NAME>
+            <SYMBOL>DdsCdd</SYMBOL>
+          </SYMBOL-PROPS>
+        </COMPLEX-DEVICE-DRIVER-SW-COMPONENT-TYPE>
+        <SWC-IMPLEMENTATION>
+          <SHORT-NAME>DdsCddType_Implementation</SHORT-NAME>
+          <CODE-DESCRIPTORS>
+            <CODE>
+              <SHORT-NAME>Default</SHORT-NAME>
+              <ARTIFACT-DESCRIPTORS>
+                <AUTOSAR-ENGINEERING-OBJECT>
+                  <SHORT-LABEL>Default</SHORT-LABEL>
+                  <CATEGORY>SWSRC</CATEGORY>
+                </AUTOSAR-ENGINEERING-OBJECT>
+              </ARTIFACT-DESCRIPTORS>
+            </CODE>
+          </CODE-DESCRIPTORS>
+          <BEHAVIOR-REF DEST="SWC-INTERNAL-BEHAVIOR">/ComponentTypes/DdsCddType/DdsCddType_InternalBehavior</BEHAVIOR-REF>
+        </SWC-IMPLEMENTATION>
+      </ELEMENTS>
+    </AR-PACKAGE>
+    <AR-PACKAGE>
+      <SHORT-NAME>PortInterfaces</SHORT-NAME>
+      <ELEMENTS>
+      <!-- For each reader/writer topic combo will need an entry for reader/writer -->
+        #foreach( $topicEntry in $topicsList)
+          <SENDER-RECEIVER-INTERFACE>
+            <SHORT-NAME>$topicEntry.get(0)</SHORT-NAME>
+            <IS-SERVICE>false</IS-SERVICE>
+            <DATA-ELEMENTS>
+              <VARIABLE-DATA-PROTOTYPE >
+              <SHORT-NAME>$topicEntry.get(1)</SHORT-NAME>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                <SW-DATA-DEF-PROPS-CONDITIONAL>
+                  <SW-CALIBRATION-ACCESS>NOT-ACCESSIBLE</SW-CALIBRATION-ACCESS>
+                  <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+              <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/dds/$topicEntry.get(1)</TYPE-TREF>
+              </VARIABLE-DATA-PROTOTYPE>
+            </DATA-ELEMENTS>
+            <!-- Workaround#HAE - delete unnecessary elements
+            <INVALIDATION-POLICYS>
+              <INVALIDATION-POLICY>
+              <DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/PortInterfaces/$topicEntry.get(0)/$topicEntry.get(1)</DATA-ELEMENT-REF>
+              <HANDLE-INVALID>DONT-INVALIDATE</HANDLE-INVALID>
+              </INVALIDATION-POLICY>
+            </INVALIDATION-POLICYS>
+            -->
+          </SENDER-RECEIVER-INTERFACE>
+        #end
+      </ELEMENTS>
+    </AR-PACKAGE>
+  </AR-PACKAGES>
+</AUTOSAR>
+
+#macro(generate_ar_topic_list)
+ #foreach( $library in $systemModel.libraries )
+  #foreach( $participant in $library.participants )
+    #foreach( $publisher in $participant.publishers )
+      #foreach( $datawriter in $publisher.dataWriters )
+        #set($topicEntry = [$datawriter.topicName, $datawriter.typeRef])
+        #if(!$topicsList.contains($topicEntry))
+          #if($topicsList.add($topicEntry))#end
+        #end
+      #end
+    #end
+    #foreach( $subscriber in $participant.subscribers )
+      #foreach( $datareader in $subscriber.dataReaders )
+        #set($topicEntry = [$datareader.topicName, $datareader.typeRef])
+        #if(!$topicsList.contains($topicEntry))
+          #if($topicsList.add($topicEntry))#end
+        #end
+      #end
+    #end
+  #end
+ #end
+#end
+
+#macro(generate_type_list)
+ #foreach( $library in $systemModel.libraries )
+    #foreach( $participant in $library.participants )
+        #foreach( $publisher in $participant.publishers )
+            #foreach( $datawriter in $publisher.dataWriters )
+                #if(!$typesList.contains($datawriter.typeRef))
+                    #if($typesList.add($datawriter.typeRef))#end
+                #end
+            #end
+        #end
+        #foreach( $subscriber in $participant.subscribers )
+            #foreach( $datareader in $subscriber.dataReaders )
+                #if(!$typesList.contains($datareader.typeRef))
+                    #if($typesList.add($datareader.typeRef))#end
+                #end
+            #end
+        #end
+    #end
+ #end
+
+
+#end

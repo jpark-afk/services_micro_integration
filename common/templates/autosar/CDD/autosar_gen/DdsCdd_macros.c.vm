@@ -1,0 +1,107 @@
+#parse("utils/utils.vm")
+
+#macro( DdsCddReadRunnableImplementation $datareader )
+    #set( $topic = $datareader.topicName )
+    #set( $type = $datareader.typeRef )
+/**********************************************************************************************************************
+ *
+ * Runnable Entity Name: Read_$topic
+ *
+ *---------------------------------------------------------------------------------------------------------------------
+ *
+ * Executed if at least one of the following trigger conditions occurred:
+ *   - triggered on TimingEvent every 100ms
+ *
+ **********************************************************************************************************************
+ *
+ * Output Interfaces:
+ * ==================
+ *   Explicit S/R API:
+ *   -----------------
+ *   Std_ReturnType Rte_Write_S_${topic}_${type}(const ${type} *data)
+ *
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of documentation area >>                  DO NOT CHANGE THIS COMMENT!
+ * Symbol: Read_${topic}_doc
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of documentation area >>                    DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+FUNC(void, DdsCdd_CODE) DdsCddRead_${topic}(void) /* PRQA S 0624, 3206 */ /* MD_Rte_0624, MD_Rte_3206 */
+{
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of runnable implementation >>             DO NOT CHANGE THIS COMMENT!
+ * Symbol: DdsCddRead_${topic}
+ *********************************************************************************************************************/
+
+    ${type} rte_data;
+    
+    /* Poll from DDS (adapter converts DDS type to RTE type) */
+    if (DdsCdd_Adapter_Read_${topic}(&rte_data) == 0)
+    {
+        /* Valid data received, write to RTE for application consumption */
+        (void)Rte_Write_S_${topic}_${type}(&rte_data);
+    }
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of runnable implementation >>               DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+}
+#end
+
+#macro( DdsCddWriteRunnableImplementation $datawriter )
+    #set( $topic = $datawriter.topicName )
+    #set( $type = $datawriter.typeRef )
+/**********************************************************************************************************************
+ *
+ * Runnable Entity Name: Write_${topic}
+ *
+ *---------------------------------------------------------------------------------------------------------------------
+ *
+ * Executed if at least one of the following trigger conditions occurred:
+ *   - triggered on DataReceivedEvent for DataElementPrototype <$type> of PortPrototype <R_$topic>
+ *
+ **********************************************************************************************************************
+ *
+ * Input Interfaces:
+ * =================
+ *   Explicit S/R API:
+ *   -----------------
+ *   Std_ReturnType Rte_Read_R_${topic}_${type}(${type} *data)
+ *
+ *********************************************************************************************************************/
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of documentation area >>                  DO NOT CHANGE THIS COMMENT!
+ * Symbol: Write_${topic}_doc
+ *********************************************************************************************************************/
+
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of documentation area >>                    DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+
+FUNC(void, DdsCdd_CODE) DdsCddWrite_${topic}(void) /* PRQA S 0624, 3206 */ /* MD_Rte_0624, MD_Rte_3206 */
+{
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << Start of runnable implementation >>             DO NOT CHANGE THIS COMMENT!
+ * Symbol: DdsCddWrite_${topic}
+ *********************************************************************************************************************/
+
+    ${type} rte_data;
+    
+    /* Read from RTE (data written by application SW-C) */
+    if (Rte_Read_R_${topic}_${type}(&rte_data) == E_OK)
+    {
+        /* Valid data available, convert and write to DDS */
+        (void)DdsCdd_Adapter_Write_${topic}(&rte_data);
+    }
+
+/**********************************************************************************************************************
+ * DO NOT CHANGE THIS COMMENT!           << End of runnable implementation >>               DO NOT CHANGE THIS COMMENT!
+ *********************************************************************************************************************/
+}
+#end

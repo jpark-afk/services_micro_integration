@@ -1,0 +1,110 @@
+#parse( "utils/utils.vm" )
+
+## This file contains macros to generate the CMakeLists.txt file
+## Use mainly with CMakeLists.txt.vm
+## Think of this file as defining content for CMakeLists.txt
+## And the CMakeLists.txt.vm file is defining the layout of the CMakeLists.txt file
+
+#set($indent = "----")
+
+## macro to define environment variables based on selected components
+#macro( DefineENVVariables $components)
+    #foreach( $entry in $components.entrySet() )
+        #set( $component = $entry.value )
+        #set( $className = $component.class.simpleName )
+        #if ( $className.equals("StaticDiscovery" ) )
+            #set( $static_include = true )
+        #elseif ( $className.equals("DynamicDiscovery" ) )
+            #set( $dynamic_include = true )
+        #elseif ( $className.equals("Udpv4" ) )
+            #set( $udp_include = true )
+        #elseif ( $className.equals("Shmem" ) )
+            #set( $shmem_include = true )
+        #elseif ( $className.equals("ZeroCopy" ) )
+            #set( $zero_copy_include = true )
+        #elseif ( $className.equals("PskSecurity" ) )
+            #set( $psk_include = true )
+        #else
+            ERROR: Component class not recognized: $className  $component
+            #logError( "Component class not recognized: $className  $component" )
+        #end
+    #end
+    #if(${psk_include})
+SET(RTIME_LIGHTWEIGHT_SECURE TRUE)
+    #else
+SET(RTIME_LIGHTWEIGHT_SECURE FALSE)
+    #end
+
+    #if(${shmem_include})
+SET(EXCLUDE_SHMEM FALSE)
+    #else
+SET(EXCLUDE_SHMEM TRUE)
+    #end
+
+    #if(${zero_copy_include})
+SET(EXCLUDE_ZCV2 FALSE)
+    #else
+SET(EXCLUDE_ZCV2 TRUE)
+    #end
+#end
+
+## macro to define a function to format CMake lists
+#macro( SET_LIB_ORDER )
+function(SET_LIB_ORDER INPUT_LIST_VAR)
+    # The target library order
+    SET(TARGET_LIB_ORDER
+        rti_me_appgen#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_cpp#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_netiosdm#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_netioshmem#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_netiozcopy#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_rhsm#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_whsm#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_discdpse#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_discdpde#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_netiopsl_cpp#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_netiopsl#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_ddsfilter#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_ddsxtypes#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_ddspsk#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_pskpsl_openssl3#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me#braces( "RTI_LIB_SUFFIX" )
+
+        rti_me_ospsl#braces( "RTI_LIB_SUFFIX" )
+
+)    
+
+    SET(INPUT_LIST ${${INPUT_LIST_VAR}})
+
+    # Remove duplicates
+    LIST(LENGTH INPUT_LIST LIST_LENGTH)
+    IF(LIST_LENGTH GREATER 0)
+        LIST(REMOVE_DUPLICATES INPUT_LIST)
+    ENDIF()
+
+    # Reorder the items based on the target order
+    SET(REORDERED_LIBS)
+    FOREACH(item IN LISTS TARGET_LIB_ORDER)
+        IF(item IN_LIST INPUT_LIST)
+            LIST(APPEND REORDERED_LIBS #braces( "item" ))
+        ENDIF()
+    ENDFOREACH()
+
+    SET(#braces("INPUT_LIST_VAR") #braces("REORDERED_LIBS") PARENT_SCOPE)
+endfunction()
+#end
