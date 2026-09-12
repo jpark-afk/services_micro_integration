@@ -2,6 +2,23 @@
 
 `projects/` keeps project-specific input files outside the shared `common/` submodule.
 
+## Clone and Update Shared Assets
+
+Clone this repository with its pinned shared-workaround release:
+
+```powershell
+git clone --recurse-submodules git@github.com:jpark-afk/services_micro_integration.git
+```
+
+For an existing clone, initialize the shared assets and enable recursive updates for later Git operations:
+
+```powershell
+git submodule update --init --recursive
+git config submodule.recurse true
+```
+
+`common/` is pinned to a release tag from `git@github.com:jpark-afk/micro_workaround.git`. To adopt a newer shared release, check out its tag in `common/`, stage the resulting gitlink in this repository, and commit that pointer update.
+
 ## New Project Layout
 
 Create one folder per project:
