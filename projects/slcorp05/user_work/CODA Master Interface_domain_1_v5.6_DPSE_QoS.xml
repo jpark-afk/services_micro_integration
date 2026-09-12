@@ -1,0 +1,2442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://community.rti.com/schema/current/rti_dds_profiles.xsd">
+  <types>
+    <struct name="Cabin_Charging_WPC_t">
+      <member name="USM_WPC_CommandState" type="uint8" />
+      <member name="WPC_PhoneLeftWarn_State" type="uint8" />
+      <member name="DualWPC_OptionState" type="uint8" />
+      <member name="WPC_IndicateSynchronize_Value" type="uint8" />
+      <member name="WPC_ResetOperation_State" type="uint8" />
+      <member name="WPC_SleepReady" type="uint8" />
+      <member name="WPC_TxPwr" type="uint8" />
+      <member name="WPC_RxPwr" type="uint8" />
+      <member name="WPC_PhnBrndInfo" type="uint8" />
+      <member name="WPC_ChargingStopByPhn" type="uint8" />
+      <member name="WPC_FANDutyRatioSta" type="uint8" />
+      <member name="WPC_WU_PWR_ACC" type="uint8" />
+      <member name="WPC_WU_PWR_IGN1" type="uint8" />
+      <member name="WPC_WU_R_DrvDoorSw" type="uint8" />
+      <member name="WPC_WU_R_B1CAN" type="uint8" />
+      <member name="WPC_WU_R_Diag" type="uint8" />
+      <member name="WPC_WU_R_IGNFallingTimer" type="uint8" />
+      <member name="WPC_MCUNonSleep" type="uint8" />
+      <member name="WPC_ChargingICNonSleep" type="uint8" />
+      <member name="WPC_NFCModuleNonSleep" type="uint8" />
+      <member name="WPC_UDSModuleNonSleep" type="uint8" />
+      <member name="WPC_Dvp_01" type="uint64" />
+      <member name="C_WPC_NFCDetection" type="uint8" />
+      <member name="WPC_NFCResetSta" type="uint8" />
+      <member name="WPC2_NFCDetection" type="uint8" />
+      <member name="WPC2_NFCResetSta" type="uint8" />
+      <member name="WPC_Status" type="uint8" />
+      <member name="WPC2_Status" type="uint8" />
+      <member name="WPC_NFC_Opt" type="uint8" />
+    </struct>
+    <struct name="Cabin_Charging_WPC_Event_t">
+      <member name="PhoneUseTime" type="uint8" />
+      <member name="PhnChargingCompleteCnt" type="uint8" />
+      <member name="EPPChargeCount" type="uint8" />
+      <member name="MPPChargingCnt" type="uint8" />
+      <member name="DigitalKeyAuthentication" type="uint8" />
+      <member name="DigitalKeyDevice" type="uint8" />
+      <member name="PhoneChargeErrorCount" type="uint8" />
+      <member name="Thermal_Sensor_MaxTemperature" type="uint8" />
+      <member name="Temperature_Sensor_FaultDTC" type="uint8" />
+      <member name="FAN_Fault_DTC" type="uint8" />
+      <member name="InternalECU_Error_DTC" type="uint8" />
+    </struct>
+    <struct name="GCS_RIGHT_1_WPC_t">
+      <member name="LFAnt_SrchSta_WPC" type="uint8" />
+      <member name="IAU_ProfileIDRVal_WPC" type="uint8" />
+      <member name="IAU_DigitalKey2Opt_WPC" type="uint8" />
+      <member name="CLU_DtntOutSta_WPC" type="uint8" />
+      <member name="CLU_RhstaLvlSta_WPC" type="uint8" />
+      <member name="CLU_DisSpdVal_KPH_WPC" type="uint16" />
+      <member name="CLU_AutoBrightSta_WPC" type="uint8" />
+      <member name="USM_StaRst1Req_WPC" type="uint8" />
+      <member name="USM_WpcSetReq_WPC" type="uint8" />
+      <member name="CLU_ClusterUSM_WPC" type="uint8" />
+      <member name="HEV_EngOpSta_WPC" type="uint8" />
+      <member name="CF_AVN_ProfileIDRValue_WPC" type="uint8" />
+      <member name="CF_Gway_WPCNValueSet_WPC" type="uint8" />
+      <member name="CF_AVN_CluUSMReset_WPC" type="uint8" />
+      <member name="CF_Gway_WPC2_NValueSet_WPC" type="uint8" />
+      <member name="CF_Gway_WPCAnimationNvalueSet_WPC" type="uint8" />
+      <member name="Warn_DrvDrSwSta_WPC" type="uint8" />
+      <member name="Warn_AsstDrSwSta_WPC" type="uint8" />
+      <member name="Warn_RrLftDrSwSta_WPC" type="uint8" />
+      <member name="Warn_RrRtDrSwSta_WPC" type="uint8" />
+      <member name="PDC_ResetPreWrngForOthers_WPC" type="uint8" />
+      <member name="PDC_ResetReqForOthers_WPC" type="uint8" />
+      <member name="VCU_EvDrvRdySta_WPC" type="uint8" />
+      <member name="VCU_GearPosSta_WPC" type="uint8" />
+      <member name="SleepRequestTo_WPC_WPC" type="uint8" />
+      <member name="VehiclePowerState_WPC" type="uint8" />
+      <member name="C_WPCNFCcmd_WPC" type="uint8" />
+      <member name="C_DigitalKey_Enable_WPC" type="uint8" />
+      <member name="C_IAU_Stauts_WPC" type="uint8" />
+      <member name="IAU_OwnerPhnRegRVal_WPC" type="uint8" />
+      <member name="WPC_NFC_Deselect_Cmd_WPC" type="uint8" />
+      <member name="WPC2_NFC_Deselect_Cmd_WPC" type="uint8" />
+      <member name="OPAdv_On_Cmd_WPC" type="uint8" />
+      <member name="WPC_Device_On_Cmd_WPC" type="uint8" />
+      <member name="IAU_DigitalKeyEnblRVal_WPC" type="uint8" />
+      <member name="WPC_FANSpeedSet_WPC" type="uint8" />
+      <member name="IAU_ISKLearning_WPC" type="uint8" />
+      <member name="IAU_ISKLearnFB_WPC" type="uint8" />
+      <member name="IAU_NFCWPCDeviceScanReq_WPC" type="uint8" />
+      <member name="IAU_DigitalKeyOpt_WPC" type="uint8" />
+      <member name="IAU_ISKLearnState_WPC" type="uint8" />
+      <member name="IAU_OptTyp_WPC" type="uint8" />
+      <member name="IAU_NFCKeyReminder_WPC" type="uint8" />
+      <member name="IAU_NFCDeactivation_WPC" type="uint8" />
+      <member name="IAU_LftDrHndLockDetected_WPC" type="uint8" />
+      <member name="IAU_LftDrHndUnlockDetected_WPC" type="uint8" />
+      <member name="IAU_RtDrHndLockDetected_WPC" type="uint8" />
+      <member name="IAU_RtDrHndUnlockDetected_WPC" type="uint8" />
+      <member name="IAU_SimplePairingPhoneNum_WPC" type="uint8" />
+      <member name="IAU_Encrypted_Result3_WPC" type="uint8" />
+      <member name="IAU_Encrypted_Result4_WPC" type="uint8" />
+      <member name="BCM_AccInSta_WPC" type="uint8" />
+      <member name="BCM_SmkOptTyp_WPC" type="uint8" />
+      <member name="IntLamp_InlTailLmpSta_WPC" type="uint8" />
+      <member name="C_PSDPTGOnOffSw_WPC" type="uint8" />
+      <member name="C_FuelDrState_WPC" type="uint8" />
+      <member name="C_3rdRCSeatBeltSW_WPC" type="uint8" />
+      <member name="C_3rdRRSBRMatSw_WPC" type="uint8" />
+      <member name="C_3rdRLSBRMatSw_WPC" type="uint8" />
+      <member name="C_3rdRRSeatBeltSW_WPC" type="uint8" />
+      <member name="C_3rdRLSeatBeltSW_WPC" type="uint8" />
+      <member name="C_4thRCSeatBeltSW_WPC" type="uint8" />
+      <member name="C_4thRRSeatBeltSW_WPC" type="uint8" />
+      <member name="C_4thRLSeatBeltSW_WPC" type="uint8" />
+      <member name="PSD_LHPSDLatchState_WPC" type="uint8" />
+      <member name="PSD_RHPSDLatchState_WPC" type="uint8" />
+      <member name="WPC2_IndSyncVal_WPC" type="uint8" />
+      <member name="RWPC_IndSyncVal_WPC" type="uint8" />
+      <member name="Warn_AsstDrSwSta_SBCM_WPC" type="uint8" />
+      <member name="Warn_DrvDrSwSta_SBCM_WPC" type="uint8" />
+      <member name="Warn_RrLftDrSwSta_SBCM_WPC" type="uint8" />
+      <member name="Warn_RrRtDrSwSta_SBCM_WPC" type="uint8" />
+      <member name="Drive_Latch_TypeOption_WPC" type="uint8" />
+    </struct>
+    <struct name="Cabin_Heat_HV_PTC_HEATER_t">
+      <member name="FHPTC_DrRdySta" type="boolean" />
+      <member name="FHPTC_DrOpSta" type="uint8" />
+      <member name="FHPTC_DrCoreTemp_C" type="int16" />
+      <member name="FHPTC_DrCnsmptPwr_W" type="uint16" />
+      <member name="FHPTC_DrCurrent_A" type="float32" />
+      <member name="FHPTC_DrDutyFB_Pec" type="float32" />
+      <member name="FHPTC_DrDutyFB_IGBT" type="float32" />
+      <member name="FHPTC_DrCtrlTyp" type="uint8" />
+      <member name="FHPTC_DrVoltage_V" type="uint16" />
+      <member name="FHPTC_DrFlt" type="boolean" />
+      <member name="FHPTC_DrFltLVLow" type="boolean" />
+      <member name="FHPTC_DrFltLVHigh" type="boolean" />
+      <member name="FHPTC_DrFltHVLow" type="boolean" />
+      <member name="FHPTC_DrFltHVHigh" type="boolean" />
+      <member name="FHPTC_DrFltOverCurrent" type="boolean" />
+      <member name="FHPTC_DrFltThermalShutDn" type="boolean" />
+      <member name="FHPTC_DrFltPcbThermalShutDn" type="boolean" />
+      <member name="FHPTC_DrFltMsgTmOutATCU" type="boolean" />
+      <member name="FHPTC_DrFailHVSnr" type="boolean" />
+      <member name="FHPTC_DrFailLVSnr" type="boolean" />
+      <member name="FHPTC_DrFailCurrentSnr" type="boolean" />
+      <member name="FHPTC_DrFailCoreTempSnr" type="boolean" />
+      <member name="FHPTC_DrFailPcbTempSnr" type="boolean" />
+      <member name="FHPTC_DrFailIGBT" type="boolean" />
+      <member name="FHPTC_DrFailOpenLoad" type="boolean" />
+      <member name="FHPTC_DrLtdOpCause" type="uint8" />
+      <member name="FHPTC_DrSwVer" type="uint8" />
+      <member name="FHPTC_CnsmptPwrTtl_W" type="uint16" />
+      <member name="FHPTC_IntlkSta" type="uint8" />
+      <member name="FHPTC_PassRdySta" type="boolean" />
+      <member name="FHPTC_PassOpSta" type="uint8" />
+      <member name="FHPTC_PassCtrlTyp" type="uint8" />
+      <member name="FHPTC_PassCoreTemp_C" type="int16" />
+      <member name="FHPTC_PassCnsmptPwr_W" type="uint16" />
+      <member name="FHPTC_PassVoltage_V" type="uint16" />
+      <member name="FHPTC_PassCurrent_A" type="float32" />
+      <member name="FHPTC_PassDutyFB_Pec" type="float32" />
+      <member name="FHPTC_PassDutyFB_IGBT" type="float32" />
+      <member name="FHPTC_PassFlt" type="boolean" />
+      <member name="FHPTC_PassFltLVLow" type="boolean" />
+      <member name="FHPTC_PassFltLVHigh" type="boolean" />
+      <member name="FHPTC_PassFltHVLow" type="boolean" />
+      <member name="FHPTC_PassFltHVHigh" type="boolean" />
+      <member name="FHPTC_PassFltOverCurrent" type="boolean" />
+      <member name="FHPTC_PassFltThermalShutDn" type="boolean" />
+      <member name="FHPTC_PassFltPcbThermalShutDn" type="boolean" />
+      <member name="FHPTC_PassFltMsgTmOutATCU" type="boolean" />
+      <member name="FHPTC_PassFailHVSnr" type="boolean" />
+      <member name="FHPTC_PassFailLVSnr" type="boolean" />
+      <member name="FHPTC_PassFailCurrentSnr" type="boolean" />
+      <member name="FHPTC_PassFailCoreTempSnr" type="boolean" />
+      <member name="FHPTC_PassFailPcbTempSnr" type="boolean" />
+      <member name="FHPTC_PassFailIGBT" type="boolean" />
+      <member name="FHPTC_PassFailOpenLoad" type="boolean" />
+      <member name="FHPTC_PassLtdOpCause" type="uint8" />
+      <member name="FHPTC_PassSwVer" type="uint8" />
+      <member name="FHPTC_SleepReady" type="uint8" />
+    </struct>
+    <struct name="GCS_RIGHT_1_HV_PTC_HEATER_t">
+      <member name="L_ATCU_FHPTCOpPrmssnSta_HV_PTC_HEATER" type="boolean" />
+      <member name="L_ATCU_DrvrSdTyp_HV_PTC_HEATER" type="boolean" />
+      <member name="L_ATCU_FHPTCDrTrgtDty_HV_PTC_HEATER" type="float32" />
+      <member name="L_ATCU_FHPTCPassTrgtDty_HV_PTC_HEATER" type="float32" />
+      <member name="L_ATCU_FHPTCDischrgReq_HV_PTC_HEATER" type="boolean" />
+      <member name="L_ATCU_FltMsgTmOutFHPTC1_HV_PTC_HEATER" type="boolean" />
+      <member name="L_ATCU_FltMsgTmOutFHPTC2_HV_PTC_HEATER" type="boolean" />
+      <member name="L_ATCU_FltMsgTmOutFHPTC3_HV_PTC_HEATER" type="boolean" />
+      <member name="L_ATCU_FltMsgTmOutFHPTC4_HV_PTC_HEATER" type="boolean" />
+      <member name="L_ATCU_FrBlwLvl_HV_PTC_HEATER" type="uint8" />
+      <member name="SleepRequestTo_FHPTC_HV_PTC_HEATER" type="uint8" />
+      <member name="VehiclePowerState_HV_PTC_HEATER" type="uint8" />
+    </struct>
+    <struct name="Cabin_Seat_PSUIO_AST_t">
+      <member name="Assist_Slide_CurrentPosition" type="uint16" />
+      <member name="Assist_Recline_CurrentPosition" type="uint16" />
+      <member name="Assist_Tilt_CurrentPosition" type="uint16" />
+      <member name="Assist_RlxTilt_CurrentPosition" type="uint16" />
+      <member name="Assist_Height_CurrentPosition" type="uint16" />
+      <member name="Assist_Legrest_CurrentPosition" type="uint16" />
+      <member name="Assist_Seat_MotorIntegratedMove_FeedbackInitial" type="uint8" />
+      <member name="Assist_Slide_VirtualLimitReach_State" type="uint8" />
+      <member name="Assist_Recline_VirtualLimitReach_State" type="uint8" />
+      <member name="Assist_Tilt_VirtualLimitReach_State" type="uint8" />
+      <member name="Assist_RelaxTilt_VirtualLimitReach_State" type="uint8" />
+      <member name="Assist_Height_VirtualLimitReach_State" type="uint8" />
+      <member name="Assist_Legrest_VirtualLimitReach_State" type="uint8" />
+      <member name="Assist_Recline_Sensor_ErrorState" type="uint8" />
+      <member name="Assist_Slide_Sensor_ErrorState" type="uint8" />
+      <member name="Assist_Tilt_Sensor_ErrorState" type="uint8" />
+      <member name="Assist_RelaxTilt_Sensor_ErrorState" type="uint8" />
+      <member name="Assist_Height_Sensor_ErrorState" type="uint8" />
+      <member name="Assist_Legrest_Sensor_ErrorState" type="uint8" />
+      <member name="Assist_Recline_EndLimit_ReachState" type="uint8" />
+      <member name="Assist_Slide_EndLimit_ReachState" type="uint8" />
+      <member name="Assist_Tilt_EndLimit_ReachState" type="uint8" />
+      <member name="Assist_RlxTilt_EndLimit_ReachState" type="uint8" />
+      <member name="Assist_Height_EndLimit_ReachState" type="uint8" />
+      <member name="Assist_Legrest_EndLimit_ReachState" type="uint8" />
+      <member name="Assist_UnitAppliedOption" type="uint8" />
+      <member name="Assist_AllSeat_Motor_FailState" type="uint8" />
+      <member name="Assist_Slide_MotorMove_State" type="uint8" />
+      <member name="Assist_Recline_MotorMove_State" type="uint8" />
+      <member name="Assist_Tilt_MotorMove_State" type="uint8" />
+      <member name="Assist_RelaxTilt_MotorMove_State" type="uint8" />
+      <member name="Assist_Height_MotorMove_State" type="uint8" />
+      <member name="Assist_Legrest_MotorMove_State" type="uint8" />
+      <member name="Assist_Slide_MotorMove_StateInitial" type="uint8" />
+      <member name="Assist_Recline_MotorMove_StateInitial" type="uint8" />
+      <member name="Assist_Tilt_MotorMove_StateInitial" type="uint8" />
+      <member name="Assist_RelaxTilt_MotorMove_StateInitial" type="uint8" />
+      <member name="Assist_Height_MotorMove_StateInitial" type="uint8" />
+      <member name="Assist_Legrest_MotorMove_StateInitial" type="uint8" />
+      <member name="Assist_Slide_MotorVirtualLimitSet_State" type="uint8" />
+      <member name="Assist_Recline_MotorVirtualLimitSet_State" type="uint8" />
+      <member name="Assist_Tilt_MotorVirtualLimitSet_State" type="uint8" />
+      <member name="Assist_RelaxTilt_MotorVirtualLimitSet_State" type="uint8" />
+      <member name="Assist_Height_MotorVirtualLimitSet_State" type="uint8" />
+      <member name="Assist_Legrest_MotorVirtualLimitSet_State" type="uint8" />
+      <member name="Assist_Seat_EasyAccess_Option" type="uint8" />
+      <member name="APSS_StSldFwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StSldBwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StRclFwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StRclBwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StTltUpMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StTltDnMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StRlxTltUpMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StRlxTltDnMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StHgtUpMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StHgtDnMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StLegUpMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StLegDnMvBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StRlxModeBtn_PSUIO_AST" type="uint8" />
+      <member name="APSS_StRlxReturnBtn_PSUIO_AST" type="uint8" />
+      <member name="Assist_Recline_ForwardMotor_Output" type="uint8" />
+      <member name="Assist_Recline_BackwardMotor_Output" type="uint8" />
+      <member name="Assist_Slide_ForwardMotor_Output" type="uint8" />
+      <member name="Assist_Slide_BackwardMotor_Output" type="uint8" />
+      <member name="Assist_Tilt_ForwardMotor_Output" type="uint8" />
+      <member name="Assist_Tilt_BackwardMotor_Output" type="uint8" />
+      <member name="Assist_RlxTilt_ForwardMotor_Output" type="uint8" />
+      <member name="Assist_RlxTilt_BackwardMotor_Output" type="uint8" />
+      <member name="Assist_Height_ForwardMotor_Output" type="uint8" />
+      <member name="Assist_Height_BackwardMotor_Output" type="uint8" />
+      <member name="Assist_Legrest_ForwardMotor_Output" type="uint8" />
+      <member name="Assist_Legrest_BackwardMotor_Output" type="uint8" />
+      <member name="PSUIO_AST_SleepReady" type="uint8" />
+      <member name="AWSM_StSldFwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="AWSM_StSldBwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="AWSM_StRclFwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="AWSM_StRclBwdMvBtn_PSUIO_AST" type="uint8" />
+      <member name="AWSM_StRlxModeBtn_PSUIO_AST" type="uint8" />
+      <member name="AWSM_StRlxReturnBtn_PSUIO_AST" type="uint8" />
+      <member name="AWSM_StMnlRlxModeBtn_PSUIO_AST" type="uint8" />
+      <member name="AWSM_StMnlRlxReturnBtn_PSUIO_AST" type="uint8" />
+      <member name="Drive_PSU_Slide_Fail_State_PSUIO_AST" type="uint8" />
+      <member name="Assist_PSU_Recline_Fail_State_PSUIO_AST" type="uint8" />
+      <member name="Assist_PSU_Tilt_Fail_State_PSUIO_AST" type="uint8" />
+      <member name="Assist_PSU_RlxTilt_Fail_State_PSUIO_AST" type="uint8" />
+      <member name="Assist_PSU_Height_Fail_State_PSUIO_AST" type="uint8" />
+      <member name="Assist_PSU_Legrest_Fail_State_PSUIO_AST" type="uint8" />
+    </struct>
+    <struct name="GCS_RIGHT_1_PSUIO_AST_t">
+      <member name="PSeat_AstInitializationPlayCmd_PSUIO_AST" type="uint8" />
+      <member name="PSeat_AstSlideManualPlayCmd_PSUIO_AST" type="uint8" />
+      <member name="PSeat_AstReclineManualPlayCmd_PSUIO_AST" type="uint8" />
+      <member name="PSeat_AstTiltManualPlayCmd_PSUIO_AST" type="uint8" />
+      <member name="PSeat_AstRlxTiltManualPlayCmd_PSUIO_AST" type="uint8" />
+      <member name="PSeat_AstHeightManualPlayCmd_PSUIO_AST" type="uint8" />
+      <member name="PSeat_AstLegrestManualPlayCmd_PSUIO_AST" type="uint8" />
+      <member name="DriveTypeOption_PSUIO_AST" type="uint8" />
+      <member name="ICU_PowerAutoCutModSta_PSUIO_AST" type="uint8" />
+      <member name="Assist_Recline_TargetPlayCmd_PSUIO_AST" type="uint16" />
+      <member name="Assist_Slide_TargetPlayCmd_PSUIO_AST" type="uint16" />
+      <member name="Assist_Tilt_TargetPlayCmd_PSUIO_AST" type="uint16" />
+      <member name="Assist_RlxTilt_TargetPlayCmd_PSUIO_AST" type="uint16" />
+      <member name="Assist_Height_TargetPlayCmd_PSUIO_AST" type="uint16" />
+      <member name="Assist_Legrest_TargetPlayCmd_PSUIO_AST" type="uint16" />
+      <member name="SleepRequestTo_PSUIO_AST" type="uint8" />
+      <member name="VehicePowerState_PSUIO_AST" type="uint8" />
+    </struct>
+    <struct name="Cabin_Door_PDIO_FR_t">
+      <member name="PDIO_FR_Assist_Door_Switch_State" type="uint8" />
+      <member name="PDIO_FR_Assist_Door_Unlock_State" type="uint8" />
+      <member name="PDIO_FR_PwrDrAvailability" type="uint8" />
+      <member name="PDIO_FR_PwrDrAngle" type="float32" />
+      <member name="PDIO_FR_PwrDrStatus" type="uint8" />
+      <member name="PDIO_FR_PwrDrSwingActrStatus" type="uint8" />
+      <member name="PDIO_FR_PwrDrErrorState" type="uint8" />
+      <member name="PDIO_FR_PwrDrAntiPinchStatus" type="uint8" />
+      <member name="PDIO_FR_PwrDrAngleSpeed" type="float32" />
+      <member name="PDIO_FR_InsdOpnClsSwStatus" type="uint8" />
+      <member name="PDIO_FR_OtsdOpnClsSwStatus" type="uint8" />
+      <member name="PDIO_FR_SleepReady" type="uint8" />
+      <member name="PDIO_FR_WakeupRequest" type="uint8" />
+      <member name="PDIO_FR_CinchingStatus" type="uint8" />
+      <member name="PDIO_FR_ActiveHoldingState" type="uint8" />
+    </struct>
+    <struct name="GCS_RIGHT_1_PDIO_FR_t">
+      <member name="PwrDrOpnClsCmd_PDIO_FR" type="uint8" />
+      <member name="PwrDrSnsrStatus_RODS_FR_PDIO_FR" type="uint8" />
+      <member name="PwrDrSnsrStopAngle_RODS_FR_PDIO_FR" type="float32" />
+      <member name="PwrDrSnsrStopRequest_RODS_FR_PDIO_FR" type="uint8" />
+      <member name="ACU_CrshActvSta_PDIO_FR" type="uint8" />
+      <member name="ACU_CrshTyp_PDIO_FR" type="uint16" />
+      <member name="Door_LockUnlockCmd_PDIO_FR" type="uint8" />
+      <member name="IMU_LatAccelSigSta_PDIO_FR" type="uint8" />
+      <member name="IMU_LongAccelSigSta_PDIO_FR" type="uint8" />
+      <member name="IMU_LatAccelVal_PDIO_FR" type="float32" />
+      <member name="IMU_LongAccelVal_PDIO_FR" type="float32" />
+      <member name="VehicleSpeedState_PDIO_FR" type="uint16" />
+      <member name="VCU_GearPosSta_PDIO_FR" type="uint8" />
+      <member name="PwrDrOpnAngVal_PDIO_FR" type="float32" />
+      <member name="SleepRequestTo_PDIO_FR" type="uint8" />
+      <member name="SleepCommandTo_PDIO_FR" type="uint8" />
+      <member name="VehiclePowerState_PDIO_FR" type="uint8" />
+    </struct>
+    <struct name="NFC_WPC_TO_GCS_ETH_WPC_t">
+      <member name="L_TP_L_WPC_FD_BDC_FD_Byte" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte0" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte1" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte2" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte3" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte4" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte5" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte6" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte7" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte8" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte9" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte10" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte11" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte12" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte13" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte14" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte15" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte16" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte17" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte18" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte19" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte20" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte21" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte22" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte23" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte24" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte25" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte26" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte27" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte28" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte29" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte30" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte31" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte32" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte33" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte34" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte35" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte36" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte37" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte38" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte39" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte40" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte41" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte42" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte43" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte44" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte45" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte46" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte47" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte48" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte49" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte50" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte51" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte52" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte53" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte54" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte55" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte56" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte57" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte58" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte59" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte60" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte61" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte62" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte63" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte64" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte65" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte66" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte67" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte68" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte69" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte70" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte71" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte72" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte73" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte74" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte75" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte76" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte77" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte78" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte79" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte80" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte81" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte82" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte83" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte84" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte85" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte86" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte87" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte88" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte89" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte90" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte91" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte92" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte93" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte94" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte95" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte96" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte97" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte98" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte99" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte100" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte101" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte102" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte103" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte104" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte105" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte106" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte107" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte108" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte109" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte110" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte111" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte112" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte113" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte114" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte115" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte116" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte117" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte118" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte119" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte120" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte121" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte122" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte123" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte124" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte125" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte126" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte127" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte128" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte129" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte130" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte131" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte132" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte133" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte134" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte135" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte136" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte137" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte138" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte139" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte140" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte141" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte142" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte143" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte144" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte145" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte146" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte147" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte148" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte149" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte150" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte151" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte152" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte153" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte154" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte155" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte156" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte157" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte158" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte159" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte160" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte161" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte162" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte163" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte164" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte165" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte166" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte167" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte168" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte169" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte170" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte171" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte172" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte173" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte174" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte175" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte176" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte177" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte178" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte179" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte180" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte181" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte182" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte183" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte184" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte185" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte186" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte187" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte188" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte189" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte190" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte191" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte192" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte193" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte194" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte195" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte196" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte197" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte198" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte199" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte200" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte201" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte202" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte203" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte204" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte205" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte206" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte207" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte208" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte209" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte210" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte211" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte212" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte213" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte214" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte215" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte216" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte217" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte218" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte219" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte220" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte221" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte222" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte223" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte224" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte225" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte226" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte227" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte228" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte229" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte230" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte231" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte232" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte233" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte234" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte235" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte236" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte237" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte238" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte239" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte240" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte241" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte242" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte243" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte244" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte245" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte246" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte247" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte248" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte249" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte250" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte251" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte252" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte253" type="uint8" />
+      <member name="NFC_WPC_TO_GCS_ETH_Byte254" type="uint8" />
+    </struct>
+    <struct name="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_t">
+      <member name="L_TP_BDC_FD_L_WPC_FD_Byte0_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte0_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte1_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte2_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte3_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte4_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte5_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte6_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte7_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte8_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte9_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte10_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte11_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte12_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte13_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte14_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte15_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte16_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte17_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte18_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte19_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte20_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte21_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte22_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte23_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte24_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte25_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte26_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte27_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte28_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte29_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte30_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte31_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte32_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte33_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte34_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte35_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte36_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte37_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte38_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte39_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte40_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte41_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte42_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte43_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte44_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte45_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte46_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte47_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte48_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte49_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte50_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte51_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte52_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte53_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte54_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte55_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte56_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte57_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte58_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte59_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte60_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte61_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte62_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte63_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte64_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte65_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte66_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte67_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte68_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte69_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte70_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte71_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte72_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte73_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte74_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte75_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte76_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte77_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte78_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte79_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte80_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte81_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte82_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte83_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte84_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte85_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte86_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte87_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte88_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte89_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte90_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte91_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte92_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte93_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte94_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte95_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte96_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte97_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte98_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte99_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte100_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte101_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte102_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte103_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte104_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte105_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte106_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte107_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte108_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte109_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte110_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte111_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte112_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte113_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte114_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte115_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte116_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte117_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte118_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte119_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte120_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte121_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte122_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte123_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte124_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte125_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte126_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte127_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte128_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte129_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte130_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte131_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte132_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte133_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte134_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte135_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte136_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte137_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte138_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte139_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte140_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte141_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte142_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte143_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte144_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte145_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte146_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte147_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte148_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte149_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte150_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte151_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte152_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte153_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte154_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte155_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte156_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte157_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte158_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte159_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte160_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte161_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte162_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte163_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte164_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte165_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte166_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte167_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte168_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte169_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte170_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte171_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte172_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte173_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte174_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte175_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte176_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte177_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte178_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte179_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte180_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte181_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte182_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte183_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte184_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte185_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte186_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte187_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte188_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte189_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte190_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte191_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte192_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte193_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte194_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte195_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte196_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte197_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte198_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte199_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte200_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte201_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte202_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte203_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte204_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte205_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte206_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte207_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte208_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte209_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte210_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte211_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte212_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte213_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte214_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte215_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte216_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte217_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte218_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte219_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte220_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte221_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte222_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte223_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte224_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte225_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte226_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte227_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte228_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte229_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte230_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte231_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte232_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte233_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte234_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte235_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte236_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte237_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte238_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte239_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte240_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte241_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte242_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte243_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte244_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte245_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte246_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte247_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte248_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte249_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte250_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte251_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte252_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte253_WPC" type="uint8" />
+      <member name="NFC_GCS_TO_WPC_ETH_Byte254_WPC" type="uint8" />
+    </struct>
+    <struct name="Vehicle_HeatActuatorControl_TMD_t">
+      <member name="TMD_SleepReady" type="uint8" />
+      <member name="TMD_McuVer" type="uint16" />
+      <member name="TMD_Variant" type="uint8" />
+      <member name="TMD_SplitVariant" type="uint8" />
+      <member name="TMD_RearClimateVariant" type="uint8" />
+      <member name="TMD_DcVol" type="uint8" />
+      <member name="TMD_DcCrnt" type="uint8" />
+      <member name="TMD_PowerW" type="uint16" />
+      <member name="TMD_McuCtrlEwpInd" type="uint8" />
+      <member name="TMD_EcuOpState" type="uint8" />
+      <member name="TMD_EcuFault" type="uint8" />
+      <member name="TMD_EcuProtect" type="uint8" />
+      <member name="TMD_EcuUndVol" type="uint8" />
+      <member name="TMD_EcuOvrVol" type="uint8" />
+      <member name="TMD_EcuOvrTemp" type="uint8" />
+      <member name="TMD_EcuWarnTemp" type="uint8" />
+      <member name="TMD_EcuShortCircuit" type="uint8" />
+      <member name="TMD_EcuOpenCircuit" type="uint8" />
+      <member name="TMD_EcuOvrCrnt" type="uint8" />
+      <member name="TMD_McuFault" type="uint8" />
+      <member name="TMD_CommErr" type="uint8" />
+      <member name="TMD_EcuAbStop" type="uint8" />
+      <member name="TMD_PeEwpIntCommErr" type="uint8" />
+      <member name="TMD_BatEwpIntCommErr" type="uint8" />
+      <member name="TMD_Ewp3IntCommErr" type="uint8" />
+      <member name="TMD_ClntVlvSysIntCommErr" type="uint8" />
+      <member name="TMD_HpExvIntCommErr" type="uint8" />
+      <member name="TMD_BatExvIntCommErr" type="uint8" />
+      <member name="TMD_RfgVlv3IntCommErr" type="uint8" />
+      <member name="TMD_RfgVlv4IntCommErr" type="uint8" />
+      <member name="TMD_RfgVlv5IntCommErr" type="uint8" />
+      <member name="TMD_CfanIntCommErr" type="uint8" />
+      <member name="TMD_WtLvAct" type="uint8" />
+      <member name="TMD_RadOutTemp" type="int16" />
+      <member name="TMD_BatInTemp" type="int16" />
+      <member name="TMD_LoRfgPrs" type="uint16" />
+      <member name="TMD_LoRfgTemp" type="uint16" />
+      <member name="TMD_HiRfgPrs" type="uint16" />
+      <member name="TMD_HiRfgTemp" type="uint16" />
+      <member name="TMD_CondRfgPrs" type="uint16" />
+      <member name="TMD_CondRfgTemp" type="uint16" />
+      <member name="TMD_WtLvSnsrErr" type="uint8" />
+      <member name="TMD_WtTempSnsr1Err" type="uint8" />
+      <member name="TMD_WtTempSnsr2Err" type="uint8" />
+      <member name="TMD_LoRfgPrsSnsrErr" type="uint8" />
+      <member name="TMD_LoRfgTempSnsrErr" type="uint8" />
+      <member name="TMD_HiRfgPrsSnsrErr" type="uint8" />
+      <member name="TMD_HiRfgTempSnsrErr" type="uint8" />
+      <member name="TMD_CondRfgPrsSnsrErr" type="uint8" />
+      <member name="TMD_CondRfgTempSnsrErr" type="uint8" />
+      <member name="TMD_PeEwpOpState" type="uint8" />
+      <member name="TMD_PeEwpActDuty" type="uint8" />
+      <member name="TMD_PeEwpForcedDiagSta" type="uint8" />
+      <member name="TMD_PeEwpCrntDC" type="uint8" />
+      <member name="TMD_PeEwpCrntIq" type="uint8" />
+      <member name="TMD_PeEwpTemp" type="uint8" />
+      <member name="TMD_PeEwpFault" type="uint8" />
+      <member name="TMD_PeEwpProtect" type="uint8" />
+      <member name="TMD_PeEwpShortCircuit" type="uint8" />
+      <member name="TMD_PeEwpOpenCircuit" type="uint8" />
+      <member name="TMD_PeEwpUndVol" type="uint8" />
+      <member name="TMD_PeEwpOvrVol" type="uint8" />
+      <member name="TMD_PeEwpOvrCrnt" type="uint8" />
+      <member name="TMD_PeEwpWarnCrnt" type="uint8" />
+      <member name="TMD_PeEwpLoCrnt" type="uint8" />
+      <member name="TMD_PeEwpOvrTemp" type="uint8" />
+      <member name="TMD_PeEwpWarnTemp" type="uint8" />
+      <member name="TMD_PeEwpStall" type="uint8" />
+      <member name="TMD_PeEwpSpdErr" type="uint8" />
+      <member name="TMD_PeEwpAbStop" type="uint8" />
+      <member name="TMD_BatEwpOpState" type="uint8" />
+      <member name="TMD_BatEwpActDuty" type="uint8" />
+      <member name="TMD_BatEwpForcedDiagSta" type="uint8" />
+      <member name="TMD_BatEwpCrntDC" type="uint8" />
+      <member name="TMD_BatEwpCrntIq" type="uint8" />
+      <member name="TMD_BatEwpTemp" type="uint8" />
+      <member name="TMD_BatEwpFault" type="uint8" />
+      <member name="TMD_BatEwpProtect" type="uint8" />
+      <member name="TMD_BatEwpShortCircuit" type="uint8" />
+      <member name="TMD_BatEwpOpenCircuit" type="uint8" />
+      <member name="TMD_BatEwpUndVol" type="uint8" />
+      <member name="TMD_BatEwpOvrVol" type="uint8" />
+      <member name="TMD_BatEwpOvrCrnt" type="uint8" />
+      <member name="TMD_BatEwpWarnCrnt" type="uint8" />
+      <member name="TMD_BatEwpLoCrnt" type="uint8" />
+      <member name="TMD_BatEwpOvrTemp" type="uint8" />
+      <member name="TMD_BatEwpWarnTemp" type="uint8" />
+      <member name="TMD_BatEwpStall" type="uint8" />
+      <member name="TMD_BatEwpSpdErr" type="uint8" />
+      <member name="TMD_BatEwpAbStop" type="uint8" />
+      <member name="TMD_Ewp3OpState" type="uint8" />
+      <member name="TMD_Ewp3ActDuty" type="uint8" />
+      <member name="TMD_Ewp3ForcedDiagSta" type="uint8" />
+      <member name="TMD_Ewp3CrntDC" type="uint8" />
+      <member name="TMD_Ewp3CrntIq" type="uint8" />
+      <member name="TMD_Ewp3Temp" type="uint8" />
+      <member name="TMD_Ewp3Fault" type="uint8" />
+      <member name="TMD_Ewp3Protect" type="uint8" />
+      <member name="TMD_Ewp3ShortCircuit" type="uint8" />
+      <member name="TMD_Ewp3OpenCircuit" type="uint8" />
+      <member name="TMD_Ewp3UndVol" type="uint8" />
+      <member name="TMD_Ewp3OvrVol" type="uint8" />
+      <member name="TMD_Ewp3OvrCrnt" type="uint8" />
+      <member name="TMD_Ewp3WarnCrnt" type="uint8" />
+      <member name="TMD_Ewp3LoCrnt" type="uint8" />
+      <member name="TMD_Ewp3OvrTemp" type="uint8" />
+      <member name="TMD_Ewp3WarnTemp" type="uint8" />
+      <member name="TMD_Ewp3Stall" type="uint8" />
+      <member name="TMD_Ewp3SpdErr" type="uint8" />
+      <member name="TMD_Ewp3AbStop" type="uint8" />
+      <member name="TMD_ClntVlvSysOpState" type="uint8" />
+      <member name="TMD_ClntVlvSysActMod" type="uint8" />
+      <member name="TMD_ClntVlvSysActSta" type="uint8" />
+      <member name="TMD_ClntVlvSysMovEnaSta" type="uint8" />
+      <member name="TMD_ClntVlvSysInitSta" type="uint8" />
+      <member name="TMD_ClntVlvSysForcedDiagSta" type="uint8" />
+      <member name="TMD_ClntVlvSysFault" type="uint8" />
+      <member name="TMD_ClntVlvSysProtect" type="uint8" />
+      <member name="TMD_ClntVlvSysShortCircuit" type="uint8" />
+      <member name="TMD_ClntVlvSysOpenCircuit" type="uint8" />
+      <member name="TMD_ClntVlvSysUndVol" type="uint8" />
+      <member name="TMD_ClntVlvSysOvrVol" type="uint8" />
+      <member name="TMD_ClntVlvSysOvrCrnt" type="uint8" />
+      <member name="TMD_ClntVlvSysOvrTemp" type="uint8" />
+      <member name="TMD_ClntVlvSysStall" type="uint8" />
+      <member name="TMD_ClntVlvSysPosErr" type="uint8" />
+      <member name="TMD_ClntVlvSysPosSnsrErr" type="uint8" />
+      <member name="TMD_ClntVlvSysCalFail" type="uint8" />
+      <member name="TMD_ClntVlvSysAbStop" type="uint8" />
+      <member name="TMD_HpExvOpState" type="uint8" />
+      <member name="TMD_HpExvActPosWay" type="uint8" />
+      <member name="TMD_HpExvActPosWayVal" type="uint16" />
+      <member name="TMD_HpExvActPosWayAVal" type="uint16" />
+      <member name="TMD_HpExvWayFulOpnSta" type="uint8" />
+      <member name="TMD_HpExvWayAFulOpnSta" type="uint8" />
+      <member name="TMD_HpExvMovEnaSta" type="uint8" />
+      <member name="TMD_HpExvInitSta" type="uint8" />
+      <member name="TMD_HpExvFailSafeOp" type="uint8" />
+      <member name="TMD_HpExvRfgInjctMod" type="uint8" />
+      <member name="TMD_HpExvFault" type="uint8" />
+      <member name="TMD_HpExvProtect" type="uint8" />
+      <member name="TMD_HpExvShortCircuit" type="uint8" />
+      <member name="TMD_HpExvOpenCircuit" type="uint8" />
+      <member name="TMD_HpExvUndVol" type="uint8" />
+      <member name="TMD_HpExvOvrVol" type="uint8" />
+      <member name="TMD_HpExvOvrCrnt" type="uint8" />
+      <member name="TMD_HpExvOvrTemp" type="uint8" />
+      <member name="TMD_HpExvStall" type="uint8" />
+      <member name="TMD_HpExvPosErr" type="uint8" />
+      <member name="TMD_HpExvPosSnsrErr" type="uint8" />
+      <member name="TMD_HpExvCalFail" type="uint8" />
+      <member name="TMD_HpExvAbStop" type="uint8" />
+      <member name="TMD_BatExvOpState" type="uint8" />
+      <member name="TMD_BatExvActPosWay" type="uint8" />
+      <member name="TMD_BatExvActPosWayVal" type="uint16" />
+      <member name="TMD_BatExvActPosWayAVal" type="uint16" />
+      <member name="TMD_BatExvWayFulOpnSta" type="uint8" />
+      <member name="TMD_BatExvWayAFulOpnSta" type="uint8" />
+      <member name="TMD_BatExvMovEnaSta" type="uint8" />
+      <member name="TMD_BatExvInitSta" type="uint8" />
+      <member name="TMD_BatExvFailSafeOp" type="uint8" />
+      <member name="TMD_BatExvRfgInjctMod" type="uint8" />
+      <member name="TMD_BatExvFault" type="uint8" />
+      <member name="TMD_BatExvProtect" type="uint8" />
+      <member name="TMD_BatExvShortCircuit" type="uint8" />
+      <member name="TMD_BatExvOpenCircuit" type="uint8" />
+      <member name="TMD_BatExvUndVol" type="uint8" />
+      <member name="TMD_BatExvOvrVol" type="uint8" />
+      <member name="TMD_BatExvOvrCrnt" type="uint8" />
+      <member name="TMD_BatExvOvrTemp" type="uint8" />
+      <member name="TMD_BatExvStall" type="uint8" />
+      <member name="TMD_BatExvPosErr" type="uint8" />
+      <member name="TMD_BatExvPosSnsrErr" type="uint8" />
+      <member name="TMD_BatExvCalFail" type="uint8" />
+      <member name="TMD_BatExvAbStop" type="uint8" />
+      <member name="TMD_RfgVlv3OpState" type="uint8" />
+      <member name="TMD_RfgVlv3ActPosWay" type="uint8" />
+      <member name="TMD_RfgVlv3ActPosWayVal" type="uint16" />
+      <member name="TMD_RfgVlv3ActPosWayAVal" type="uint16" />
+      <member name="TMD_RfgVlv3WayFulOpnSta" type="uint8" />
+      <member name="TMD_RfgVlv3WayAFulOpnSta" type="uint8" />
+      <member name="TMD_RfgVlv3MovEnaSta" type="uint8" />
+      <member name="TMD_RfgVlv3InitSta" type="uint8" />
+      <member name="TMD_RfgVlv3FailSafeOp" type="uint8" />
+      <member name="TMD_RfgVlv3RfgInjctMod" type="uint8" />
+      <member name="TMD_RfgVlv3Fault" type="uint8" />
+      <member name="TMD_RfgVlv3Protect" type="uint8" />
+      <member name="TMD_RfgVlv3ShortCircuit" type="uint8" />
+      <member name="TMD_RfgVlv3OpenCircuit" type="uint8" />
+      <member name="TMD_RfgVlv3UndVol" type="uint8" />
+      <member name="TMD_RfgVlv3OvrVol" type="uint8" />
+      <member name="TMD_RfgVlv3OvrCrnt" type="uint8" />
+      <member name="TMD_RfgVlv3OvrTemp" type="uint8" />
+      <member name="TMD_RfgVlv3Stall" type="uint8" />
+      <member name="TMD_RfgVlv3PosErr" type="uint8" />
+      <member name="TMD_RfgVlv3PosSnsrErr" type="uint8" />
+      <member name="TMD_RfgVlv3CalFail" type="uint8" />
+      <member name="TMD_RfgVlv3AbStop" type="uint8" />
+      <member name="TMD_RfgVlv4OpState" type="uint8" />
+      <member name="TMD_RfgVlv4ActPosWay" type="uint8" />
+      <member name="TMD_RfgVlv4ActPosWayVal" type="uint16" />
+      <member name="TMD_RfgVlv4ActPosWayAVal" type="uint16" />
+      <member name="TMD_RfgVlv4WayFulOpnSta" type="uint8" />
+      <member name="TMD_RfgVlv4WayAFulOpnSta" type="uint8" />
+      <member name="TMD_RfgVlv4MovEnaSta" type="uint8" />
+      <member name="TMD_RfgVlv4InitSta" type="uint8" />
+      <member name="TMD_RfgVlv4FailSafeOp" type="uint8" />
+      <member name="TMD_RfgVlv4RfgInjctMod" type="uint8" />
+      <member name="TMD_RfgVlv4Fault" type="uint8" />
+      <member name="TMD_RfgVlv4Protect" type="uint8" />
+      <member name="TMD_RfgVlv4ShortCircuit" type="uint8" />
+      <member name="TMD_RfgVlv4OpenCircuit" type="uint8" />
+      <member name="TMD_RfgVlv4UndVol" type="uint8" />
+      <member name="TMD_RfgVlv4OvrVol" type="uint8" />
+      <member name="TMD_RfgVlv4OvrCrnt" type="uint8" />
+      <member name="TMD_RfgVlv4OvrTemp" type="uint8" />
+      <member name="TMD_RfgVlv4Stall" type="uint8" />
+      <member name="TMD_RfgVlv4PosErr" type="uint8" />
+      <member name="TMD_RfgVlv4PosSnsrErr" type="uint8" />
+      <member name="TMD_RfgVlv4CalFail" type="uint8" />
+      <member name="TMD_RfgVlv4AbStop" type="uint8" />
+      <member name="TMD_RfgVlv5OpState" type="uint8" />
+      <member name="TMD_RfgVlv5ActPosWay" type="uint8" />
+      <member name="TMD_RfgVlv5ActPosWayVal" type="uint16" />
+      <member name="TMD_RfgVlv5ActPosWayAVal" type="uint16" />
+      <member name="TMD_RfgVlv5WayFulOpnSta" type="uint8" />
+      <member name="TMD_RfgVlv5WayAFulOpnSta" type="uint8" />
+      <member name="TMD_RfgVlv5MovEnaSta" type="uint8" />
+      <member name="TMD_RfgVlv5InitSta" type="uint8" />
+      <member name="TMD_RfgVlv5FailSafeOp" type="uint8" />
+      <member name="TMD_RfgVlv5RfgInjctMod" type="uint8" />
+      <member name="TMD_RfgVlv5Fault" type="uint8" />
+      <member name="TMD_RfgVlv5Protect" type="uint8" />
+      <member name="TMD_RfgVlv5ShortCircuit" type="uint8" />
+      <member name="TMD_RfgVlv5OpenCircuit" type="uint8" />
+      <member name="TMD_RfgVlv5UndVol" type="uint8" />
+      <member name="TMD_RfgVlv5OvrVol" type="uint8" />
+      <member name="TMD_RfgVlv5OvrCrnt" type="uint8" />
+      <member name="TMD_RfgVlv5OvrTemp" type="uint8" />
+      <member name="TMD_RfgVlv5Stall" type="uint8" />
+      <member name="TMD_RfgVlv5PosErr" type="uint8" />
+      <member name="TMD_RfgVlv5PosSnsrErr" type="uint8" />
+      <member name="TMD_RfgVlv5CalFail" type="uint8" />
+      <member name="TMD_RfgVlv5AbStop" type="uint8" />
+      <member name="TMD_EvaTxvSta" type="uint8" />
+      <member name="TMD_EvaTxvErr" type="uint8" />
+      <member name="TMD_CfanSwVer" type="uint8" />
+      <member name="TMD_CfanOpState" type="uint8" />
+      <member name="TMD_CfanActDuty" type="uint8" />
+      <member name="TMD_CfanForcedDiagSta" type="uint8" />
+      <member name="TMD_CfanWindMillSta" type="uint8" />
+      <member name="TMD_CfanInputCrnt" type="uint16" />
+      <member name="TMD_CfanInputVol" type="uint16" />
+      <member name="TMD_CfanTemp" type="uint8" />
+      <member name="TMD_CfanFault" type="uint8" />
+      <member name="TMD_CfanProtect" type="uint8" />
+      <member name="TMD_CfanShortCircuit" type="uint8" />
+      <member name="TMD_CfanOpenCircuit" type="uint8" />
+      <member name="TMD_CfanUndVol" type="uint8" />
+      <member name="TMD_CfanOvrVol" type="uint8" />
+      <member name="TMD_CfanOvrCrnt" type="uint8" />
+      <member name="TMD_CfanWarnCrnt" type="uint8" />
+      <member name="TMD_CfanOvrTemp" type="uint8" />
+      <member name="TMD_CfanWarnTemp" type="uint8" />
+      <member name="TMD_CfanStall" type="uint8" />
+      <member name="TMD_CfanSpdErr" type="uint8" />
+      <member name="TMD_CfanAbStop" type="uint8" />
+      <member name="TMD_CfanCommErr" type="uint8" />
+      <member name="TMD_CfanMcuFault" type="uint8" />
+      <member name="TMD_CfanStartFail" type="uint8" />
+      <member name="TMD_CfanTempSnsrErr" type="uint8" />
+      <member name="TMD_CfanCrntSnsrErr" type="uint8" />
+      <member name="TMD_EcompPowerW" type="uint16" />
+      <member name="TMD_EcompInputHvCrnt" type="uint8" />
+      <member name="TMD_EcompInputHvVol" type="uint8" />
+      <member name="TMD_EcompInterlockSta" type="uint8" />
+      <member name="TMD_EcompCommErr" type="uint8" />
+      <member name="TMD_EcompFault" type="uint8" />
+      <member name="TMD_EcompProtect" type="uint8" />
+      <member name="TMD_EcompSwVer" type="uint16" />
+      <member name="TMD_EcompActDuty" type="uint16" />
+      <member name="TMD_EcompInverterTemp1" type="uint8" />
+      <member name="TMD_EcompInverterTemp2" type="uint8" />
+      <member name="TMD_EcompOpSta" type="uint8" />
+      <member name="TMD_EcompLvOvrVol" type="uint8" />
+      <member name="TMD_EcompLvUndVol" type="uint8" />
+      <member name="TMD_EcompHvOvrVol" type="uint8" />
+      <member name="TMD_EcompHvUndVol" type="uint8" />
+      <member name="TMD_EcompLoCrnt" type="uint8" />
+      <member name="TMD_EcompWarnCrnt" type="uint8" />
+      <member name="TMD_EcompOvrCrnt" type="uint8" />
+      <member name="TMD_EcompContiOvrCrnt" type="uint8" />
+      <member name="TMD_EcompOpenCircuit" type="uint8" />
+      <member name="TMD_EcompShortCircuit" type="uint8" />
+      <member name="TMD_EcompCrntSnsrErr" type="uint8" />
+      <member name="TMD_EcompWarnTemp" type="uint8" />
+      <member name="TMD_EcompOvrTemp" type="uint8" />
+      <member name="TMD_EcompTempSnsrErr" type="uint8" />
+      <member name="TMD_EcompSpdErr" type="uint8" />
+      <member name="TMD_EcompStartFail" type="uint8" />
+      <member name="TMD_EcompContiStartFail" type="uint8" />
+      <member name="TMD_EcompContiSysErr" type="uint8" />
+      <member name="TMD_EcompMcuFault" type="uint8" />
+      <member name="TMD_TSMBatPowerW" type="uint16" />
+      <member name="TMD_TSMBatInputHVCrnt" type="uint8" />
+      <member name="TMD_TSMCabinPowerW" type="uint16" />
+      <member name="TMD_TSMCabinInputHVCrnt" type="uint8" />
+      <member name="TMD_TSMInputHvVol" type="uint8" />
+      <member name="TMD_TSMInterlockSta" type="uint8" />
+      <member name="TMD_TSMCommErr" type="uint8" />
+      <member name="TMD_TSMBatProtectMod" type="uint8" />
+      <member name="TMD_TSMBatFaultMod" type="uint8" />
+      <member name="TMD_TSMCabinProtectMod" type="uint8" />
+      <member name="TMD_TSMCabinFaultMod" type="uint8" />
+      <member name="TMD_TSMBatActDuty" type="uint16" />
+      <member name="TMD_TSMCabinActDuty" type="uint16" />
+      <member name="TMD_TSMOpSta" type="uint8" />
+      <member name="TMD_TSMLvVolErr" type="uint8" />
+      <member name="TMD_TSMHvVolErr" type="uint8" />
+      <member name="TMD_TSMWarnCrnt" type="uint8" />
+      <member name="TMD_TSMOvrCrnt" type="uint8" />
+      <member name="TMD_TSMOpenCircuit" type="uint8" />
+      <member name="TMD_TSMShortCircuit" type="uint8" />
+      <member name="TMD_TSMCrntSnsrErr" type="uint8" />
+      <member name="TMD_TSMWarnTemp" type="uint8" />
+      <member name="TMD_TSMOverTemp" type="uint8" />
+      <member name="TMD_TSMTempSnsrErr" type="uint8" />
+      <member name="TMD_TSMTrkErr" type="uint8" />
+      <member name="TMD_TSMContiSysErr" type="uint8" />
+      <member name="TMD_TSMLoClntTemp" type="uint8" />
+      <member name="TMD_TSMBatClntOutletTemp" type="int16" />
+      <member name="TMD_TSMCabinClntOutletTemp" type="int16" />
+      <member name="TMD_TSMSwVer" type="uint16" />
+      <member name="TMD_TSMSplitVariant" type="uint8" />
+      <member name="TMD_WtTemp3" type="int16" />
+    </struct>
+    <struct name="GCS_RIGHT_1_TMD_t">
+      <member name="HPVC_PeEwpTgtDuty_TMD" type="uint8" />
+      <member name="HPVC_PeEwpInitial_TMD" type="uint8" />
+      <member name="HPVC_PeEwpForcedDiag_TMD" type="uint8" />
+      <member name="HPVC_BatEwpTgtDuty_TMD" type="uint8" />
+      <member name="HPVC_BatEwpInitial_TMD" type="uint8" />
+      <member name="HPVC_BatEwpForcedDiag_TMD" type="uint8" />
+      <member name="HPVC_Ewp3TgtDuty_TMD" type="uint8" />
+      <member name="HPVC_Ewp3Initial_TMD" type="uint8" />
+      <member name="HPVC_Ewp3ForcedDiag_TMD" type="uint8" />
+      <member name="HPVC_ClntVlvSysTgtMod_TMD" type="uint8" />
+      <member name="HPVC_ClntVlvSysMovEna_TMD" type="uint8" />
+      <member name="HPVC_ClntVlvSysInitial_TMD" type="uint8" />
+      <member name="HPVC_ClntVlvSysForcedDiag_TMD" type="uint8" />
+      <member name="HPVC_WtLvDiagDrv_TMD" type="uint8" />
+      <member name="HPVC_EwpClntVlvSysTransCtrProhibit_TMD" type="uint8" />
+      <member name="HPVC_ClntInjctMod_TMD" type="uint8" />
+      <member name="HPVC_HpExvPosWayTgt_TMD" type="uint8" />
+      <member name="HPVC_HpExvPosWayTgtVal_TMD" type="uint16" />
+      <member name="HPVC_HpExvPosWayATgtVal_TMD" type="uint16" />
+      <member name="HPVC_HpExvFulOpnWayReq_TMD" type="uint8" />
+      <member name="HPVC_HpExvFulOpnWayAReq_TMD" type="uint8" />
+      <member name="HPVC_HpExvMovEna_TMD" type="uint8" />
+      <member name="HPVC_HpExvInitial_TMD" type="uint8" />
+      <member name="HPVC_BatExvPosWayTgt_TMD" type="uint8" />
+      <member name="HPVC_BatExvPosWayTgtVal_TMD" type="uint16" />
+      <member name="HPVC_BatExvPosWayATgtVal_TMD" type="uint16" />
+      <member name="HPVC_BatExvFulOpnWayReq_TMD" type="uint8" />
+      <member name="HPVC_BatExvFulOpnWayAReq_TMD" type="uint8" />
+      <member name="HPVC_BatExvMovEna_TMD" type="uint8" />
+      <member name="HPVC_BatExvInitial_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv3PosWayTgt_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv3PosWayTgtVal_TMD" type="uint16" />
+      <member name="HPVC_RfgVlv3PosWayATgtVal_TMD" type="uint16" />
+      <member name="HPVC_RfgVlv3FulOpnWayReq_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv3FulOpnWayAReq_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv3MovEna_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv3Initial_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv4PosWayTgt_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv4PosWayTgtVal_TMD" type="uint16" />
+      <member name="HPVC_RfgVlv4PosWayATgtVal_TMD" type="uint16" />
+      <member name="HPVC_RfgVlv4FulOpnWayReq_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv4FulOpnWayAReq_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv4MovEna_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv4Initial_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv5PosWayTgt_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv5PosWayTgtVal_TMD" type="uint16" />
+      <member name="HPVC_RfgVlv5PosWayATgtVal_TMD" type="uint16" />
+      <member name="HPVC_RfgVlv5FulOpnWayReq_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv5FulOpnWayAReq_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv5MovEna_TMD" type="uint8" />
+      <member name="HPVC_RfgVlv5Initial_TMD" type="uint8" />
+      <member name="HPVC_EvaTxvActvReq_TMD" type="uint8" />
+      <member name="HPVC_RfgInjctMod_TMD" type="uint8" />
+      <member name="HPVC_CfanTgtDuty_TMD" type="uint8" />
+      <member name="HPVC_CfanInitial_TMD" type="uint8" />
+      <member name="HPVC_CfanForcedDiag_TMD" type="uint8" />
+      <member name="HPVC_EcompTgtDuty_TMD" type="uint16" />
+      <member name="HPVC_EcompAllowOp_TMD" type="uint8" />
+      <member name="HPVC_EcompRestart_TMD" type="uint8" />
+      <member name="HPVC_MainRlySta_TMD" type="uint8" />
+      <member name="HPVC_AcSystemLoad_TMD" type="uint8" />
+      <member name="HPVC_TSMBatTgtDuty_TMD" type="uint16" />
+      <member name="HPVC_TSMCabinTgtDuty_TMD" type="uint16" />
+      <member name="HPVC_TSMAllowOp_TMD" type="uint8" />
+      <member name="HPVC_TSMRestart_TMD" type="uint8" />
+      <member name="HPVC_SleepRequestTo_TMD" type="uint8" />
+      <member name="HPVC_VehiclePowerState_TMD" type="uint8" />
+      <member name="HPVC_EcuInitial_TMD" type="uint8" />
+      <member name="GNSS_Year_TMD" type="uint8" />
+      <member name="GNSS_Month_TMD" type="uint8" />
+      <member name="GNSS_Day_TMD" type="uint8" />
+      <member name="GNSS_Hour_TMD" type="uint8" />
+      <member name="GNSS_Min_TMD" type="uint8" />
+      <member name="GNSS_Sec_TMD" type="uint8" />
+      <member name="HPVC_DrivingCycleStatus_TMD" type="uint8" />
+      <member name="HPVC_WarmupCycleStatus_TMD" type="uint8" />
+    </struct>
+  </types>
+  <qos_library name="qoslib">
+    <qos_profile name="Cabin_Charging_WPC_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>240000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>200000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="Cabin_Charging_WPC_Event_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>31449600</sec>
+            <nanosec>0</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>31449600</sec>
+            <nanosec>0</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="GCS_RIGHT_1_WPC_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>12000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>10000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="Cabin_Heat_HV_PTC_HEATER_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>24000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="GCS_RIGHT_1_HV_PTC_HEATER_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>24000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="Cabin_Seat_PSUIO_AST_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>24000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="GCS_RIGHT_1_PSUIO_AST_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>240000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>200000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="Cabin_Door_PDIO_FR_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>12000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>10000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="GCS_RIGHT_1_PDIO_FR_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>12000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>10000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="NFC_WPC_TO_GCS_ETH_WPC_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>31449600</sec>
+            <nanosec>0</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>31449600</sec>
+            <nanosec>0</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>31449600</sec>
+            <nanosec>0</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>31449600</sec>
+            <nanosec>0</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="Vehicle_HeatActuatorControl_TMD_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>12000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>10000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+    <qos_profile name="GCS_RIGHT_1_TMD_QosProfile">
+      <datareader_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>12000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      </datareader_qos>
+      <datawriter_qos>
+        <durability>
+          <kind>VOLATILE_DURABILITY_QOS</kind>
+        </durability>
+        <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+        </reliability>
+        <deadline>
+          <period>
+            <sec>0</sec>
+            <nanosec>10000000</nanosec>
+          </period>
+        </deadline>
+        <history>
+          <kind>KEEP_LAST_HISTORY_QOS</kind>
+          <depth>1</depth>
+        </history>
+      <writer_resource_limits>
+          <max_remote_readers>1</max_remote_readers>
+        </writer_resource_limits>
+      </datawriter_qos>
+    </qos_profile>
+  </qos_library>
+  <domain_library name="domlib">
+    <domain name="Domain_1" domain_id="1">
+      <register_type name="Cabin_Charging_WPC_t" type_ref="Cabin_Charging_WPC_t" />
+      <register_type name="Cabin_Charging_WPC_Event_t" type_ref="Cabin_Charging_WPC_Event_t" />
+      <register_type name="GCS_RIGHT_1_WPC_t" type_ref="GCS_RIGHT_1_WPC_t" />
+      <register_type name="Cabin_Heat_HV_PTC_HEATER_t" type_ref="Cabin_Heat_HV_PTC_HEATER_t" />
+      <register_type name="GCS_RIGHT_1_HV_PTC_HEATER_t" type_ref="GCS_RIGHT_1_HV_PTC_HEATER_t" />
+      <register_type name="Cabin_Seat_PSUIO_AST_t" type_ref="Cabin_Seat_PSUIO_AST_t" />
+      <register_type name="GCS_RIGHT_1_PSUIO_AST_t" type_ref="GCS_RIGHT_1_PSUIO_AST_t" />
+      <register_type name="Cabin_Door_PDIO_FR_t" type_ref="Cabin_Door_PDIO_FR_t" />
+      <register_type name="GCS_RIGHT_1_PDIO_FR_t" type_ref="GCS_RIGHT_1_PDIO_FR_t" />
+      <register_type name="NFC_WPC_TO_GCS_ETH_WPC_t" type_ref="NFC_WPC_TO_GCS_ETH_WPC_t" />
+      <register_type name="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_t" type_ref="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_t" />
+      <register_type name="Vehicle_HeatActuatorControl_TMD_t" type_ref="Vehicle_HeatActuatorControl_TMD_t" />
+      <register_type name="GCS_RIGHT_1_TMD_t" type_ref="GCS_RIGHT_1_TMD_t" />
+      <topic name="Cabin_Charging_WPC" register_type_ref="Cabin_Charging_WPC_t" />
+      <topic name="Cabin_Charging_WPC_Event" register_type_ref="Cabin_Charging_WPC_Event_t" />
+      <topic name="GCS_RIGHT_1_WPC" register_type_ref="GCS_RIGHT_1_WPC_t" />
+      <topic name="Cabin_Heat_HV_PTC_HEATER" register_type_ref="Cabin_Heat_HV_PTC_HEATER_t" />
+      <topic name="GCS_RIGHT_1_HV_PTC_HEATER" register_type_ref="GCS_RIGHT_1_HV_PTC_HEATER_t" />
+      <topic name="Cabin_Seat_PSUIO_AST" register_type_ref="Cabin_Seat_PSUIO_AST_t" />
+      <topic name="GCS_RIGHT_1_PSUIO_AST" register_type_ref="GCS_RIGHT_1_PSUIO_AST_t" />
+      <topic name="Cabin_Door_PDIO_FR" register_type_ref="Cabin_Door_PDIO_FR_t" />
+      <topic name="GCS_RIGHT_1_PDIO_FR" register_type_ref="GCS_RIGHT_1_PDIO_FR_t" />
+      <topic name="NFC_WPC_TO_GCS_ETH_WPC" register_type_ref="NFC_WPC_TO_GCS_ETH_WPC_t" />
+      <topic name="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC" register_type_ref="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_t" />
+      <topic name="Vehicle_HeatActuatorControl_TMD" register_type_ref="Vehicle_HeatActuatorControl_TMD_t" />
+      <topic name="GCS_RIGHT_1_TMD" register_type_ref="GCS_RIGHT_1_TMD_t" />
+    </domain>
+  </domain_library>
+  <domain_participant_library name="parlib">
+    <domain_participant name="WPC::Domain_1" domain_ref="domlib::Domain_1" domain_id="1">
+      <publisher name="P_WPC">
+        <data_writer name="Cabin_Charging_WPC_Writer" topic_ref="Cabin_Charging_WPC">
+          <datawriter_qos base_name="qoslib::Cabin_Charging_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>3111</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+        <data_writer name="Cabin_Charging_WPC_Event_Writer" topic_ref="Cabin_Charging_WPC_Event">
+          <datawriter_qos base_name="qoslib::Cabin_Charging_WPC_Event_QosProfile">
+            <protocol>
+              <rtps_object_id>3112</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+        <data_writer name="NFC_WPC_TO_GCS_ETH_WPC_Writer" topic_ref="NFC_WPC_TO_GCS_ETH_WPC">
+          <datawriter_qos base_name="qoslib::NFC_WPC_TO_GCS_ETH_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>3113</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+      </publisher>
+      <subscriber name="S_WPC">
+        <data_reader name="GCS_RIGHT_1_WPC_Reader" topic_ref="GCS_RIGHT_1_WPC">
+          <datareader_qos base_name="qoslib::GCS_RIGHT_1_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>3115</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+        <data_reader name="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_Reader" topic_ref="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC">
+          <datareader_qos base_name="qoslib::NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>3114</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+      </subscriber>
+    <domain_participant_qos base_name="qoslib_Domain::WPC_DPSEProfile" />
+    </domain_participant>
+    <domain_participant name="GCS_RIGHT_1::Domain_1" domain_ref="domlib::Domain_1" domain_id="1">
+      <publisher name="P_GCS_RIGHT_1">
+        <data_writer name="GCS_RIGHT_1_WPC_Writer" topic_ref="GCS_RIGHT_1_WPC">
+          <datawriter_qos base_name="qoslib::GCS_RIGHT_1_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>3001</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+        <data_writer name="GCS_RIGHT_1_HV_PTC_HEATER_Writer" topic_ref="GCS_RIGHT_1_HV_PTC_HEATER">
+          <datawriter_qos base_name="qoslib::GCS_RIGHT_1_HV_PTC_HEATER_QosProfile">
+            <protocol>
+              <rtps_object_id>3002</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+        <data_writer name="GCS_RIGHT_1_PSUIO_AST_Writer" topic_ref="GCS_RIGHT_1_PSUIO_AST">
+          <datawriter_qos base_name="qoslib::GCS_RIGHT_1_PSUIO_AST_QosProfile">
+            <protocol>
+              <rtps_object_id>3003</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+        <data_writer name="GCS_RIGHT_1_PDIO_FR_Writer" topic_ref="GCS_RIGHT_1_PDIO_FR">
+          <datawriter_qos base_name="qoslib::GCS_RIGHT_1_PDIO_FR_QosProfile">
+            <protocol>
+              <rtps_object_id>3004</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+        <data_writer name="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_Writer" topic_ref="NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC">
+          <datawriter_qos base_name="qoslib::NFC_GCS_TO_WPC_ETH_GCS_RIGHT_1_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>30012</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+        <data_writer name="GCS_RIGHT_1_TMD_Writer" topic_ref="GCS_RIGHT_1_TMD">
+          <datawriter_qos base_name="qoslib::GCS_RIGHT_1_TMD_QosProfile">
+            <protocol>
+              <rtps_object_id>3005</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+      </publisher>
+      <subscriber name="S_GCS_RIGHT_1">
+        <data_reader name="Cabin_Charging_WPC_Reader" topic_ref="Cabin_Charging_WPC">
+          <datareader_qos base_name="qoslib::Cabin_Charging_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>3006</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+        <data_reader name="Cabin_Charging_WPC_Event_Reader" topic_ref="Cabin_Charging_WPC_Event">
+          <datareader_qos base_name="qoslib::Cabin_Charging_WPC_Event_QosProfile">
+            <protocol>
+              <rtps_object_id>3007</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+        <data_reader name="Cabin_Heat_HV_PTC_HEATER_Reader" topic_ref="Cabin_Heat_HV_PTC_HEATER">
+          <datareader_qos base_name="qoslib::Cabin_Heat_HV_PTC_HEATER_QosProfile">
+            <protocol>
+              <rtps_object_id>3008</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+        <data_reader name="Cabin_Seat_PSUIO_AST_Reader" topic_ref="Cabin_Seat_PSUIO_AST">
+          <datareader_qos base_name="qoslib::Cabin_Seat_PSUIO_AST_QosProfile">
+            <protocol>
+              <rtps_object_id>3009</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+        <data_reader name="Cabin_Door_PDIO_FR_Reader" topic_ref="Cabin_Door_PDIO_FR">
+          <datareader_qos base_name="qoslib::Cabin_Door_PDIO_FR_QosProfile">
+            <protocol>
+              <rtps_object_id>30010</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+        <data_reader name="NFC_WPC_TO_GCS_ETH_WPC_Reader" topic_ref="NFC_WPC_TO_GCS_ETH_WPC">
+          <datareader_qos base_name="qoslib::NFC_WPC_TO_GCS_ETH_WPC_QosProfile">
+            <protocol>
+              <rtps_object_id>30011</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+        <data_reader name="Vehicle_HeatActuatorControl_TMD_Reader" topic_ref="Vehicle_HeatActuatorControl_TMD">
+          <datareader_qos base_name="qoslib::Vehicle_HeatActuatorControl_TMD_QosProfile">
+            <protocol>
+              <rtps_object_id>30013</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+      </subscriber>
+    <domain_participant_qos base_name="qoslib_Domain::GCS_RIGHT_1_DPSEProfile" />
+    </domain_participant>
+    <domain_participant name="HV_PTC_HEATER::Domain_1" domain_ref="domlib::Domain_1" domain_id="1">
+      <publisher name="P_HV_PTC_HEATER">
+        <data_writer name="Cabin_Heat_HV_PTC_HEATER_Writer" topic_ref="Cabin_Heat_HV_PTC_HEATER">
+          <datawriter_qos base_name="qoslib::Cabin_Heat_HV_PTC_HEATER_QosProfile">
+            <protocol>
+              <rtps_object_id>3021</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+      </publisher>
+      <subscriber name="S_HV_PTC_HEATER">
+        <data_reader name="GCS_RIGHT_1_HV_PTC_HEATER_Reader" topic_ref="GCS_RIGHT_1_HV_PTC_HEATER">
+          <datareader_qos base_name="qoslib::GCS_RIGHT_1_HV_PTC_HEATER_QosProfile">
+            <protocol>
+              <rtps_object_id>3022</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+      </subscriber>
+    <domain_participant_qos base_name="qoslib_Domain::HV_PTC_HEATER_DPSEProfile" />
+    </domain_participant>
+    <domain_participant name="PSUIO_AST::Domain_1" domain_ref="domlib::Domain_1" domain_id="1">
+      <publisher name="P_PSUIO_AST">
+        <data_writer name="Cabin_Seat_PSUIO_AST_Writer" topic_ref="Cabin_Seat_PSUIO_AST">
+          <datawriter_qos base_name="qoslib::Cabin_Seat_PSUIO_AST_QosProfile">
+            <protocol>
+              <rtps_object_id>3141</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+      </publisher>
+      <subscriber name="S_PSUIO_AST">
+        <data_reader name="GCS_RIGHT_1_PSUIO_AST_Reader" topic_ref="GCS_RIGHT_1_PSUIO_AST">
+          <datareader_qos base_name="qoslib::GCS_RIGHT_1_PSUIO_AST_QosProfile">
+            <protocol>
+              <rtps_object_id>3142</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+      </subscriber>
+    <domain_participant_qos base_name="qoslib_Domain::PSUIO_AST_DPSEProfile" />
+    </domain_participant>
+    <domain_participant name="PDIO_FR::Domain_1" domain_ref="domlib::Domain_1" domain_id="1">
+      <publisher name="P_PDIO_FR">
+        <data_writer name="Cabin_Door_PDIO_FR_Writer" topic_ref="Cabin_Door_PDIO_FR">
+          <datawriter_qos base_name="qoslib::Cabin_Door_PDIO_FR_QosProfile">
+            <protocol>
+              <rtps_object_id>3171</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+      </publisher>
+      <subscriber name="S_PDIO_FR">
+        <data_reader name="GCS_RIGHT_1_PDIO_FR_Reader" topic_ref="GCS_RIGHT_1_PDIO_FR">
+          <datareader_qos base_name="qoslib::GCS_RIGHT_1_PDIO_FR_QosProfile">
+            <protocol>
+              <rtps_object_id>3172</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+      </subscriber>
+    <domain_participant_qos base_name="qoslib_Domain::PDIO_FR_DPSEProfile" />
+    </domain_participant>
+    <domain_participant name="TMD::Domain_1" domain_ref="domlib::Domain_1" domain_id="1">
+      <publisher name="P_TMD">
+        <data_writer name="Vehicle_HeatActuatorControl_TMD_Writer" topic_ref="Vehicle_HeatActuatorControl_TMD">
+          <datawriter_qos base_name="qoslib::Vehicle_HeatActuatorControl_TMD_QosProfile">
+            <protocol>
+              <rtps_object_id>3051</rtps_object_id>
+            </protocol>
+          </datawriter_qos>
+        </data_writer>
+      </publisher>
+      <subscriber name="S_TMD">
+        <data_reader name="GCS_RIGHT_1_TMD_Reader" topic_ref="GCS_RIGHT_1_TMD">
+          <datareader_qos base_name="qoslib::GCS_RIGHT_1_TMD_QosProfile">
+            <protocol>
+              <rtps_object_id>3052</rtps_object_id>
+            </protocol>
+          </datareader_qos>
+        </data_reader>
+      </subscriber>
+    <domain_participant_qos base_name="qoslib_Domain::TMD_DPSEProfile" />
+    </domain_participant>
+  </domain_participant_library>
+<qos_library name="qoslib_Domain">
+    <qos_profile name="DefaultParticipantFactoryProfile" is_default_participant_factory_profile="true">
+      <participant_factory_qos>
+        <entity_factory>
+          <autoenable_created_entities>false</autoenable_created_entities>
+        </entity_factory>
+      </participant_factory_qos>
+    </qos_profile><qos_profile name="GCS_RIGHT_1_DPSEProfile">
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+          <udpv4>
+            <ignore_loopback_interface>1</ignore_loopback_interface>
+            <interface_table>
+              <element>
+                <interface_name>10BASE-T1S</interface_name>
+                <address>10.0.3.0</address>
+                <net_mask>255.0.0.0</net_mask>
+                <flags>UDP_INTERFACE_INTERFACE_UP_FLAG</flags>
+              </element>
+            </interface_table><allow_interfaces_list>
+              <element>10BASE-T1S</element>
+            </allow_interfaces_list>
+          </udpv4>
+        </transport_builtin><property>
+          <value>
+            <element>
+              <name>dds.micro.discovery.enable_participant_discovery_by_name</name>
+              <value>true</value>
+            </element>
+          </value>
+        </property><discovery_config>
+          <builtin_discovery_plugins>DPSE</builtin_discovery_plugins>
+          <initial_participant_announcements>2</initial_participant_announcements>
+          <max_initial_participant_announcement_period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </max_initial_participant_announcement_period><participant_liveliness_assert_period>
+            <sec>30</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_assert_period><participant_liveliness_lease_duration>
+            <sec>100</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_lease_duration>
+        </discovery_config><discovery>
+          <initial_peers>
+            <element>0@10.0.3.2</element>
+            <element>0@10.0.3.5</element>
+            <element>0@10.0.3.11</element>
+            <element>0@10.0.3.14</element>
+            <element>0@10.0.3.17</element>
+          </initial_peers><enabled_transports>
+            <element>udpv4</element>
+          </enabled_transports>
+        </discovery><default_unicast>
+          <value>
+            <element>
+              <transports>
+                <element>udpv4</element>
+              </transports>
+            </element>
+          </value>
+        </default_unicast><resource_limits>
+          <remote_participant_allocation>
+            <max_count>5</max_count>
+          </remote_participant_allocation><remote_writer_allocation>
+            <max_count>7</max_count>
+          </remote_writer_allocation><remote_reader_allocation>
+            <max_count>6</max_count>
+          </remote_reader_allocation>
+        </resource_limits>
+      </participant_qos>
+    </qos_profile><qos_profile name="HV_PTC_HEATER_DPSEProfile">
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+          <udpv4>
+            <ignore_loopback_interface>1</ignore_loopback_interface>
+            <interface_table>
+              <element>
+                <interface_name>10BASE-T1S</interface_name>
+                <address>10.0.3.2</address>
+                <net_mask>255.0.0.0</net_mask>
+                <flags>UDP_INTERFACE_INTERFACE_UP_FLAG</flags>
+              </element>
+            </interface_table><allow_interfaces_list>
+              <element>10BASE-T1S</element>
+            </allow_interfaces_list>
+          </udpv4>
+        </transport_builtin><property>
+          <value>
+            <element>
+              <name>dds.micro.discovery.enable_participant_discovery_by_name</name>
+              <value>true</value>
+            </element>
+          </value>
+        </property><discovery_config>
+          <builtin_discovery_plugins>DPSE</builtin_discovery_plugins>
+          <initial_participant_announcements>2</initial_participant_announcements>
+          <max_initial_participant_announcement_period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </max_initial_participant_announcement_period><participant_liveliness_assert_period>
+            <sec>30</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_assert_period><participant_liveliness_lease_duration>
+            <sec>100</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_lease_duration>
+        </discovery_config><discovery>
+          <initial_peers>
+            <element>0@10.0.3.0</element>
+          </initial_peers><enabled_transports>
+            <element>udpv4</element>
+          </enabled_transports>
+        </discovery><default_unicast>
+          <value>
+            <element>
+              <transports>
+                <element>udpv4</element>
+              </transports>
+            </element>
+          </value>
+        </default_unicast><resource_limits>
+          <remote_participant_allocation>
+            <max_count>5</max_count>
+          </remote_participant_allocation><remote_writer_allocation>
+            <max_count>12</max_count>
+          </remote_writer_allocation><remote_reader_allocation>
+            <max_count>12</max_count>
+          </remote_reader_allocation>
+        </resource_limits>
+      </participant_qos>
+    </qos_profile><qos_profile name="TMD_DPSEProfile">
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+          <udpv4>
+            <ignore_loopback_interface>1</ignore_loopback_interface>
+            <interface_table>
+              <element>
+                <interface_name>10BASE-T1S</interface_name>
+                <address>10.0.3.5</address>
+                <net_mask>255.0.0.0</net_mask>
+                <flags>UDP_INTERFACE_INTERFACE_UP_FLAG</flags>
+              </element>
+            </interface_table><allow_interfaces_list>
+              <element>10BASE-T1S</element>
+            </allow_interfaces_list>
+          </udpv4>
+        </transport_builtin><property>
+          <value>
+            <element>
+              <name>dds.micro.discovery.enable_participant_discovery_by_name</name>
+              <value>true</value>
+            </element>
+          </value>
+        </property><discovery_config>
+          <builtin_discovery_plugins>DPSE</builtin_discovery_plugins>
+          <initial_participant_announcements>2</initial_participant_announcements>
+          <max_initial_participant_announcement_period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </max_initial_participant_announcement_period><participant_liveliness_assert_period>
+            <sec>30</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_assert_period><participant_liveliness_lease_duration>
+            <sec>100</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_lease_duration>
+        </discovery_config><discovery>
+          <initial_peers>
+            <element>0@10.0.3.0</element>
+          </initial_peers><enabled_transports>
+            <element>udpv4</element>
+          </enabled_transports>
+        </discovery><default_unicast>
+          <value>
+            <element>
+              <transports>
+                <element>udpv4</element>
+              </transports>
+            </element>
+          </value>
+        </default_unicast><resource_limits>
+          <remote_participant_allocation>
+            <max_count>5</max_count>
+          </remote_participant_allocation><remote_writer_allocation>
+            <max_count>12</max_count>
+          </remote_writer_allocation><remote_reader_allocation>
+            <max_count>12</max_count>
+          </remote_reader_allocation>
+        </resource_limits>
+      </participant_qos>
+    </qos_profile><qos_profile name="WPC_DPSEProfile">
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+          <udpv4>
+            <ignore_loopback_interface>1</ignore_loopback_interface>
+            <interface_table>
+              <element>
+                <interface_name>10BASE-T1S</interface_name>
+                <address>10.0.3.11</address>
+                <net_mask>255.0.0.0</net_mask>
+                <flags>UDP_INTERFACE_INTERFACE_UP_FLAG</flags>
+              </element>
+            </interface_table><allow_interfaces_list>
+              <element>10BASE-T1S</element>
+            </allow_interfaces_list>
+          </udpv4>
+        </transport_builtin><property>
+          <value>
+            <element>
+              <name>dds.micro.discovery.enable_participant_discovery_by_name</name>
+              <value>true</value>
+            </element>
+          </value>
+        </property><discovery_config>
+          <builtin_discovery_plugins>DPSE</builtin_discovery_plugins>
+          <initial_participant_announcements>2</initial_participant_announcements>
+          <max_initial_participant_announcement_period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </max_initial_participant_announcement_period><participant_liveliness_assert_period>
+            <sec>30</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_assert_period><participant_liveliness_lease_duration>
+            <sec>100</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_lease_duration>
+        </discovery_config><discovery>
+          <initial_peers>
+            <element>0@10.0.3.0</element>
+          </initial_peers><enabled_transports>
+            <element>udpv4</element>
+          </enabled_transports>
+        </discovery><default_unicast>
+          <value>
+            <element>
+              <transports>
+                <element>udpv4</element>
+              </transports>
+            </element>
+          </value>
+        </default_unicast><resource_limits>
+          <remote_participant_allocation>
+            <max_count>5</max_count>
+          </remote_participant_allocation><remote_writer_allocation>
+            <max_count>10</max_count>
+          </remote_writer_allocation><remote_reader_allocation>
+            <max_count>11</max_count>
+          </remote_reader_allocation>
+        </resource_limits>
+      </participant_qos>
+    </qos_profile><qos_profile name="PSUIO_AST_DPSEProfile">
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+          <udpv4>
+            <ignore_loopback_interface>1</ignore_loopback_interface>
+            <interface_table>
+              <element>
+                <interface_name>10BASE-T1S</interface_name>
+                <address>10.0.3.14</address>
+                <net_mask>255.0.0.0</net_mask>
+                <flags>UDP_INTERFACE_INTERFACE_UP_FLAG</flags>
+              </element>
+            </interface_table><allow_interfaces_list>
+              <element>10BASE-T1S</element>
+            </allow_interfaces_list>
+          </udpv4>
+        </transport_builtin><property>
+          <value>
+            <element>
+              <name>dds.micro.discovery.enable_participant_discovery_by_name</name>
+              <value>true</value>
+            </element>
+          </value>
+        </property><discovery_config>
+          <builtin_discovery_plugins>DPSE</builtin_discovery_plugins>
+          <initial_participant_announcements>2</initial_participant_announcements>
+          <max_initial_participant_announcement_period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </max_initial_participant_announcement_period><participant_liveliness_assert_period>
+            <sec>30</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_assert_period><participant_liveliness_lease_duration>
+            <sec>100</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_lease_duration>
+        </discovery_config><discovery>
+          <initial_peers>
+            <element>0@10.0.3.0</element>
+          </initial_peers><enabled_transports>
+            <element>udpv4</element>
+          </enabled_transports>
+        </discovery><default_unicast>
+          <value>
+            <element>
+              <transports>
+                <element>udpv4</element>
+              </transports>
+            </element>
+          </value>
+        </default_unicast><resource_limits>
+          <remote_participant_allocation>
+            <max_count>5</max_count>
+          </remote_participant_allocation><remote_writer_allocation>
+            <max_count>12</max_count>
+          </remote_writer_allocation><remote_reader_allocation>
+            <max_count>12</max_count>
+          </remote_reader_allocation>
+        </resource_limits>
+      </participant_qos>
+    </qos_profile><qos_profile name="PDIO_FR_DPSEProfile">
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+          <udpv4>
+            <ignore_loopback_interface>1</ignore_loopback_interface>
+            <interface_table>
+              <element>
+                <interface_name>10BASE-T1S</interface_name>
+                <address>10.0.3.17</address>
+                <net_mask>255.0.0.0</net_mask>
+                <flags>UDP_INTERFACE_INTERFACE_UP_FLAG</flags>
+              </element>
+            </interface_table><allow_interfaces_list>
+              <element>10BASE-T1S</element>
+            </allow_interfaces_list>
+          </udpv4>
+        </transport_builtin><property>
+          <value>
+            <element>
+              <name>dds.micro.discovery.enable_participant_discovery_by_name</name>
+              <value>true</value>
+            </element>
+          </value>
+        </property><discovery_config>
+          <builtin_discovery_plugins>DPSE</builtin_discovery_plugins>
+          <initial_participant_announcements>2</initial_participant_announcements>
+          <max_initial_participant_announcement_period>
+            <sec>0</sec>
+            <nanosec>20000000</nanosec>
+          </max_initial_participant_announcement_period><participant_liveliness_assert_period>
+            <sec>30</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_assert_period><participant_liveliness_lease_duration>
+            <sec>100</sec>
+            <nanosec>0</nanosec>
+          </participant_liveliness_lease_duration>
+        </discovery_config><discovery>
+          <initial_peers>
+            <element>0@10.0.3.0</element>
+          </initial_peers><enabled_transports>
+            <element>udpv4</element>
+          </enabled_transports>
+        </discovery><default_unicast>
+          <value>
+            <element>
+              <transports>
+                <element>udpv4</element>
+              </transports>
+            </element>
+          </value>
+        </default_unicast><resource_limits>
+          <remote_participant_allocation>
+            <max_count>5</max_count>
+          </remote_participant_allocation><remote_writer_allocation>
+            <max_count>12</max_count>
+          </remote_writer_allocation><remote_reader_allocation>
+            <max_count>12</max_count>
+          </remote_reader_allocation>
+        </resource_limits>
+      </participant_qos>
+    </qos_profile>
+  </qos_library>
+</dds>

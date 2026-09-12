@@ -1,0 +1,29 @@
+# Run from projects\slcorp04:
+# ..\..\common\management\render_project_scripts.bat .\project-template-values.yaml --force
+project: slcorp05
+
+tokens:
+  RTIMEHOME: C:\RTI\rti_connext_drive-4.0.0\rti_connext_dds-7.3.1\rti_connext_dds_micro-4.3.0_ER738
+  JRE_HOME: C:\RTI\rti_connext_drive-4.0.0\rti_connext_dds-7.3.1\resource\app\jre\x64Win64
+  PROJECT_WORK_DIR: user_work
+  COMMON_TEMPLATES_DIR: ..\..\common\templates
+  PATCH_INPUT_XML_FILE: CODA Master Interface_domain_1_v5.6_DPSE_QoS.xml
+  PATCH_OUTPUT_XML_FILE: wpc_system.xml
+  PATCH_AUTOSAR_PARTICIPANT: WPC::Domain_1
+  SYSTEM_XML_REL_PATH: '@PROJECT_WORK_DIR@\@PATCH_OUTPUT_XML_FILE@'  
+  DEPLOYMENT_NAME: WPC_Domain_1_Deployment  
+  DEPLOYMENT_LIBRARY_NAME: MyDeploymentLib
+  DEPLOYMENT_SCENARIO_NAME: MyDeploymentScenario
+  APPLICATION_NAME: WPC_Domain_1_Application
+  DOMAIN_PARTICIPANT_NAME: WPC_Domain_1
+  IS_CERT: NO
+  IS_DPSE: YES
+  RTIME_MAG_FILES: test_system.xml
+  NATIVE_MAG_DEPLOYMENT: GCS_RIGHT_1_Domain_1_Deployment
+  NATIVE_SYSTEM_XML_REL_PATH: '@TEST_XML_DIR@\@RTIME_MAG_FILES@'
+  TEST_XML_DIR: '@PROJECT_WORK_DIR@'  
+  WINDOWS_TARGET_NAME: x86_64lePEvs2017-Win10
+  RTIMEHOME_LINUX: /home/jpark/Documents/dds/rti_connext_dds_micro-4.3.0
+  JRE_HOME_LINUX: /usr/lib/jvm/default-java
+  TEST_XML_DIR_POSIX: './@PROJECT_WORK_DIR@'
+  LINUX_TARGET_NAME: x86_64leElfgcc13.3.0-Linux6  
