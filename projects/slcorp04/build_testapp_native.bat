@@ -12,7 +12,6 @@ set "TARGET_NAME=x86_64lePEvs2017-Win10"
 set "BUILD_CONFIG=Debug"
 set "MSVC_ARCH=x64"
 set "SRC_DIR=.\testapp"
-set "COMMON_TEMPLATES_DIR=%~dp0..\..\common\templates"
 
 if not exist "%SRC_DIR%" exit /b 1
 if not exist "%XML_DIR%\%RTIME_MAG_FILES%" exit /b 1
@@ -28,10 +27,6 @@ if errorlevel 1 exit /b 1
 for %%F in ("%RTIME_MAG_FILES%") do set "APP_BASE=%%~nF"
 if not exist "%SRC_DIR%\%APP_BASE%Appgen.c" exit /b 1
 if not exist "%SRC_DIR%\%APP_BASE%Appgen.h" exit /b 1
-
-if exist "%COMMON_TEMPLATES_DIR%\.workaround\fix_cmakelists_paths.py" if exist "%SRC_DIR%\CMakeLists.txt" (
-    python "%COMMON_TEMPLATES_DIR%\.workaround\fix_cmakelists_paths.py" --cmakelists "%SRC_DIR%\CMakeLists.txt"
-)
 
 pushd "%SRC_DIR%"
 call "%RTIMEHOME%\resource\scripts\rtime-make.bat" ^

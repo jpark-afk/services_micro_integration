@@ -5,6 +5,31 @@ description: workaround for micro430er738 to support RTI Services
 sourceRoot: ../../..
 targetDir: ../../../customer/slcorp05
 
+include:
+  - path: README.customer.md
+  - path: common/fix_psl
+    recursive: true
+  - path: common/fix_tools
+    recursive: true
+  - path: common/templates
+    recursive: true
+  - path: common/workaround_report.md
+  - path: common/README.md
+  - path: projects/slcorp05
+    recursive: true 
+
+exclude:
+  - "**/__pycache__/**"
+  - "**/_git_cache/**"
+  - "**/*.pyc"
+  - "**/*.pyo"
+  - "**/.DS_Store"
+  - "**/Thumbs.db"
+  - "**/_patched_tmp/**"
+  - "**/*.yaml"
+  - "common/templates/.project_scripts/**"
+  - "projects/slcorp05/deploy_patch/**"
+
 deploymentMarkerFormat:
   batchStaticCommentBlock:
     - "REM RTI INTERNAL TEMPORARY WORKAROUND NOTICE"
@@ -34,27 +59,4 @@ deploymentMarkerFormat:
     - "<!-- RTI does not provide official support for this file content and assumes no responsibility for errors from its use. -->"
     - "<!-- Users must review and modify this file for their own environment before use. -->"
     - "<!-- Refer to the Connext Micro 4.3 online documentation for guidance. -->"
-
-include:
-  - path: common/fix_psl
-    recursive: true
-  - path: common/fix_tools
-    recursive: true
-  - path: common/templates
-    recursive: true
-  - path: common/README.md
-  - path: projects/slcorp05
-    recursive: true 
-
-exclude:
-  - "**/__pycache__/**"
-  - "**/_git_cache/**"
-  - "**/*.pyc"
-  - "**/*.pyo"
-  - "**/.DS_Store"
-  - "**/Thumbs.db"
-  - "**/_patched_tmp/**"
-  - "**/*.yaml"
-  - "common/templates/.project_scripts/**"
-  - "projects/slcorp05/deploy_patch/**"
 
