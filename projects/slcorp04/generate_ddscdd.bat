@@ -27,7 +27,7 @@ set "DOMAIN_PARTICIPANT_NAME=PDIO_FL_Domain_6"
 
 for %%F in ("%SYSTEM_XML_PATH%") do set "XML_NAME=%%~nF"
 
-echo [1/5] Running rtiddsmag...
+echo [1/6] Running rtiddsmag...
 call "%RTIMEHOME%\bin\rtiddsmag.bat" ^
     -inputXml "%SYSTEM_XML_PATH%" ^
     -deployment %DEPLOYMENT_NAME% ^
@@ -41,7 +41,7 @@ if errorlevel 1 exit /b 1
 set "PARTICIPANT_DIR=%OUTPUT_DIR%\%DEPLOYMENT_LIBRARY_NAME%\%DEPLOYMENT_SCENARIO_NAME%\%DEPLOYMENT_NAME%\%APPLICATION_NAME%\%DOMAIN_PARTICIPANT_NAME%"
 set "DDS_GEN_DIR=%PARTICIPANT_DIR%\dds_gen"
 
-echo [2/5] Running rtiarcgen...
+echo [2/6] Running rtiarcgen...
 if not exist "%DDS_GEN_DIR%" mkdir "%DDS_GEN_DIR%"
 pushd "%DDS_GEN_DIR%"
 set "RTIDDSGEN_PATH=%RTIMEHOME%\rtiddsgen\scripts\rtiddsgen.bat"
@@ -51,12 +51,12 @@ set "RTIARCGEN_RESULT=%errorlevel%"
 popd
 if not "%RTIARCGEN_RESULT%"=="0" exit /b 1
 
-echo [3/5] Creating dds_cdd_userstub.h...
+echo [3/6] Creating dds_cdd_userstub.h...
 type nul > "%PARTICIPANT_DIR%\dds_cdd_userstub.h"
 if errorlevel 1 exit /b 1
 
 if /I "%IS_DPSE%"=="YES" (
-    echo [4/5] DPSE Appgen patch...
+    echo [4/6] DPSE Appgen patch...
     set "DPSE_TEMP_DIR=%PARTICIPANT_DIR%\dpse_appgen_temp"
     if not exist "!DPSE_TEMP_DIR!" mkdir "!DPSE_TEMP_DIR!"
     call "%RTIMEHOME%\bin\rtiddsmag.bat" ^
@@ -71,12 +71,18 @@ if /I "%IS_DPSE%"=="YES" (
     rmdir /s /q "!DPSE_TEMP_DIR!"
 )
 
-echo [5/5] Patching unused conversion blocks...
+echo [5/6] Patching unused conversion blocks...
 python "%MAG_TEMPLATE_PATH%\patch_unused_conversions.py" ^
     --system-xml "%SYSTEM_XML_PATH%" ^
     --deployment "%DEPLOYMENT_NAME%" ^
     --c "%DDS_GEN_DIR%\%XML_NAME%_conversions.c" ^
     --h "%DDS_GEN_DIR%\%XML_NAME%_conversions.h"
+if errorlevel 1 exit /b 1
+
+echo [6/6] Patching receiver init values...
+python "%MAG_TEMPLATE_PATH%\patch_receiver_init_values.py" ^
+    --types-arxml "%DDS_GEN_DIR%\%XML_NAME%_types.arxml" ^
+    --cdd-arxml "%PARTICIPANT_DIR%\autosar_model\DdsCddType.arxml"
 if errorlevel 1 exit /b 1
 
 echo Done. Generated files are under "%PARTICIPANT_DIR%".
