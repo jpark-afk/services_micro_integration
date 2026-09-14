@@ -10,6 +10,18 @@ cd projects\projectName
 
 ## 1. Prepare the XML File
 
+Open `user_work\patch_run.bat` and update `RTIMEHOME` for the customer's local Connext Micro installation:
+
+```bat
+set "RTIMEHOME=<path-to-rti-connext-micro>"
+```
+
+The patch uses the following schema from that installation to correct `xsi:noNamespaceSchemaLocation` in the output XML:
+
+```text
+%RTIMEHOME%\rtiddsmag\resource\schema\dds-xml_system_definitions.xsd
+```
+
 Run the XML patch script once:
 
 ```bat
@@ -17,6 +29,12 @@ Run the XML patch script once:
 ```
 
 The script processes the original XML file and automatically fills in required elements such as deployment-related information. It writes a patched system XML file under `user_work\`, for example `wpc_system.xml` or another `xxx_system.xml` file depending on the project configuration.
+
+The rendered script already contains the configured input XML, output XML, and AUTOSAR participant. To override them for a one-off run, pass all values in this order:
+
+```bat
+.\user_work\patch_run.bat "<input.xml>" "<output.xml>" "<AUTOSAR_PARTICIPANT>"
+```
 
 After the patched XML is generated, open it and search for the keyword `REQUIRED`.
 

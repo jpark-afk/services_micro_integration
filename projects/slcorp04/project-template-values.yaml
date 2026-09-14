@@ -23,7 +23,7 @@ tokens:
   NATIVE_SYSTEM_XML_REL_PATH: '@TEST_XML_DIR@\@RTIME_MAG_FILES@'
   TEST_XML_DIR: '@PROJECT_WORK_DIR@'  
   WINDOWS_TARGET_NAME: x86_64lePEvs2017-Win10
-  RTIMEHOME_LINUX: /home/jpark/Documents/dds/rti_connext_dds_micro-4.3.0
+  RTIMEHOME_LINUX: /home/jpark/dds/rti_connext_dds_micro-4.3.0_ER738
   JRE_HOME_LINUX: /usr/lib/jvm/default-java
   TEST_XML_DIR_POSIX: './@PROJECT_WORK_DIR@'
   LINUX_TARGET_NAME: x86_64leElfgcc13.3.0-Linux6  

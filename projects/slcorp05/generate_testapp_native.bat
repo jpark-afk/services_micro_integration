@@ -15,6 +15,16 @@ set "MAG_DEPLOYMENT=GCS_RIGHT_1_Domain_1_Deployment"
 set "COMMON_TEMPLATES_DIR=%~dp0..\..\common\templates"
 set "MAG_TEMPLATE_PATH=%COMMON_TEMPLATES_DIR%\.workaround"
 
+if not exist "%SYSTEM_XML_PATH%" (
+    echo ERROR: DDS System XML not found: %SYSTEM_XML_PATH%
+    exit /b 1
+)
+
+for %%F in ("%SYSTEM_XML_PATH%") do (
+    set "XML_NAME=%%~nF"
+    set "XML_FILE=%%~nxF"
+)
+
 if not exist "%OUTPUT%" mkdir "%OUTPUT%"
 dir /a /b "%OUTPUT%" 2>nul | findstr . >nul
 if %errorlevel%==0 (
@@ -49,9 +59,9 @@ for /f "delims=" %%F in ('dir /a:-d /b /s "%OUTPUT%"') do (
 for /f "delims=" %%D in ('dir /a:d /b /s "%OUTPUT%" ^| sort /r') do rmdir "%%D" 2>nul
 
 echo [4/5] Copying "%SYSTEM_XML_PATH%" into "%OUTPUT%"...
-copy /Y "%SYSTEM_XML_PATH%" "%OUTPUT_ABS%\" >nul
+copy /Y "%SYSTEM_XML_PATH%" "%OUTPUT_ABS%\%XML_FILE%" >nul
+if errorlevel 1 exit /b 1
 
-for %%F in ("%SYSTEM_XML_PATH%") do set "XML_NAME=%%~nF"
 if /I "%IS_DPSE%"=="YES" (
     echo [5/5] DPSE Appgen patch...
     set "DPSE_TEMP_DIR=%OUTPUT%\dpse_appgen_temp"

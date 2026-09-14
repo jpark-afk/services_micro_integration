@@ -28,7 +28,17 @@ for %%F in ("%RTIME_MAG_FILES%") do set "APP_BASE=%%~nF"
 if not exist "%SRC_DIR%\%APP_BASE%Appgen.c" exit /b 1
 if not exist "%SRC_DIR%\%APP_BASE%Appgen.h" exit /b 1
 
-pushd "%SRC_DIR%"
+set "BUILD_DRIVE="
+for %%D in (Z Y X W V U T S R Q P O N M L K J I H G F E D) do if not defined BUILD_DRIVE if not exist "%%D:\" set "BUILD_DRIVE=%%D:"
+if not defined BUILD_DRIVE (
+    echo ERROR: No free drive letter is available for the short build path.
+    exit /b 1
+)
+
+subst %BUILD_DRIVE% "%CD%"
+if errorlevel 1 exit /b 1
+
+pushd "%BUILD_DRIVE%\testapp"
 call "%RTIMEHOME%\resource\scripts\rtime-make.bat" ^
     --config %BUILD_CONFIG% ^
     -A %MSVC_ARCH% ^
@@ -40,6 +50,7 @@ call "%RTIMEHOME%\resource\scripts\rtime-make.bat" ^
     -DRTIME_MAG_FILES_eq_%RTIME_MAG_FILES%
 set "BUILD_RESULT=%errorlevel%"
 popd
+subst %BUILD_DRIVE% /d
 
 if not "%BUILD_RESULT%"=="0" exit /b 1
 if "%STAGED_XML%"=="1" del /q "%SRC_DIR%\%RTIME_MAG_FILES%"

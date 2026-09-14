@@ -14,7 +14,7 @@ print_notice
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
-RTIMEHOME="/home/jpark/Documents/dds/rti_connext_dds_micro-4.3.0"
+RTIMEHOME="/home/jpark/dds/rti_connext_dds_micro-4.3.0_ER738"
 RTIMEHOME="${RTIMEHOME/#\~/$HOME}"
 export RTIMEHOME
 
@@ -27,14 +27,24 @@ TARGET_NAME="x86_64leElfgcc13.3.0-Linux6"
 BUILD_CONFIG="Debug"
 GENERATOR="Unix Makefiles"
 SRC_DIR="./testapp"
+SCHEMA_PATH="${RTIMEHOME}/rtiddsmag/resource/schema/dds-xml_system_definitions.xsd"
 
 if [[ ! -d "${SRC_DIR}" ]]; then exit 1; fi
 if [[ ! -f "${XML_DIR}/${RTIME_MAG_FILES}" ]]; then exit 1; fi
 if [[ "${RTIME_MAG_FILES}" == */* ]]; then exit 1; fi
+if [[ ! -f "${SCHEMA_PATH}" ]]; then
+    echo "ERROR: DDS System XML schema not found: ${SCHEMA_PATH}"
+    exit 1
+fi
+if ! grep -q 'xsi:noNamespaceSchemaLocation=' "${XML_DIR}/${RTIME_MAG_FILES}"; then
+    echo "ERROR: xsi:noNamespaceSchemaLocation not found in ${XML_DIR}/${RTIME_MAG_FILES}"
+    exit 1
+fi
 
 STAGED_XML=0
 if [[ ! -f "${SRC_DIR}/${RTIME_MAG_FILES}" ]]; then STAGED_XML=1; fi
-cp -f "${XML_DIR}/${RTIME_MAG_FILES}" "${SRC_DIR}/${RTIME_MAG_FILES}"
+sed -E "s#xsi:noNamespaceSchemaLocation=\"[^\"]*\"#xsi:noNamespaceSchemaLocation=\"${SCHEMA_PATH}\"#" \
+    "${XML_DIR}/${RTIME_MAG_FILES}" > "${SRC_DIR}/${RTIME_MAG_FILES}"
 
 pushd "${SRC_DIR}" > /dev/null
 set +e

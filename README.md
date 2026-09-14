@@ -49,7 +49,7 @@ Generate runnable scripts after writing the YAML file:
 ..\..\common\management\render_project_scripts.bat .\project-template-values.yaml --force
 ```
 
-Run the command from `projects\<your_project>`. It generates scripts such as `generate_ddscdd.bat`, `generate_testapp_native.bat`, `build_testapp_native.bat`, and `user_work\patch_run.bat`.
+Run the command from `projects\<your_project>`. It generates scripts such as `generate_ddscdd.bat`, `generate_testapp_native.bat`, `generate_testapp_native.sh`, `build_testapp_native.bat`, `build_testapp_native.sh`, and `user_work\patch_run.bat`.
 
 ## Generation Workflow
 
